@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c96cbd49c9430eb48bed02d571e72273, type: 3}
+  m_Name: PieceTypeDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::PieceTypeDatabase
+  pieceTypes:
+  - {fileID: 11400000, guid: a55d643cdc554ac42a5955073a08090a, type: 2}
+  - {fileID: 11400000, guid: d5e6e42ec3730a74bb7e9c59f920c43d, type: 2}
+  - {fileID: 11400000, guid: c057f7757a31ff54d8b8b3fdc2e83332, type: 2}
+  - {fileID: 11400000, guid: f38c18b2f0ffe1b4b9591e3221ccae68, type: 2}
+  - {fileID: 11400000, guid: 93d166e4b3aa2874d9345246e31ae761, type: 2}
+  - {fileID: 11400000, guid: a13646f49a570a44e93950f1980d4048, type: 2}
+  maxTypesInPlay: 6

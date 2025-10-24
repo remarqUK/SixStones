@@ -1,0 +1,659 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class Board : MonoBehaviour
+{
+    [Header("Board Settings")]
+    [SerializeField] private int width = 8;
+    [SerializeField] private int height = 8;
+    [SerializeField] private float cellSize = 1f;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject gamePiecePrefab;
+    [SerializeField] private GameObject cellBackgroundPrefab;
+
+    [Header("Gameplay Settings")]
+    [SerializeField] private float swapDuration = 0.2f;
+    [SerializeField] private float fallDuration = 0.3f;
+
+    [Header("References")]
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private CPUPlayer cpuPlayer;
+    [SerializeField] private GameModeData currentMode;
+
+    private GamePiece[,] pieces;
+    private bool isProcessing = false;
+    private MatchDetector matchDetector;
+
+    public int Width => width;
+    public int Height => height;
+    public bool IsProcessing => isProcessing;
+    public GameModeData CurrentMode => currentMode;
+
+    private void Start()
+    {
+        Debug.Log("===== BOARD START() CALLED =====");
+        Debug.Log($"Board Instance ID: {GetInstanceID()}");
+        Debug.Log($"Frame: {Time.frameCount}, Time: {Time.time}");
+        Debug.Log($"Total Board objects in scene: {FindObjectsOfType<Board>().Length}");
+
+        // Apply game mode settings if available
+        if (currentMode != null)
+        {
+            Debug.Log($"Current mode: {currentMode.modeName}, configured size: {currentMode.boardWidth}x{currentMode.boardHeight}");
+
+            if (currentMode.boardWidth > 0)
+                width = currentMode.boardWidth;
+
+            if (currentMode.boardHeight > 0)
+                height = currentMode.boardHeight;
+
+            Debug.Log($"Board size set to: {width}x{height}");
+
+            // Initialize player manager with game mode settings
+            if (playerManager != null)
+            {
+                playerManager.Initialize(currentMode);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No game mode assigned to Board! Using default size.");
+        }
+
+        matchDetector = new MatchDetector(this);
+        InitializeBoard();
+    }
+
+    private void InitializeBoard()
+    {
+        Debug.Log("===== InitializeBoard CALLED =====");
+        Debug.Log($"Stack trace: {System.Environment.StackTrace}");
+
+        pieces = new GamePiece[width, height];
+
+        // Create background
+        CreateBackground();
+
+        // Fill board with pieces
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                CreatePiece(x, y);
+            }
+        }
+
+        // In drop mode, ensure no drop gems on bottom row
+        if (currentMode != null && currentMode.scoreOnBottomRowHit)
+        {
+            EnsureNoDropGemsOnBottomRow();
+        }
+
+        // Ensure no initial matches
+        StartCoroutine(ClearInitialMatches());
+    }
+
+    private void CreateBackground()
+    {
+        if (cellBackgroundPrefab == null) return;
+
+        GameObject backgroundParent = new GameObject("Background");
+        backgroundParent.transform.SetParent(transform);
+        backgroundParent.transform.localPosition = Vector3.zero;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GameObject cell = Instantiate(cellBackgroundPrefab, backgroundParent.transform);
+                cell.transform.position = GridToWorld(x, y);
+                cell.name = $"Cell_{x}_{y}";
+
+                // Alternate colors for checkerboard pattern
+                if ((x + y) % 2 == 0)
+                {
+                    SpriteRenderer sr = cell.GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.color = new Color(0.3f, 0.3f, 0.4f);
+                    }
+                }
+            }
+        }
+    }
+
+    private void CreatePiece(int x, int y, bool animate = false)
+    {
+        GamePiece.PieceType randomType = GetRandomPieceType();
+        Vector3 spawnPosition = animate ? GridToWorld(x, height + 2) : GridToWorld(x, y);
+
+        GameObject pieceObj = Instantiate(gamePiecePrefab, spawnPosition, Quaternion.identity, transform);
+        pieceObj.name = $"Piece_{x}_{y}";
+
+        GamePiece piece = pieceObj.GetComponent<GamePiece>();
+        piece.Initialize(randomType, new Vector2Int(x, y), this);
+        pieces[x, y] = piece;
+
+        if (animate)
+        {
+            piece.MoveTo(GridToWorld(x, y), fallDuration);
+        }
+    }
+
+    private GamePiece.PieceType GetRandomPieceType()
+    {
+        int typeCount = System.Enum.GetValues(typeof(GamePiece.PieceType)).Length;
+        return (GamePiece.PieceType)Random.Range(0, typeCount);
+    }
+
+    public Vector3 GridToWorld(int x, int y)
+    {
+        float offsetX = -(width - 1) * cellSize / 2f;
+        float offsetY = -(height - 1) * cellSize / 2f;
+        return new Vector3(x * cellSize + offsetX, y * cellSize + offsetY, 0);
+    }
+
+    public Vector2Int WorldToGrid(Vector3 worldPosition)
+    {
+        float offsetX = -(width - 1) * cellSize / 2f;
+        float offsetY = -(height - 1) * cellSize / 2f;
+
+        int x = Mathf.RoundToInt((worldPosition.x - offsetX) / cellSize);
+        int y = Mathf.RoundToInt((worldPosition.y - offsetY) / cellSize);
+
+        return new Vector2Int(x, y);
+    }
+
+    public bool IsValidPosition(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    public bool IsValidPosition(Vector2Int pos)
+    {
+        return IsValidPosition(pos.x, pos.y);
+    }
+
+    public GamePiece GetPieceAt(int x, int y)
+    {
+        if (!IsValidPosition(x, y)) return null;
+        return pieces[x, y];
+    }
+
+    public GamePiece GetPieceAt(Vector2Int pos)
+    {
+        return GetPieceAt(pos.x, pos.y);
+    }
+
+    public void SwapPieces(Vector2Int pos1, Vector2Int pos2)
+    {
+        if (!IsValidPosition(pos1) || !IsValidPosition(pos2)) return;
+        if (isProcessing) return;
+
+        StartCoroutine(SwapPiecesCoroutine(pos1, pos2));
+    }
+
+    private IEnumerator SwapPiecesCoroutine(Vector2Int pos1, Vector2Int pos2)
+    {
+        isProcessing = true;
+
+        GamePiece piece1 = pieces[pos1.x, pos1.y];
+        GamePiece piece2 = pieces[pos2.x, pos2.y];
+
+        // Swap in grid
+        pieces[pos1.x, pos1.y] = piece2;
+        pieces[pos2.x, pos2.y] = piece1;
+
+        // Update grid positions
+        piece1.SetGridPosition(pos2);
+        piece2.SetGridPosition(pos1);
+
+        // Animate swap
+        piece1.MoveTo(GridToWorld(pos2.x, pos2.y), swapDuration);
+        piece2.MoveTo(GridToWorld(pos1.x, pos1.y), swapDuration);
+
+        yield return new WaitForSeconds(swapDuration);
+
+        // Check for matches
+        List<GamePiece> matches = matchDetector.FindAllMatches();
+
+        if (matches.Count == 0)
+        {
+            // No matches, swap back
+            pieces[pos1.x, pos1.y] = piece1;
+            pieces[pos2.x, pos2.y] = piece2;
+            piece1.SetGridPosition(pos1);
+            piece2.SetGridPosition(pos2);
+            piece1.MoveTo(GridToWorld(pos1.x, pos1.y), swapDuration);
+            piece2.MoveTo(GridToWorld(pos2.x, pos2.y), swapDuration);
+            yield return new WaitForSeconds(swapDuration);
+
+            // Invalid move - turn ends without scoring
+            EndTurn();
+        }
+        else
+        {
+            // Process matches (check bonus turn only for initial match from player's swap)
+            yield return StartCoroutine(ProcessMatches(matches, checkBonusTurn: true));
+
+            // Valid move completed - end turn
+            EndTurn();
+        }
+
+        isProcessing = false;
+    }
+
+    private IEnumerator ProcessMatches(List<GamePiece> matchedPieces, bool checkBonusTurn = false)
+    {
+        // Report scores to GameManager (only if not in drop mode)
+        if (gameManager != null && currentMode != null && !currentMode.scoreOnBottomRowHit)
+        {
+            gameManager.AddScore(matchedPieces, checkBonusTurn);
+        }
+
+        // Clear matched pieces
+        foreach (GamePiece piece in matchedPieces)
+        {
+            Vector2Int pos = piece.GridPosition;
+            pieces[pos.x, pos.y] = null;
+            piece.DestroyPiece();
+        }
+
+        yield return new WaitForSeconds(0.3f);
+
+        // Make pieces fall
+        yield return StartCoroutine(MakePiecesFall());
+
+        // Check for bottom row hits (drop mode)
+        yield return StartCoroutine(CheckBottomRowHits());
+
+        // Fill empty spaces
+        FillEmptySpaces();
+
+        yield return new WaitForSeconds(fallDuration);
+
+        // Check for new matches (only if not in drop mode or matches still count)
+        if (currentMode == null || !currentMode.scoreOnBottomRowHit)
+        {
+            List<GamePiece> newMatches = matchDetector.FindAllMatches();
+            if (newMatches.Count > 0)
+            {
+                // Cascades don't give bonus turns
+                yield return StartCoroutine(ProcessMatches(newMatches, checkBonusTurn: false));
+            }
+        }
+        else
+        {
+            // In drop mode, check bottom row again after spawning
+            yield return StartCoroutine(CheckBottomRowHits());
+        }
+    }
+
+    private IEnumerator MakePiecesFall()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pieces[x, y] == null)
+                {
+                    // Find piece above
+                    for (int above = y + 1; above < height; above++)
+                    {
+                        if (pieces[x, above] != null)
+                        {
+                            // Move piece down
+                            GamePiece fallingPiece = pieces[x, above];
+                            pieces[x, above] = null;
+                            pieces[x, y] = fallingPiece;
+                            fallingPiece.SetGridPosition(new Vector2Int(x, y));
+                            fallingPiece.MoveTo(GridToWorld(x, y), fallDuration);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        yield return new WaitForSeconds(fallDuration);
+    }
+
+    private void FillEmptySpaces()
+    {
+        // Check if current mode allows spawning new pieces
+        if (currentMode != null && !currentMode.spawnNewPieces)
+        {
+            // Solve mode - no new pieces spawn
+            return;
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pieces[x, y] == null)
+                {
+                    CreatePiece(x, y, true);
+                }
+            }
+        }
+    }
+
+    private IEnumerator ClearInitialMatches()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        List<GamePiece> matches = matchDetector.FindAllMatches();
+        while (matches.Count > 0)
+        {
+            // Replace matched pieces with random different types
+            foreach (GamePiece piece in matches)
+            {
+                Vector2Int pos = piece.GridPosition;
+                Destroy(piece.gameObject);
+                CreatePiece(pos.x, pos.y, false);
+            }
+
+            yield return new WaitForSeconds(0.1f);
+            matches = matchDetector.FindAllMatches();
+        }
+
+        // Check if there are any possible moves
+        int possibleMoves = GetPossibleMovesCount();
+        Debug.Log($"ClearInitialMatches: Found {possibleMoves} possible moves");
+        if (possibleMoves == 0)
+        {
+            Debug.Log("===== BOARD REGENERATION TRIGGERED - No possible moves =====");
+
+            // Clear entire board
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null)
+                    {
+                        Destroy(pieces[x, y].gameObject);
+                        pieces[x, y] = null;
+                    }
+                }
+            }
+
+            // Recreate board
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    CreatePiece(x, y);
+                }
+            }
+
+            // Recursively check again
+            yield return StartCoroutine(ClearInitialMatches());
+            yield break;
+        }
+
+        // Update UI now that board is initialized
+        if (gameManager != null)
+        {
+            gameManager.UpdateUI();
+        }
+    }
+
+    /// <summary>
+    /// Calculate the number of possible moves on the board
+    /// </summary>
+    public int GetPossibleMovesCount()
+    {
+        // Return 0 if board not initialized yet
+        if (pieces == null) return 0;
+
+        int possibleMoves = 0;
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GamePiece piece = pieces[x, y];
+                if (piece == null) continue;
+
+                // Check swap with right neighbor
+                if (x < width - 1)
+                {
+                    if (WouldCreateMatch(x, y, x + 1, y))
+                    {
+                        possibleMoves++;
+                    }
+                }
+
+                // Check swap with top neighbor
+                if (y < height - 1)
+                {
+                    if (WouldCreateMatch(x, y, x, y + 1))
+                    {
+                        possibleMoves++;
+                    }
+                }
+            }
+        }
+
+        return possibleMoves;
+    }
+
+    /// <summary>
+    /// Get a random possible move for hint system
+    /// Returns positions of two pieces that can be swapped to create a match
+    /// Returns (-1,-1) and (-1,-1) if no moves available
+    /// </summary>
+    public (Vector2Int, Vector2Int) GetRandomPossibleMove()
+    {
+        // Return invalid positions if board not initialized
+        if (pieces == null)
+        {
+            return (new Vector2Int(-1, -1), new Vector2Int(-1, -1));
+        }
+
+        // Collect all possible moves
+        List<(Vector2Int, Vector2Int)> possibleMoves = new List<(Vector2Int, Vector2Int)>();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GamePiece piece = pieces[x, y];
+                if (piece == null) continue;
+
+                // Check swap with right neighbor
+                if (x < width - 1)
+                {
+                    if (WouldCreateMatch(x, y, x + 1, y))
+                    {
+                        possibleMoves.Add((new Vector2Int(x, y), new Vector2Int(x + 1, y)));
+                    }
+                }
+
+                // Check swap with top neighbor
+                if (y < height - 1)
+                {
+                    if (WouldCreateMatch(x, y, x, y + 1))
+                    {
+                        possibleMoves.Add((new Vector2Int(x, y), new Vector2Int(x, y + 1)));
+                    }
+                }
+            }
+        }
+
+        // Return random move if any exist
+        if (possibleMoves.Count > 0)
+        {
+            int randomIndex = Random.Range(0, possibleMoves.Count);
+            return possibleMoves[randomIndex];
+        }
+
+        // No moves available
+        return (new Vector2Int(-1, -1), new Vector2Int(-1, -1));
+    }
+
+    /// <summary>
+    /// Ensure no drop gems on bottom row (drop mode initialization)
+    /// </summary>
+    private void EnsureNoDropGemsOnBottomRow()
+    {
+        if (currentMode == null || !currentMode.scoreOnBottomRowHit) return;
+
+        GamePiece.PieceType dropGem = currentMode.bottomRowScoreGem;
+        int replacementCount = 0;
+
+        // Check bottom row (y = 0)
+        for (int x = 0; x < width; x++)
+        {
+            GamePiece piece = pieces[x, 0];
+            if (piece != null && piece.Type == dropGem)
+            {
+                // Destroy the drop gem
+                Destroy(piece.gameObject);
+
+                // Create a new piece that's NOT the drop gem type
+                GamePiece newPiece = CreatePieceAvoidingType(x, 0, dropGem);
+                pieces[x, 0] = newPiece;
+                replacementCount++;
+            }
+        }
+
+        if (replacementCount > 0)
+        {
+            Debug.Log($"Replaced {replacementCount} {dropGem} gems on bottom row during initialization");
+        }
+    }
+
+    /// <summary>
+    /// Create a piece avoiding a specific type
+    /// </summary>
+    private GamePiece CreatePieceAvoidingType(int x, int y, GamePiece.PieceType avoidType)
+    {
+        GamePiece.PieceType[] allTypes = (GamePiece.PieceType[])System.Enum.GetValues(typeof(GamePiece.PieceType));
+        GamePiece.PieceType selectedType;
+
+        // Keep randomizing until we get a type that's not the avoided type
+        do
+        {
+            selectedType = allTypes[Random.Range(0, allTypes.Length)];
+        }
+        while (selectedType == avoidType);
+
+        Vector3 position = GridToWorld(x, y);
+        GameObject pieceObj = Instantiate(gamePiecePrefab, position, Quaternion.identity, transform);
+        pieceObj.name = $"Piece_{x}_{y}";
+
+        GamePiece piece = pieceObj.GetComponent<GamePiece>();
+        piece.Initialize(selectedType, new Vector2Int(x, y), this);
+
+        return piece;
+    }
+
+    /// <summary>
+    /// Check bottom row for target gems (drop mode)
+    /// </summary>
+    private IEnumerator CheckBottomRowHits()
+    {
+        // Only process if in drop mode
+        if (currentMode == null || !currentMode.scoreOnBottomRowHit)
+        {
+            yield break;
+        }
+
+        List<GamePiece> bottomRowHits = new List<GamePiece>();
+
+        // Scan bottom row (y = 0) for target gem type
+        for (int x = 0; x < width; x++)
+        {
+            GamePiece piece = pieces[x, 0];
+            if (piece != null && piece.Type == currentMode.bottomRowScoreGem)
+            {
+                bottomRowHits.Add(piece);
+            }
+        }
+
+        if (bottomRowHits.Count > 0)
+        {
+            Debug.Log($"Bottom row hits: {bottomRowHits.Count} {currentMode.bottomRowScoreGem} gems reached the bottom!");
+
+            // Award points for each gem
+            if (gameManager != null)
+            {
+                int totalPoints = bottomRowHits.Count * currentMode.bottomRowHitPoints;
+                Debug.Log($"Awarding {totalPoints} points for bottom row hits");
+
+                // Create a temporary list for scoring (AddScore expects a list)
+                gameManager.AddScore(bottomRowHits);
+            }
+
+            // Remove the gems from the bottom row
+            foreach (GamePiece piece in bottomRowHits)
+            {
+                Vector2Int pos = piece.GridPosition;
+                pieces[pos.x, pos.y] = null;
+                piece.DestroyPiece();
+            }
+
+            yield return new WaitForSeconds(0.3f);
+
+            // Make pieces fall to fill the gaps
+            yield return StartCoroutine(MakePiecesFall());
+
+            // Fill empty spaces
+            FillEmptySpaces();
+
+            yield return new WaitForSeconds(fallDuration);
+
+            // Recursively check again
+            yield return StartCoroutine(CheckBottomRowHits());
+        }
+    }
+
+    /// <summary>
+    /// End the current turn and switch players if needed
+    /// </summary>
+    private void EndTurn()
+    {
+        if (playerManager != null)
+        {
+            playerManager.EndTurn();
+
+            // Update UI to show current player
+            if (gameManager != null)
+            {
+                gameManager.UpdateUI();
+            }
+
+            // Check if CPU should make a move
+            if (cpuPlayer != null)
+            {
+                cpuPlayer.CheckAndMakeMove();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check if swapping two pieces would create a match
+    /// </summary>
+    private bool WouldCreateMatch(int x1, int y1, int x2, int y2)
+    {
+        // Temporarily swap
+        GamePiece temp = pieces[x1, y1];
+        pieces[x1, y1] = pieces[x2, y2];
+        pieces[x2, y2] = temp;
+
+        // Check for matches at both positions
+        bool hasMatch = matchDetector.HasMatchAt(x1, y1) || matchDetector.HasMatchAt(x2, y2);
+
+        // Swap back
+        temp = pieces[x1, y1];
+        pieces[x1, y1] = pieces[x2, y2];
+        pieces[x2, y2] = temp;
+
+        return hasMatch;
+    }
+}

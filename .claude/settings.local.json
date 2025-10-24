@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:\\Users\\mouse\\Test2D\\Assets\" /s /b)",
+      "Bash(dir:*)",
+      "Bash(tree:*)",
+      "Bash(mkdir:*)",
+      "Read(//c//**)",
+      "Bash(where Unity.exe)",
+      "Bash(powershell.exe:*)",
+      "Bash(reg query:*)",
+      "Bash(reg query \"HKEY_CURRENT_USER\\SOFTWARE\\Unity Technologies\\Hub\")",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\CompileLog.txt\" -executeMethod BuildScript.ValidateScripts)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\SetupLog.txt\" -executeMethod Match3Setup.SetupMatch3Scene)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\BuildLog.txt\" -executeMethod BuildScript.BuildGameCommandLine)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\GameModesLog.txt\" -executeMethod BuildScript.CreateGameModesCommandLine)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
