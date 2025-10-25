@@ -4,7 +4,7 @@ using UnityEditor;
 /// <summary>
 /// Editor script to create default gem type configurations
 /// </summary>
-public class CreateDefaultGemTypes : MonoBehaviour
+public class CreateDefaultGemTypes
 {
     [MenuItem("Tools/Create Default Gem Types")]
     public static void CreateGemTypes()

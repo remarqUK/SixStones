@@ -283,25 +283,25 @@ public class GemSelector : MonoBehaviour
     }
 
     /// <summary>
-    /// Create the visual indicator (X overlay)
+    /// Create the visual indicator (ring overlay)
     /// </summary>
     private void CreateSelectionIndicator()
     {
         selectionIndicator = new GameObject("SelectionIndicator");
         indicatorRenderer = selectionIndicator.AddComponent<SpriteRenderer>();
-        indicatorRenderer.sprite = CreateXSprite();
+        indicatorRenderer.sprite = CreateRingSprite();
         indicatorRenderer.sortingOrder = 10; // On top of everything
         indicatorRenderer.color = new Color(1f, 1f, 0f, 0.8f); // Yellow with slight transparency
 
-        selectionIndicator.transform.localScale = Vector3.one * 1.2f; // Slightly larger than gem
+        selectionIndicator.transform.localScale = Vector3.one * 0.9f; // 90% of gem cell
     }
 
     /// <summary>
-    /// Create a simple X sprite for the selection indicator
+    /// Create a ring sprite for the selection indicator
     /// </summary>
-    private Sprite CreateXSprite()
+    private Sprite CreateRingSprite()
     {
-        int size = 64;
+        int size = 128;
         indicatorTexture = new Texture2D(size, size);
         Color[] pixels = new Color[size * size];
 
@@ -311,26 +311,38 @@ public class GemSelector : MonoBehaviour
             pixels[i] = Color.clear;
         }
 
-        int thickness = 6;
+        float center = size / 2f;
+        float outerRadius = size / 2f - 2f; // Slightly inside the texture edge
+        float ringThickness = 6f; // Thickness of the ring line
+        float innerRadius = outerRadius - ringThickness;
 
-        // Draw X (two diagonal lines)
-        for (int i = 0; i < size; i++)
+        // Draw ring
+        for (int y = 0; y < size; y++)
         {
-            for (int t = -thickness / 2; t <= thickness / 2; t++)
+            for (int x = 0; x < size; x++)
             {
-                // Top-left to bottom-right diagonal
-                int y1 = size - 1 - i;
-                if (i + t >= 0 && i + t < size && y1 >= 0 && y1 < size)
-                {
-                    pixels[y1 * size + (i + t)] = Color.white;
-                }
+                float dx = x - center;
+                float dy = y - center;
+                float distance = Mathf.Sqrt(dx * dx + dy * dy);
 
-                // Top-right to bottom-left diagonal
-                int x2 = size - 1 - i;
-                int y2 = size - 1 - i;
-                if (x2 + t >= 0 && x2 + t < size && y2 >= 0 && y2 < size)
+                // Check if this pixel is within the ring (between inner and outer radius)
+                if (distance >= innerRadius && distance <= outerRadius)
                 {
-                    pixels[y2 * size + (x2 + t)] = Color.white;
+                    // Optional: Add anti-aliasing for smoother edges
+                    float alpha = 1.0f;
+
+                    // Smooth the inner edge
+                    if (distance < innerRadius + 1f)
+                    {
+                        alpha = distance - innerRadius;
+                    }
+                    // Smooth the outer edge
+                    else if (distance > outerRadius - 1f)
+                    {
+                        alpha = outerRadius - distance;
+                    }
+
+                    pixels[y * size + x] = new Color(1f, 1f, 1f, alpha);
                 }
             }
         }

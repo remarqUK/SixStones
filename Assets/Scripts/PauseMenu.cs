@@ -8,6 +8,7 @@ public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject optionsPanel;
+    [SerializeField] private GameManager gameManager;
 
     private bool isPaused = false;
 
@@ -134,5 +135,27 @@ public class PauseMenu : MonoBehaviour
     public void SaveAndQuit()
     {
         Debug.Log("Save & Quit clicked (not implemented yet)");
+    }
+
+    /// <summary>
+    /// Restart the game (called by Restart Game button)
+    /// </summary>
+    public void RestartGame()
+    {
+        Debug.Log("Restart Game clicked");
+
+        // Unpause first
+        isPaused = false;
+        Time.timeScale = 1f;
+
+        // Call GameManager's reset
+        if (gameManager != null)
+        {
+            gameManager.ResetGame();
+        }
+        else
+        {
+            Debug.LogError("GameManager reference not set in PauseMenu!");
+        }
     }
 }

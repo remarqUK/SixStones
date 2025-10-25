@@ -12,6 +12,8 @@ public class InputManager : MonoBehaviour
     private Vector3 dragStartPosition;
     private bool isDragging = false;
     private bool isPointerDown = false;
+    private GamePiece pressedPiece = null;
+    private GamePiece keyboardPressedPiece = null; // For shift/A button press
     private const float DRAG_THRESHOLD = 0.5f;
 
     private void Awake()
@@ -61,8 +63,15 @@ public class InputManager : MonoBehaviour
                     dragStartPosition = worldPos;
                     isDragging = false;
 
-                    // Highlight the piece we just clicked
-                    piece.Highlight(true);
+                    // Release any previously pressed piece
+                    if (pressedPiece != null && pressedPiece != piece)
+                    {
+                        pressedPiece.SetPressed(false);
+                    }
+
+                    // Tell the new piece it's being pressed (it manages its own state)
+                    piece.SetPressed(true);
+                    pressedPiece = piece;
 
                     // Notify player activity (e.g., for hint system)
                     PlayerActivityNotifier.NotifyActivity();
@@ -88,20 +97,19 @@ public class InputManager : MonoBehaviour
         // Pointer up (released)
         if (!currentPointerDown && isPointerDown)
         {
-            // Turn off highlighting on the piece at current cursor position (if any)
-            if (gemSelector != null && board != null)
+            // Tell the piece it's no longer pressed
+            if (pressedPiece != null)
             {
-                Vector2Int cursorPos = gemSelector.CurrentPosition;
-                GamePiece pieceAtCursor = board.GetPieceAt(cursorPos.x, cursorPos.y);
-                if (pieceAtCursor != null)
-                {
-                    pieceAtCursor.Highlight(false);
-                }
+                pressedPiece.SetPressed(false);
+                pressedPiece = null;
             }
             isDragging = false;
         }
 
         isPointerDown = currentPointerDown;
+
+        // Handle keyboard/gamepad press (Shift key or A button)
+        HandleKeyboardPress();
     }
 
     private Vector3 GetPointerWorldPosition()
@@ -161,11 +169,11 @@ public class InputManager : MonoBehaviour
 
         Vector2Int targetPos = cursorPos + gridDirection;
 
-        // Turn off highlighting on piece at cursor (if any)
-        GamePiece pieceAtCursor = board.GetPieceAt(cursorPos.x, cursorPos.y);
-        if (pieceAtCursor != null)
+        // Tell the piece it's no longer pressed (starting drag/swap)
+        if (pressedPiece != null)
         {
-            pieceAtCursor.Highlight(false);
+            pressedPiece.SetPressed(false);
+            pressedPiece = null;
         }
 
         // Use unified swap method - it will query gems at action time
@@ -187,5 +195,50 @@ public class InputManager : MonoBehaviour
             return hit.collider.GetComponent<GamePiece>();
         }
         return null;
+    }
+
+    private void HandleKeyboardPress()
+    {
+        // Check if Shift key or gamepad A button is pressed
+        bool isKeyboardPressHeld = false;
+
+        if (Keyboard.current != null && (Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed))
+        {
+            isKeyboardPressHeld = true;
+        }
+
+        if (Gamepad.current != null && Gamepad.current.buttonSouth.isPressed) // A button
+        {
+            isKeyboardPressHeld = true;
+        }
+
+        if (isKeyboardPressHeld && gemSelector != null && board != null)
+        {
+            // Get the piece at the current cursor position
+            Vector2Int cursorPos = gemSelector.CurrentPosition;
+            GamePiece pieceAtCursor = board.GetPieceAt(cursorPos.x, cursorPos.y);
+
+            if (pieceAtCursor != null && pieceAtCursor != keyboardPressedPiece)
+            {
+                // Release previous keyboard-pressed piece
+                if (keyboardPressedPiece != null)
+                {
+                    keyboardPressedPiece.SetPressed(false);
+                }
+
+                // Press new piece
+                pieceAtCursor.SetPressed(true);
+                keyboardPressedPiece = pieceAtCursor;
+            }
+        }
+        else
+        {
+            // Key/button released - unpress the piece
+            if (keyboardPressedPiece != null)
+            {
+                keyboardPressedPiece.SetPressed(false);
+                keyboardPressedPiece = null;
+            }
+        }
     }
 }

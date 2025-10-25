@@ -139,7 +139,13 @@ public class CPUPlayer : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("CPU couldn't find a valid move!");
+            Debug.LogWarning("CPU couldn't find a valid move! (Board should have been regenerated)");
+            // This should be rare now that board regeneration happens before each turn
+            // End turn so the game can continue
+            if (playerManager != null)
+            {
+                playerManager.EndTurn();
+            }
         }
 
         isThinking = false;

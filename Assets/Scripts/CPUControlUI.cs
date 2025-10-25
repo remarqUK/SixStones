@@ -12,7 +12,11 @@ public class CPUControlUI : MonoBehaviour
     private void Start()
     {
         Debug.Log($"CPUControlUI Start - cpuPlayer: {(cpuPlayer != null ? "OK" : "NULL")}, buttonText: {(buttonText != null ? "OK" : "NULL")}");
-        UpdateButtonText();
+        // Only update button text if we have a button (it's optional now)
+        if (buttonText != null)
+        {
+            UpdateButtonText();
+        }
     }
 
     /// <summary>
@@ -24,7 +28,12 @@ public class CPUControlUI : MonoBehaviour
         if (cpuPlayer != null)
         {
             cpuPlayer.ToggleAutoPlay();
-            UpdateButtonText();
+
+            // Only update button text if we have a button (it's optional now)
+            if (buttonText != null)
+            {
+                UpdateButtonText();
+            }
         }
         else
         {
@@ -50,15 +59,11 @@ public class CPUControlUI : MonoBehaviour
 
     private void UpdateButtonText()
     {
-        Debug.Log($"UpdateButtonText - buttonText: {(buttonText != null ? "OK" : "NULL")}, cpuPlayer: {(cpuPlayer != null ? "OK" : "NULL")}");
+        // buttonText is optional - only update if assigned
         if (buttonText != null && cpuPlayer != null)
         {
             buttonText.text = cpuPlayer.AutoPlay ? "Auto-Play: ON" : "Auto-Play: OFF";
             Debug.Log($"Button text updated to: {buttonText.text}");
-        }
-        else
-        {
-            Debug.LogWarning($"Cannot update button text - buttonText null: {buttonText == null}, cpuPlayer null: {cpuPlayer == null}");
         }
     }
 }

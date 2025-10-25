@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI player1ColorScoresText;
     [SerializeField] private TextMeshProUGUI player2ColorScoresText;
     [SerializeField] private TextMeshProUGUI possibleMovesText;
-    [SerializeField] private TextMeshProUGUI currentPlayerText;
     [SerializeField] private TextMeshProUGUI player1ScoreText;
     [SerializeField] private TextMeshProUGUI player2ScoreText;
     [SerializeField] private TextMeshProUGUI player1HealthText;
@@ -34,6 +33,8 @@ public class GameManager : MonoBehaviour
     private int player2Score = 0;
     private int player1Health;
     private int player2Health;
+    private int player1MaxHealth;
+    private int player2MaxHealth;
     private int player1RemainingMoves;
     private int player2RemainingMoves;
     private Dictionary<GamePiece.PieceType, int> player1ColorScores;
@@ -48,6 +49,8 @@ public class GameManager : MonoBehaviour
         player2RemainingMoves = maxMoves;
         player1Health = startingHealth;
         player2Health = startingHealth;
+        player1MaxHealth = startingHealth;
+        player2MaxHealth = startingHealth;
         InitializeColorScores();
         UpdateUI();
 
@@ -275,43 +278,73 @@ public class GameManager : MonoBehaviour
             player1Score += totalMatchPoints;
         }
 
-        // Award XP based on matches
+        // Award XP based on matches (Player 1 only)
         if (LevelSystem.Instance != null)
         {
-            int totalXP = 0;
-            foreach (var kvp in colorGroups)
+            // Only award XP to Player 1 in two-player mode
+            bool shouldAwardXP = true;
+            if (playerManager != null && playerManager.TwoPlayerMode)
             {
-                int matchCount = kvp.Value.Count;
-                // XP reward based on match size
-                int xpReward = CalculateXPReward(matchCount);
-                totalXP += xpReward;
+                shouldAwardXP = (playerManager.CurrentPlayer == PlayerManager.Player.Player1);
             }
 
-            if (totalXP > 0)
+            if (shouldAwardXP)
             {
-                LevelSystem.Instance.AddXP(totalXP);
+                int totalXP = 0;
+                foreach (var kvp in colorGroups)
+                {
+                    int matchCount = kvp.Value.Count;
+                    // XP reward based on match size
+                    int xpReward = CalculateXPReward(matchCount);
+                    totalXP += xpReward;
+                }
+
+                if (totalXP > 0)
+                {
+                    LevelSystem.Instance.AddXP(totalXP);
+                }
             }
         }
 
-        // Award gold based on gem types
+        // Award gold based on gem types (Player 1 only)
         if (CurrencyManager.Instance != null && GemTypeManager.Instance != null)
         {
-            int totalGold = GemTypeManager.Instance.CalculateTotalGold(colorGroups);
-
-            if (totalGold > 0)
+            // Only award gold to Player 1 in two-player mode
+            bool shouldAwardGold = true;
+            if (playerManager != null && playerManager.TwoPlayerMode)
             {
-                CurrencyManager.Instance.AddGold(totalGold);
+                shouldAwardGold = (playerManager.CurrentPlayer == PlayerManager.Player.Player1);
+            }
+
+            if (shouldAwardGold)
+            {
+                int totalGold = GemTypeManager.Instance.CalculateTotalGold(colorGroups);
+
+                if (totalGold > 0)
+                {
+                    CurrencyManager.Instance.AddGold(totalGold);
+                }
             }
         }
 
-        // Charge spell gems based on matches
+        // Charge spell gems based on matches (Player 1 only)
         if (SpellManager.Instance != null)
         {
-            foreach (var kvp in colorGroups)
+            // Only charge gems for Player 1 in two-player mode
+            bool shouldChargeGems = true;
+            if (playerManager != null && playerManager.TwoPlayerMode)
             {
-                GamePiece.PieceType gemType = kvp.Key;
-                int matchCount = kvp.Value.Count;
-                SpellManager.Instance.AddGemCharge(gemType, matchCount);
+                shouldChargeGems = (playerManager.CurrentPlayer == PlayerManager.Player.Player1);
+            }
+
+            if (shouldChargeGems)
+            {
+                foreach (var kvp in colorGroups)
+                {
+                    GamePiece.PieceType gemType = kvp.Key;
+                    int matchCount = kvp.Value.Count;
+                    SpellManager.Instance.AddGemCharge(gemType, matchCount);
+                }
             }
         }
 
@@ -435,6 +468,68 @@ public class GameManager : MonoBehaviour
         ModifyHealth(player, -damage, HealthChangeReason.Poison);
     }
 
+    /// <summary>
+    /// Increase a player's maximum health
+    /// </summary>
+    public void IncreaseMaxHealth(PlayerManager.Player player, int amount)
+    {
+        if (amount <= 0) return;
+
+        if (player == PlayerManager.Player.Player1)
+        {
+            player1MaxHealth += amount;
+            Debug.Log($"Player 1 max health increased by {amount}! New max: {player1MaxHealth}");
+        }
+        else
+        {
+            player2MaxHealth += amount;
+            Debug.Log($"Player 2 max health increased by {amount}! New max: {player2MaxHealth}");
+        }
+
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Set a player's maximum health to a specific value
+    /// </summary>
+    public void SetMaxHealth(PlayerManager.Player player, int newMaxHealth)
+    {
+        if (newMaxHealth <= 0) return;
+
+        if (player == PlayerManager.Player.Player1)
+        {
+            player1MaxHealth = newMaxHealth;
+            // Clamp current health to new max
+            player1Health = Mathf.Min(player1Health, player1MaxHealth);
+            Debug.Log($"Player 1 max health set to {player1MaxHealth}");
+        }
+        else
+        {
+            player2MaxHealth = newMaxHealth;
+            // Clamp current health to new max
+            player2Health = Mathf.Min(player2Health, player2MaxHealth);
+            Debug.Log($"Player 2 max health set to {player2MaxHealth}");
+        }
+
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Get a player's current max health
+    /// </summary>
+    public int GetMaxHealth(PlayerManager.Player player)
+    {
+        return player == PlayerManager.Player.Player1 ? player1MaxHealth : player2MaxHealth;
+    }
+
+    /// <summary>
+    /// Get a player's current health
+    /// </summary>
+    public int GetCurrentHealth(PlayerManager.Player player)
+    {
+        return player == PlayerManager.Player.Player1 ? player1Health : player2Health;
+    }
+
     public void UpdateUI()
     {
         // Update legacy score text for backward compatibility
@@ -457,13 +552,6 @@ public class GameManager : MonoBehaviour
             player2ScoreText.text = $"Player 2: {player2Score}";
         }
 
-        // Update current player indicator
-        if (currentPlayerText != null && playerManager != null && playerManager.TwoPlayerMode)
-        {
-            string bonusText = playerManager.BonusTurnEarned ? " (BONUS TURN!)" : "";
-            currentPlayerText.text = $"Current: {playerManager.GetCurrentPlayerName()}{bonusText}";
-        }
-
         // Debug logging removed for performance (was called on every UI update)
 
         // Update Player 1 color scores
@@ -482,14 +570,14 @@ public class GameManager : MonoBehaviour
         if (player1HealthText != null)
         {
             int displayHealth = Mathf.Max(0, player1Health);
-            player1HealthText.text = $"HP: {displayHealth}";
+            player1HealthText.text = $"HP: {displayHealth}/{player1MaxHealth}";
         }
 
         // Update Player 2 health (clamp to 0)
         if (player2HealthText != null)
         {
             int displayHealth = Mathf.Max(0, player2Health);
-            player2HealthText.text = $"HP: {displayHealth}";
+            player2HealthText.text = $"HP: {displayHealth}/{player2MaxHealth}";
         }
 
         // Removed expensive GetPossibleMovesCount() debug logging for performance
@@ -573,12 +661,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Game Over! Final Score: {player1Score}");
         }
 
-        // Display game over message in current player text
-        if (currentPlayerText != null)
-        {
-            currentPlayerText.text = gameOverMessage;
-        }
-
+        Debug.Log(gameOverMessage);
         UpdateUI();
     }
 
@@ -588,6 +671,8 @@ public class GameManager : MonoBehaviour
         player2Score = 0;
         player1Health = startingHealth;
         player2Health = startingHealth;
+        player1MaxHealth = startingHealth;
+        player2MaxHealth = startingHealth;
         player1RemainingMoves = maxMoves;
         player2RemainingMoves = maxMoves;
         isGameOver = false;

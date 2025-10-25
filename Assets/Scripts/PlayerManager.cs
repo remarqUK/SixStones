@@ -12,6 +12,9 @@ public class PlayerManager : MonoBehaviour
         Player2
     }
 
+    [Header("References")]
+    [SerializeField] private SidePanelManager sidePanelManager;
+
     private bool twoPlayerMode = true;
     private Player currentPlayer = Player.Player1;
     private bool bonusTurnEarned = false;
@@ -38,6 +41,9 @@ public class PlayerManager : MonoBehaviour
 
         currentPlayer = Player.Player1;
         bonusTurnEarned = false;
+
+        // Update side panel border for initial player
+        UpdateSidePanelBorder();
     }
 
     /// <summary>
@@ -48,6 +54,9 @@ public class PlayerManager : MonoBehaviour
         currentPlayer = Player.Player1;
         bonusTurnEarned = false;
         Debug.Log("Turn reset to Player 1");
+
+        // Update side panel border
+        UpdateSidePanelBorder();
     }
 
     /// <summary>
@@ -106,6 +115,20 @@ public class PlayerManager : MonoBehaviour
         if (StatusEffectManager.Instance != null)
         {
             StatusEffectManager.Instance.ProcessStartOfTurn(currentPlayer);
+        }
+
+        // Update side panel border to show active player
+        UpdateSidePanelBorder();
+    }
+
+    /// <summary>
+    /// Update the side panel border to highlight the active player's panel
+    /// </summary>
+    private void UpdateSidePanelBorder()
+    {
+        if (sidePanelManager != null)
+        {
+            sidePanelManager.SetActivePlayer(currentPlayer);
         }
     }
 

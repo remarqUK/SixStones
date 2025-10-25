@@ -55,11 +55,18 @@ public class Match3Setup : EditorWindow
         GameObject cameraObj = new GameObject("Main Camera");
         Camera camera = cameraObj.AddComponent<Camera>();
         camera.clearFlags = CameraClearFlags.SolidColor;
-        camera.backgroundColor = new Color(0.1f, 0.1f, 0.15f);
+        // Match background to side panels for seamless dark background
+        camera.backgroundColor = new Color(0.08f, 0.08f, 0.12f);
         camera.orthographic = true;
-        camera.orthographicSize = 6f;
+
+        // Set orthographic size for 8x8 board at 95% screen height
+        // boardHeight = 8, cameraHeight = 8 / 0.95 ≈ 8.42, orthoSize = 8.42 / 2 ≈ 4.21
+        camera.orthographicSize = 4.21f;
         cameraObj.tag = "MainCamera";
-        cameraObj.transform.position = new Vector3(0, 0, -10);
+
+        // Position camera at origin (Board.cs centers the grid around 0,0 with offsets)
+        // Board.GridToWorld applies offset: pieces are at (-3.5,-3.5) to (3.5,3.5)
+        cameraObj.transform.position = new Vector3(0f, 0f, -10);
 
         // Add URP Additional Camera Data component (required for URP)
         UniversalAdditionalCameraData cameraData = cameraObj.AddComponent<UniversalAdditionalCameraData>();
@@ -80,12 +87,22 @@ public class Match3Setup : EditorWindow
         camera.enabled = true;
         camera.targetDisplay = 0; // Render to main display
 
+        // Add CameraScaler for responsive scaling
+        CameraScaler cameraScaler = cameraObj.AddComponent<CameraScaler>();
+        SerializedObject scalerSO = new SerializedObject(cameraScaler);
+        scalerSO.FindProperty("boardWidth").intValue = 8;
+        scalerSO.FindProperty("boardHeight").intValue = 8;
+        scalerSO.FindProperty("cellSize").floatValue = 1f;
+        scalerSO.FindProperty("boardHeightPercent").floatValue = 0.95f;
+        scalerSO.ApplyModifiedProperties();
+
         // Create prefabs
         GameObject piecePrefab = CreateGamePiecePrefab();
         GameObject cellPrefab = CreateCellBackgroundPrefab();
 
         // Create Board
         GameObject boardObj = new GameObject("Board");
+        boardObj.transform.position = Vector3.zero; // Ensure board is at origin
         Board board = boardObj.AddComponent<Board>();
 
         // Use reflection to set private fields (since they're serialized)
@@ -149,11 +166,18 @@ public class Match3Setup : EditorWindow
         inputSO.FindProperty("playerManager").objectReferenceValue = playerManager;
         inputSO.ApplyModifiedProperties();
 
-        // Create Canvas for UI
+        // Create Canvas for UI with proper scaling
         GameObject canvasObj = new GameObject("Canvas");
         Canvas canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+
+        // Configure CanvasScaler for responsive UI
+        UnityEngine.UI.CanvasScaler canvasScaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        canvasScaler.uiScaleMode = UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        canvasScaler.referenceResolution = new Vector2(1920, 1080);
+        canvasScaler.screenMatchMode = UnityEngine.UI.CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        canvasScaler.matchWidthOrHeight = 0.5f; // Balance between width and height
+
         canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
         // Create EventSystem (required for UI interaction)
@@ -161,9 +185,63 @@ public class Match3Setup : EditorWindow
         eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
         eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
+        // Create Side Panels FIRST (so they render behind UI text)
+        GameObject leftPanelObj = new GameObject("LeftPanel");
+        leftPanelObj.transform.SetParent(canvasObj.transform);
+        RectTransform leftPanelRect = leftPanelObj.AddComponent<RectTransform>();
+        leftPanelRect.anchorMin = new Vector2(0, 0);
+        leftPanelRect.anchorMax = new Vector2(0, 1);
+        leftPanelRect.pivot = new Vector2(0, 0.5f);
+        leftPanelRect.anchoredPosition = Vector2.zero;
+        leftPanelRect.sizeDelta = new Vector2(300, 0);
+
+        UnityEngine.UI.Image leftPanelImage = leftPanelObj.AddComponent<UnityEngine.UI.Image>();
+        leftPanelImage.color = new Color(0.08f, 0.08f, 0.12f, 1f); // Dark blue-gray
+
+        // Add Outline component for border effect
+        UnityEngine.UI.Outline leftPanelOutline = leftPanelObj.AddComponent<UnityEngine.UI.Outline>();
+        leftPanelOutline.effectColor = new Color(1f, 0.8f, 0.2f, 1f); // Gold color
+        leftPanelOutline.effectDistance = new Vector2(3f, 3f);
+        leftPanelOutline.enabled = false; // Initially disabled
+
+        GameObject rightPanelObj = new GameObject("RightPanel");
+        rightPanelObj.transform.SetParent(canvasObj.transform);
+        RectTransform rightPanelRect = rightPanelObj.AddComponent<RectTransform>();
+        rightPanelRect.anchorMin = new Vector2(1, 0);
+        rightPanelRect.anchorMax = new Vector2(1, 1);
+        rightPanelRect.pivot = new Vector2(1, 0.5f);
+        rightPanelRect.anchoredPosition = Vector2.zero;
+        rightPanelRect.sizeDelta = new Vector2(300, 0);
+
+        UnityEngine.UI.Image rightPanelImage = rightPanelObj.AddComponent<UnityEngine.UI.Image>();
+        rightPanelImage.color = new Color(0.08f, 0.08f, 0.12f, 1f); // Dark blue-gray
+
+        // Add Outline component for border effect
+        UnityEngine.UI.Outline rightPanelOutline = rightPanelObj.AddComponent<UnityEngine.UI.Outline>();
+        rightPanelOutline.effectColor = new Color(1f, 0.8f, 0.2f, 1f); // Gold color
+        rightPanelOutline.effectDistance = new Vector2(3f, 3f);
+        rightPanelOutline.enabled = false; // Initially disabled
+
+        // Create SidePanelManager
+        GameObject sidePanelManagerObj = new GameObject("SidePanelManager");
+        SidePanelManager sidePanelManager = sidePanelManagerObj.AddComponent<SidePanelManager>();
+
+        SerializedObject sidePanelSO = new SerializedObject(sidePanelManager);
+        sidePanelSO.FindProperty("leftPanel").objectReferenceValue = leftPanelRect;
+        sidePanelSO.FindProperty("rightPanel").objectReferenceValue = rightPanelRect;
+        sidePanelSO.FindProperty("leftPanelImage").objectReferenceValue = leftPanelImage;
+        sidePanelSO.FindProperty("rightPanelImage").objectReferenceValue = rightPanelImage;
+        sidePanelSO.FindProperty("leftPanelOutline").objectReferenceValue = leftPanelOutline;
+        sidePanelSO.FindProperty("rightPanelOutline").objectReferenceValue = rightPanelOutline;
+        sidePanelSO.FindProperty("panelColor").colorValue = new Color(0.08f, 0.08f, 0.12f, 1f);
+        sidePanelSO.FindProperty("panelWidth").floatValue = 300f;
+        sidePanelSO.FindProperty("activeBorderColor").colorValue = new Color(1f, 0.8f, 0.2f, 1f);
+        sidePanelSO.FindProperty("borderEffectDistance").vector2Value = new Vector2(3f, 3f);
+        sidePanelSO.ApplyModifiedProperties();
+
         // Create Score Text (Player 1 - left side)
         GameObject scoreObj = new GameObject("ScoreText");
-        scoreObj.transform.SetParent(canvasObj.transform);
+        scoreObj.transform.SetParent(leftPanelObj.transform);
         RectTransform scoreRect = scoreObj.AddComponent<RectTransform>();
         scoreRect.anchorMin = new Vector2(0, 1);
         scoreRect.anchorMax = new Vector2(0, 1);
@@ -179,7 +257,7 @@ public class Match3Setup : EditorWindow
 
         // Create Level Text (Player 1 - left side)
         GameObject levelObj = new GameObject("LevelText");
-        levelObj.transform.SetParent(canvasObj.transform);
+        levelObj.transform.SetParent(leftPanelObj.transform);
         RectTransform levelRect = levelObj.AddComponent<RectTransform>();
         levelRect.anchorMin = new Vector2(0, 1);
         levelRect.anchorMax = new Vector2(0, 1);
@@ -195,7 +273,7 @@ public class Match3Setup : EditorWindow
 
         // Create XP Text (Player 1 - left side)
         GameObject xpObj = new GameObject("XPText");
-        xpObj.transform.SetParent(canvasObj.transform);
+        xpObj.transform.SetParent(leftPanelObj.transform);
         RectTransform xpRect = xpObj.AddComponent<RectTransform>();
         xpRect.anchorMin = new Vector2(0, 1);
         xpRect.anchorMax = new Vector2(0, 1);
@@ -211,7 +289,7 @@ public class Match3Setup : EditorWindow
 
         // Create Gold Text (Player 1 - left side)
         GameObject goldObj = new GameObject("GoldText");
-        goldObj.transform.SetParent(canvasObj.transform);
+        goldObj.transform.SetParent(leftPanelObj.transform);
         RectTransform goldRect = goldObj.AddComponent<RectTransform>();
         goldRect.anchorMin = new Vector2(0, 1);
         goldRect.anchorMax = new Vector2(0, 1);
@@ -227,7 +305,7 @@ public class Match3Setup : EditorWindow
 
         // Create Player 1 Color Scores Text (bottom left)
         GameObject player1ColorScoresObj = new GameObject("Player1ColorScoresText");
-        player1ColorScoresObj.transform.SetParent(canvasObj.transform);
+        player1ColorScoresObj.transform.SetParent(leftPanelObj.transform);
         RectTransform player1ColorScoresRect = player1ColorScoresObj.AddComponent<RectTransform>();
         player1ColorScoresRect.anchorMin = new Vector2(0, 0);
         player1ColorScoresRect.anchorMax = new Vector2(0, 0);
@@ -244,7 +322,7 @@ public class Match3Setup : EditorWindow
 
         // Create Player 2 Color Scores Text (bottom right)
         GameObject player2ColorScoresObj = new GameObject("Player2ColorScoresText");
-        player2ColorScoresObj.transform.SetParent(canvasObj.transform);
+        player2ColorScoresObj.transform.SetParent(rightPanelObj.transform);
         RectTransform player2ColorScoresRect = player2ColorScoresObj.AddComponent<RectTransform>();
         player2ColorScoresRect.anchorMin = new Vector2(1, 0);
         player2ColorScoresRect.anchorMax = new Vector2(1, 0);
@@ -259,26 +337,9 @@ public class Match3Setup : EditorWindow
         player2ColorScoresText.alignment = TMPro.TextAlignmentOptions.TopRight;
         player2ColorScoresText.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
 
-        // Create Current Player Text (top center)
-        GameObject currentPlayerObj = new GameObject("CurrentPlayerText");
-        currentPlayerObj.transform.SetParent(canvasObj.transform);
-        RectTransform currentPlayerRect = currentPlayerObj.AddComponent<RectTransform>();
-        currentPlayerRect.anchorMin = new Vector2(0.5f, 1);
-        currentPlayerRect.anchorMax = new Vector2(0.5f, 1);
-        currentPlayerRect.pivot = new Vector2(0.5f, 1);
-        currentPlayerRect.anchoredPosition = new Vector2(0, -20);
-        currentPlayerRect.sizeDelta = new Vector2(400, 60);
-
-        TMPro.TextMeshProUGUI currentPlayerText = currentPlayerObj.AddComponent<TMPro.TextMeshProUGUI>();
-        currentPlayerText.text = "Current: Player 1";
-        currentPlayerText.fontSize = 32;
-        currentPlayerText.color = new Color(1f, 0.9f, 0.3f); // Yellow-ish
-        currentPlayerText.alignment = TMPro.TextAlignmentOptions.Top;
-        currentPlayerText.fontStyle = TMPro.FontStyles.Bold;
-
         // Create Player 1 Score Text
         GameObject player1ScoreObj = new GameObject("Player1ScoreText");
-        player1ScoreObj.transform.SetParent(canvasObj.transform);
+        player1ScoreObj.transform.SetParent(leftPanelObj.transform);
         RectTransform player1ScoreRect = player1ScoreObj.AddComponent<RectTransform>();
         player1ScoreRect.anchorMin = new Vector2(0, 1);
         player1ScoreRect.anchorMax = new Vector2(0, 1);
@@ -294,7 +355,7 @@ public class Match3Setup : EditorWindow
 
         // Create Player 2 Score Text
         GameObject player2ScoreObj = new GameObject("Player2ScoreText");
-        player2ScoreObj.transform.SetParent(canvasObj.transform);
+        player2ScoreObj.transform.SetParent(rightPanelObj.transform);
         RectTransform player2ScoreRect = player2ScoreObj.AddComponent<RectTransform>();
         player2ScoreRect.anchorMin = new Vector2(1, 1);
         player2ScoreRect.anchorMax = new Vector2(1, 1);
@@ -310,7 +371,7 @@ public class Match3Setup : EditorWindow
 
         // Create Player 1 Health Text
         GameObject player1HealthObj = new GameObject("Player1HealthText");
-        player1HealthObj.transform.SetParent(canvasObj.transform);
+        player1HealthObj.transform.SetParent(leftPanelObj.transform);
         RectTransform player1HealthRect = player1HealthObj.AddComponent<RectTransform>();
         player1HealthRect.anchorMin = new Vector2(0, 1);
         player1HealthRect.anchorMax = new Vector2(0, 1);
@@ -319,7 +380,7 @@ public class Match3Setup : EditorWindow
         player1HealthRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player1HealthText = player1HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
-        player1HealthText.text = "HP: 100";
+        player1HealthText.text = "HP: 100/100";
         player1HealthText.fontSize = 32;
         player1HealthText.color = new Color(0.3f, 1f, 0.3f); // Bright green
         player1HealthText.alignment = TMPro.TextAlignmentOptions.Left;
@@ -327,7 +388,7 @@ public class Match3Setup : EditorWindow
 
         // Create Player 2 Health Text
         GameObject player2HealthObj = new GameObject("Player2HealthText");
-        player2HealthObj.transform.SetParent(canvasObj.transform);
+        player2HealthObj.transform.SetParent(rightPanelObj.transform);
         RectTransform player2HealthRect = player2HealthObj.AddComponent<RectTransform>();
         player2HealthRect.anchorMin = new Vector2(1, 1);
         player2HealthRect.anchorMax = new Vector2(1, 1);
@@ -336,7 +397,7 @@ public class Match3Setup : EditorWindow
         player2HealthRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player2HealthText = player2HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
-        player2HealthText.text = "HP: 100";
+        player2HealthText.text = "HP: 100/100";
         player2HealthText.fontSize = 32;
         player2HealthText.color = new Color(0.3f, 1f, 0.3f); // Bright green
         player2HealthText.alignment = TMPro.TextAlignmentOptions.Right;
@@ -352,7 +413,6 @@ public class Match3Setup : EditorWindow
         gmSO.FindProperty("scoreText").objectReferenceValue = scoreText;
         gmSO.FindProperty("player1ColorScoresText").objectReferenceValue = player1ColorScoresText;
         gmSO.FindProperty("player2ColorScoresText").objectReferenceValue = player2ColorScoresText;
-        gmSO.FindProperty("currentPlayerText").objectReferenceValue = currentPlayerText;
         gmSO.FindProperty("player1ScoreText").objectReferenceValue = player1ScoreText;
         gmSO.FindProperty("player2ScoreText").objectReferenceValue = player2ScoreText;
         gmSO.FindProperty("player1HealthText").objectReferenceValue = player1HealthText;
@@ -442,126 +502,9 @@ public class Match3Setup : EditorWindow
         SerializedObject cpuControlSO = new SerializedObject(cpuControlUI);
         cpuControlSO.FindProperty("cpuPlayer").objectReferenceValue = cpuPlayer;
 
-        // Create Auto-Play Toggle Button
-        GameObject autoPlayButtonObj = new GameObject("AutoPlayButton");
-        autoPlayButtonObj.transform.SetParent(canvasObj.transform);
-        RectTransform autoPlayButtonRect = autoPlayButtonObj.AddComponent<RectTransform>();
-        autoPlayButtonRect.anchorMin = new Vector2(0.5f, 0);
-        autoPlayButtonRect.anchorMax = new Vector2(0.5f, 0);
-        autoPlayButtonRect.pivot = new Vector2(0.5f, 0);
-        autoPlayButtonRect.anchoredPosition = new Vector2(-80, 20);
-        autoPlayButtonRect.sizeDelta = new Vector2(150, 40);
-
-        UnityEngine.UI.Image autoPlayButtonImage = autoPlayButtonObj.AddComponent<UnityEngine.UI.Image>();
-        autoPlayButtonImage.color = new Color(0.2f, 0.3f, 0.8f);
-
-        UnityEngine.UI.Button autoPlayButton = autoPlayButtonObj.AddComponent<UnityEngine.UI.Button>();
-        UnityEngine.UI.ColorBlock autoPlayColors = autoPlayButton.colors;
-        autoPlayColors.normalColor = new Color(0.2f, 0.3f, 0.8f);
-        autoPlayColors.highlightedColor = new Color(0.3f, 0.4f, 0.9f);
-        autoPlayColors.pressedColor = new Color(0.1f, 0.2f, 0.7f);
-        autoPlayButton.colors = autoPlayColors;
-
-        // Add button text
-        GameObject autoPlayTextObj = new GameObject("Text");
-        autoPlayTextObj.transform.SetParent(autoPlayButtonObj.transform);
-        RectTransform autoPlayTextRect = autoPlayTextObj.AddComponent<RectTransform>();
-        autoPlayTextRect.anchorMin = Vector2.zero;
-        autoPlayTextRect.anchorMax = Vector2.one;
-        autoPlayTextRect.sizeDelta = Vector2.zero;
-        autoPlayTextRect.anchoredPosition = Vector2.zero;
-
-        TMPro.TextMeshProUGUI autoPlayButtonText = autoPlayTextObj.AddComponent<TMPro.TextMeshProUGUI>();
-        autoPlayButtonText.text = "Auto-Play: ON";
-        autoPlayButtonText.fontSize = 16;
-        autoPlayButtonText.color = Color.white;
-        autoPlayButtonText.alignment = TMPro.TextAlignmentOptions.Center;
-
-        // Wire up button click using UnityEventTools
-        UnityEventTools.AddPersistentListener(autoPlayButton.onClick, cpuControlUI.OnToggleAutoPlay);
-        EditorUtility.SetDirty(autoPlayButtonObj);
-
-        // Create Manual Move Button
-        GameObject manualMoveButtonObj = new GameObject("ManualMoveButton");
-        manualMoveButtonObj.transform.SetParent(canvasObj.transform);
-        RectTransform manualMoveButtonRect = manualMoveButtonObj.AddComponent<RectTransform>();
-        manualMoveButtonRect.anchorMin = new Vector2(0.5f, 0);
-        manualMoveButtonRect.anchorMax = new Vector2(0.5f, 0);
-        manualMoveButtonRect.pivot = new Vector2(0.5f, 0);
-        manualMoveButtonRect.anchoredPosition = new Vector2(80, 20);
-        manualMoveButtonRect.sizeDelta = new Vector2(150, 40);
-
-        UnityEngine.UI.Image manualMoveButtonImage = manualMoveButtonObj.AddComponent<UnityEngine.UI.Image>();
-        manualMoveButtonImage.color = new Color(0.3f, 0.7f, 0.3f);
-
-        UnityEngine.UI.Button manualMoveButton = manualMoveButtonObj.AddComponent<UnityEngine.UI.Button>();
-        UnityEngine.UI.ColorBlock manualMoveColors = manualMoveButton.colors;
-        manualMoveColors.normalColor = new Color(0.3f, 0.7f, 0.3f);
-        manualMoveColors.highlightedColor = new Color(0.4f, 0.8f, 0.4f);
-        manualMoveColors.pressedColor = new Color(0.2f, 0.6f, 0.2f);
-        manualMoveButton.colors = manualMoveColors;
-
-        // Add button text
-        GameObject manualMoveTextObj = new GameObject("Text");
-        manualMoveTextObj.transform.SetParent(manualMoveButtonObj.transform);
-        RectTransform manualMoveTextRect = manualMoveTextObj.AddComponent<RectTransform>();
-        manualMoveTextRect.anchorMin = Vector2.zero;
-        manualMoveTextRect.anchorMax = Vector2.one;
-        manualMoveTextRect.sizeDelta = Vector2.zero;
-        manualMoveTextRect.anchoredPosition = Vector2.zero;
-
-        TMPro.TextMeshProUGUI manualMoveButtonText = manualMoveTextObj.AddComponent<TMPro.TextMeshProUGUI>();
-        manualMoveButtonText.text = "CPU Move Now";
-        manualMoveButtonText.fontSize = 16;
-        manualMoveButtonText.color = Color.white;
-        manualMoveButtonText.alignment = TMPro.TextAlignmentOptions.Center;
-
-        // Wire up button click using UnityEventTools
-        UnityEventTools.AddPersistentListener(manualMoveButton.onClick, cpuControlUI.OnManualMove);
-        EditorUtility.SetDirty(manualMoveButtonObj);
-
-        // Connect button text to CPU control UI
-        cpuControlSO.FindProperty("buttonText").objectReferenceValue = autoPlayButtonText;
+        // NOTE: Auto-Play and Manual Move buttons have been moved to the pause menu
+        // They are no longer displayed at the bottom of the screen
         cpuControlSO.ApplyModifiedProperties();
-
-        // Create Restart Game Button (bottom center)
-        GameObject resetButtonObj = new GameObject("RestartGameButton");
-        resetButtonObj.transform.SetParent(canvasObj.transform);
-        RectTransform resetButtonRect = resetButtonObj.AddComponent<RectTransform>();
-        resetButtonRect.anchorMin = new Vector2(0.5f, 0);
-        resetButtonRect.anchorMax = new Vector2(0.5f, 0);
-        resetButtonRect.pivot = new Vector2(0.5f, 0);
-        resetButtonRect.anchoredPosition = new Vector2(0, 70);
-        resetButtonRect.sizeDelta = new Vector2(150, 40);
-
-        UnityEngine.UI.Image resetButtonImage = resetButtonObj.AddComponent<UnityEngine.UI.Image>();
-        resetButtonImage.color = new Color(0.8f, 0.3f, 0.3f);
-
-        UnityEngine.UI.Button resetButton = resetButtonObj.AddComponent<UnityEngine.UI.Button>();
-        UnityEngine.UI.ColorBlock resetColors = resetButton.colors;
-        resetColors.normalColor = new Color(0.8f, 0.3f, 0.3f);
-        resetColors.highlightedColor = new Color(0.9f, 0.4f, 0.4f);
-        resetColors.pressedColor = new Color(0.7f, 0.2f, 0.2f);
-        resetButton.colors = resetColors;
-
-        // Add button text
-        GameObject resetTextObj = new GameObject("Text");
-        resetTextObj.transform.SetParent(resetButtonObj.transform);
-        RectTransform resetTextRect = resetTextObj.AddComponent<RectTransform>();
-        resetTextRect.anchorMin = Vector2.zero;
-        resetTextRect.anchorMax = Vector2.one;
-        resetTextRect.sizeDelta = Vector2.zero;
-        resetTextRect.anchoredPosition = Vector2.zero;
-
-        TMPro.TextMeshProUGUI resetButtonText = resetTextObj.AddComponent<TMPro.TextMeshProUGUI>();
-        resetButtonText.text = "Restart Game";
-        resetButtonText.fontSize = 16;
-        resetButtonText.color = Color.white;
-        resetButtonText.alignment = TMPro.TextAlignmentOptions.Center;
-
-        // Wire up button click to GameManager.ResetGame() - full game restart
-        UnityEventTools.AddPersistentListener(resetButton.onClick, gameManager.ResetGame);
-        EditorUtility.SetDirty(resetButtonObj);
 
         // Create Pause Menu
         GameObject pauseMenuObj = new GameObject("PauseMenu");
@@ -646,9 +589,14 @@ public class Match3Setup : EditorWindow
         UnityEventTools.AddPersistentListener(saveQuitButton.onClick, pauseMenu.SaveAndQuit);
         EditorUtility.SetDirty(saveQuitButton.gameObject);
 
-        // Connect pause menu panel to PauseMenu script
+        UnityEngine.UI.Button restartButton = CreateMenuButton("RestartGameButton", "Restart Game", -200);
+        UnityEventTools.AddPersistentListener(restartButton.onClick, pauseMenu.RestartGame);
+        EditorUtility.SetDirty(restartButton.gameObject);
+
+        // Connect pause menu panel and GameManager to PauseMenu script
         SerializedObject pauseMenuSO = new SerializedObject(pauseMenu);
         pauseMenuSO.FindProperty("pauseMenuPanel").objectReferenceValue = pausePanelObj;
+        pauseMenuSO.FindProperty("gameManager").objectReferenceValue = gameManager;
         pauseMenuSO.ApplyModifiedProperties();
 
         // Create Options Panel (full screen, semi-transparent background)
@@ -671,7 +619,7 @@ public class Match3Setup : EditorWindow
         optionsContainerRect.anchorMax = new Vector2(0.5f, 0.5f);
         optionsContainerRect.pivot = new Vector2(0.5f, 0.5f);
         optionsContainerRect.anchoredPosition = Vector2.zero;
-        optionsContainerRect.sizeDelta = new Vector2(500, 600);
+        optionsContainerRect.sizeDelta = new Vector2(500, 670); // Increased height for language dropdown
 
         // Add background to options container
         UnityEngine.UI.Image optionsContainerBg = optionsContainerObj.AddComponent<UnityEngine.UI.Image>();
@@ -1012,6 +960,209 @@ public class Match3Setup : EditorWindow
 
         yPos -= ySpacing;
 
+        // Language Dropdown
+        CreateLabel("LanguageLabel", "Language:", yPos);
+
+        // Create LanguageSettings component to handle dropdown
+        GameObject languageSettingsObj = new GameObject("LanguageSettings");
+        LanguageSettings languageSettings = languageSettingsObj.AddComponent<LanguageSettings>();
+
+        // Create Language Dropdown (reuse the same structure as game speed dropdown)
+        GameObject languageDropdownObj = new GameObject("LanguageDropdown");
+        languageDropdownObj.transform.SetParent(optionsContainerObj.transform);
+        RectTransform languageDropdownRect = languageDropdownObj.AddComponent<RectTransform>();
+        languageDropdownRect.anchorMin = new Vector2(0f, 1f);
+        languageDropdownRect.anchorMax = new Vector2(0f, 1f);
+        languageDropdownRect.pivot = new Vector2(0f, 0.5f);
+        languageDropdownRect.anchoredPosition = new Vector2(200, yPos);
+        languageDropdownRect.sizeDelta = new Vector2(250, 30);
+
+        UnityEngine.UI.Image langDropdownBg = languageDropdownObj.AddComponent<UnityEngine.UI.Image>();
+        langDropdownBg.color = new Color(0.3f, 0.3f, 0.3f);
+
+        TMPro.TMP_Dropdown languageDropdown = languageDropdownObj.AddComponent<TMPro.TMP_Dropdown>();
+
+        // Dropdown label (clone from game speed dropdown setup)
+        GameObject langLabelObj = new GameObject("Label");
+        langLabelObj.transform.SetParent(languageDropdownObj.transform);
+        RectTransform langLabelRect = langLabelObj.AddComponent<RectTransform>();
+        langLabelRect.anchorMin = Vector2.zero;
+        langLabelRect.anchorMax = Vector2.one;
+        langLabelRect.offsetMin = new Vector2(10, 2);
+        langLabelRect.offsetMax = new Vector2(-25, -2);
+
+        TMPro.TextMeshProUGUI langLabel = langLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
+        langLabel.text = "";
+        langLabel.fontSize = 16;
+        langLabel.color = Color.white;
+        langLabel.alignment = TMPro.TextAlignmentOptions.Left;
+        langLabel.enableAutoSizing = false;
+        langLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+
+        // Dropdown arrow
+        GameObject langArrowObj = new GameObject("Arrow");
+        langArrowObj.transform.SetParent(languageDropdownObj.transform);
+        RectTransform langArrowRect = langArrowObj.AddComponent<RectTransform>();
+        langArrowRect.anchorMin = new Vector2(1f, 0.5f);
+        langArrowRect.anchorMax = new Vector2(1f, 0.5f);
+        langArrowRect.pivot = new Vector2(0.5f, 0.5f);
+        langArrowRect.anchoredPosition = new Vector2(-15, 0);
+        langArrowRect.sizeDelta = new Vector2(10, 10);
+
+        TMPro.TextMeshProUGUI langArrow = langArrowObj.AddComponent<TMPro.TextMeshProUGUI>();
+        langArrow.text = "▼";
+        langArrow.fontSize = 12;
+        langArrow.color = Color.white;
+        langArrow.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Use the same template as game speed dropdown (they can share template structure)
+        // Create new template for language dropdown
+        GameObject langTemplateObj = new GameObject("Template");
+        langTemplateObj.transform.SetParent(languageDropdownObj.transform);
+        RectTransform langTemplateRect = langTemplateObj.AddComponent<RectTransform>();
+        langTemplateRect.anchorMin = new Vector2(0f, 0f);
+        langTemplateRect.anchorMax = new Vector2(1f, 0f);
+        langTemplateRect.pivot = new Vector2(0.5f, 1f);
+        langTemplateRect.anchoredPosition = new Vector2(0, 2);
+        langTemplateRect.sizeDelta = new Vector2(0, 120); // Taller for 4 languages
+
+        UnityEngine.UI.Image langTemplateBg = langTemplateObj.AddComponent<UnityEngine.UI.Image>();
+        langTemplateBg.color = new Color(0.3f, 0.3f, 0.3f);
+
+        CanvasGroup langTemplateCanvasGroup = langTemplateObj.AddComponent<CanvasGroup>();
+
+        UnityEngine.UI.ScrollRect langScrollRect = langTemplateObj.AddComponent<UnityEngine.UI.ScrollRect>();
+        langScrollRect.horizontal = false;
+        langScrollRect.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped;
+        langScrollRect.scrollSensitivity = 10;
+
+        // Viewport
+        GameObject langViewportObj = new GameObject("Viewport");
+        langViewportObj.transform.SetParent(langTemplateObj.transform);
+        RectTransform langViewportRect = langViewportObj.AddComponent<RectTransform>();
+        langViewportRect.anchorMin = Vector2.zero;
+        langViewportRect.anchorMax = Vector2.one;
+        langViewportRect.offsetMin = new Vector2(0, 0);
+        langViewportRect.offsetMax = new Vector2(0, 0);
+
+        UnityEngine.UI.Image langViewportImage = langViewportObj.AddComponent<UnityEngine.UI.Image>();
+        langViewportImage.color = new Color(0.3f, 0.3f, 0.3f);
+        UnityEngine.UI.Mask langViewportMask = langViewportObj.AddComponent<UnityEngine.UI.Mask>();
+        langViewportMask.showMaskGraphic = false;
+
+        // Content
+        GameObject langContentObj = new GameObject("Content");
+        langContentObj.transform.SetParent(langViewportObj.transform);
+        RectTransform langContentRect = langContentObj.AddComponent<RectTransform>();
+        langContentRect.anchorMin = new Vector2(0f, 1f);
+        langContentRect.anchorMax = new Vector2(1f, 1f);
+        langContentRect.pivot = new Vector2(0.5f, 1f);
+        langContentRect.anchoredPosition = Vector2.zero;
+        langContentRect.sizeDelta = new Vector2(0, 120);
+
+        UnityEngine.UI.ToggleGroup langToggleGroup = langContentObj.AddComponent<UnityEngine.UI.ToggleGroup>();
+
+        // Item
+        GameObject langItemObj = new GameObject("Item");
+        langItemObj.transform.SetParent(langContentObj.transform);
+        RectTransform langItemRect = langItemObj.AddComponent<RectTransform>();
+        langItemRect.anchorMin = new Vector2(0f, 0.5f);
+        langItemRect.anchorMax = new Vector2(1f, 0.5f);
+        langItemRect.pivot = new Vector2(0.5f, 0.5f);
+        langItemRect.sizeDelta = new Vector2(0, 30);
+
+        UnityEngine.UI.Toggle langItemToggle = langItemObj.AddComponent<UnityEngine.UI.Toggle>();
+        langItemToggle.group = langToggleGroup;
+        langItemToggle.isOn = true;
+        langItemToggle.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+
+        // Item Background
+        GameObject langItemBgObj = new GameObject("Item Background");
+        langItemBgObj.transform.SetParent(langItemObj.transform);
+        RectTransform langItemBgRect = langItemBgObj.AddComponent<RectTransform>();
+        langItemBgRect.anchorMin = Vector2.zero;
+        langItemBgRect.anchorMax = Vector2.one;
+        langItemBgRect.offsetMin = Vector2.zero;
+        langItemBgRect.offsetMax = Vector2.zero;
+
+        UnityEngine.UI.Image langItemBg = langItemBgObj.AddComponent<UnityEngine.UI.Image>();
+        langItemBg.color = new Color(0.3f, 0.3f, 0.3f);
+        langItemToggle.targetGraphic = langItemBg;
+
+        UnityEngine.UI.ColorBlock langItemColors = langItemToggle.colors;
+        langItemColors.normalColor = new Color(0.3f, 0.3f, 0.3f);
+        langItemColors.highlightedColor = new Color(0.4f, 0.4f, 0.4f);
+        langItemColors.pressedColor = new Color(0.25f, 0.25f, 0.25f);
+        langItemColors.selectedColor = new Color(0.35f, 0.35f, 0.35f);
+        langItemToggle.colors = langItemColors;
+
+        // Item Checkmark
+        GameObject langItemCheckmarkObj = new GameObject("Item Checkmark");
+        langItemCheckmarkObj.transform.SetParent(langItemObj.transform);
+        RectTransform langItemCheckmarkRect = langItemCheckmarkObj.AddComponent<RectTransform>();
+        langItemCheckmarkRect.anchorMin = new Vector2(0f, 0.5f);
+        langItemCheckmarkRect.anchorMax = new Vector2(0f, 0.5f);
+        langItemCheckmarkRect.pivot = new Vector2(0.5f, 0.5f);
+        langItemCheckmarkRect.anchoredPosition = new Vector2(15, 0);
+        langItemCheckmarkRect.sizeDelta = new Vector2(15, 15);
+
+        UnityEngine.UI.Image langItemCheckmark = langItemCheckmarkObj.AddComponent<UnityEngine.UI.Image>();
+        langItemCheckmark.color = Color.white;
+
+        langItemToggle.graphic = langItemCheckmark;
+
+        // Item Label
+        GameObject langItemLabelObj = new GameObject("Item Label");
+        langItemLabelObj.transform.SetParent(langItemObj.transform);
+        RectTransform langItemLabelRect = langItemLabelObj.AddComponent<RectTransform>();
+        langItemLabelRect.anchorMin = new Vector2(0f, 0f);
+        langItemLabelRect.anchorMax = new Vector2(1f, 1f);
+        langItemLabelRect.pivot = new Vector2(0.5f, 0.5f);
+        langItemLabelRect.offsetMin = new Vector2(30, 1);
+        langItemLabelRect.offsetMax = new Vector2(-5, -2);
+        langItemLabelRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI langItemLabel = langItemLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
+        langItemLabel.text = "Option";
+        langItemLabel.fontSize = 16;
+        langItemLabel.color = Color.white;
+        langItemLabel.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
+        langItemLabel.enableAutoSizing = false;
+        langItemLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+        langItemLabel.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+
+        if (langItemLabel.font == null)
+        {
+            langItemLabel.font = TMPro.TMP_Settings.defaultFontAsset;
+        }
+
+        // Wire up ScrollRect
+        langScrollRect.viewport = langViewportRect;
+        langScrollRect.content = langContentRect;
+
+        langTemplateObj.SetActive(false);
+
+        // Wire up dropdown components
+        languageDropdown.captionText = langLabel;
+        languageDropdown.itemText = langItemLabel;
+        languageDropdown.template = langTemplateRect;
+
+        // Add language options
+        languageDropdown.options.Clear();
+        languageDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("English"));
+        languageDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Español"));
+        languageDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Français"));
+        languageDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Deutsch"));
+
+        languageDropdown.value = 0; // Default to English
+        languageDropdown.RefreshShownValue();
+
+        // Wire up dropdown to LanguageSettings
+        UnityEventTools.AddPersistentListener(languageDropdown.onValueChanged, languageSettings.SetLanguageFromDropdown);
+        EditorUtility.SetDirty(languageDropdownObj);
+
+        yPos -= ySpacing;
+
         // Helper to create a toggle
         UnityEngine.UI.Toggle CreateToggle(string toggleName, string labelText, float y)
         {
@@ -1138,6 +1289,115 @@ public class Match3Setup : EditorWindow
         // Hide pause menu by default
         pausePanelObj.SetActive(false);
 
+        // Create Level Up Dialog
+        GameObject levelUpDialogObj = new GameObject("LevelUpDialog");
+        LevelUpDialog levelUpDialog = levelUpDialogObj.AddComponent<LevelUpDialog>();
+
+        // Create dialog panel (full screen overlay)
+        GameObject levelUpPanelObj = new GameObject("LevelUpPanel");
+        levelUpPanelObj.transform.SetParent(canvasObj.transform);
+        RectTransform levelUpPanelRect = levelUpPanelObj.AddComponent<RectTransform>();
+        levelUpPanelRect.anchorMin = Vector2.zero;
+        levelUpPanelRect.anchorMax = Vector2.one;
+        levelUpPanelRect.sizeDelta = Vector2.zero;
+        levelUpPanelRect.anchoredPosition = Vector2.zero;
+
+        UnityEngine.UI.Image levelUpPanelImage = levelUpPanelObj.AddComponent<UnityEngine.UI.Image>();
+        levelUpPanelImage.color = new Color(0f, 0f, 0f, 0.7f); // Semi-transparent black
+
+        // Create dialog box (centered)
+        GameObject dialogBoxObj = new GameObject("DialogBox");
+        dialogBoxObj.transform.SetParent(levelUpPanelObj.transform);
+        RectTransform dialogBoxRect = dialogBoxObj.AddComponent<RectTransform>();
+        dialogBoxRect.anchorMin = new Vector2(0.5f, 0.5f);
+        dialogBoxRect.anchorMax = new Vector2(0.5f, 0.5f);
+        dialogBoxRect.pivot = new Vector2(0.5f, 0.5f);
+        dialogBoxRect.anchoredPosition = Vector2.zero;
+        dialogBoxRect.sizeDelta = new Vector2(500, 300);
+
+        UnityEngine.UI.Image dialogBoxImage = dialogBoxObj.AddComponent<UnityEngine.UI.Image>();
+        dialogBoxImage.color = new Color(0.2f, 0.2f, 0.3f, 1f); // Dark blue-gray
+
+        // Create title text
+        GameObject titleTextObj = new GameObject("TitleText");
+        titleTextObj.transform.SetParent(dialogBoxObj.transform);
+        RectTransform titleTextRect = titleTextObj.AddComponent<RectTransform>();
+        titleTextRect.anchorMin = new Vector2(0f, 1f);
+        titleTextRect.anchorMax = new Vector2(1f, 1f);
+        titleTextRect.pivot = new Vector2(0.5f, 1f);
+        titleTextRect.anchoredPosition = new Vector2(0, -20);
+        titleTextRect.sizeDelta = new Vector2(-40, 60);
+
+        TMPro.TextMeshProUGUI titleText = titleTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        titleText.text = "Level Up!";
+        titleText.fontSize = 48;
+        titleText.color = new Color(1f, 0.9f, 0.3f); // Gold
+        titleText.alignment = TMPro.TextAlignmentOptions.Center;
+        titleText.fontStyle = TMPro.FontStyles.Bold;
+
+        // Create message text
+        GameObject messageTextObj = new GameObject("MessageText");
+        messageTextObj.transform.SetParent(dialogBoxObj.transform);
+        RectTransform messageTextRect = messageTextObj.AddComponent<RectTransform>();
+        messageTextRect.anchorMin = new Vector2(0f, 0f);
+        messageTextRect.anchorMax = new Vector2(1f, 1f);
+        messageTextRect.pivot = new Vector2(0.5f, 0.5f);
+        messageTextRect.anchoredPosition = new Vector2(0, -10);
+        messageTextRect.sizeDelta = new Vector2(-40, -150);
+
+        TMPro.TextMeshProUGUI messageText = messageTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        messageText.text = "Congratulations!\n\nYou have reached Level 2!";
+        messageText.fontSize = 28;
+        messageText.color = Color.white;
+        messageText.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Create OK button
+        GameObject okButtonObj = new GameObject("OKButton");
+        okButtonObj.transform.SetParent(dialogBoxObj.transform);
+        RectTransform okButtonRect = okButtonObj.AddComponent<RectTransform>();
+        okButtonRect.anchorMin = new Vector2(0.5f, 0f);
+        okButtonRect.anchorMax = new Vector2(0.5f, 0f);
+        okButtonRect.pivot = new Vector2(0.5f, 0f);
+        okButtonRect.anchoredPosition = new Vector2(0, 20);
+        okButtonRect.sizeDelta = new Vector2(150, 50);
+
+        UnityEngine.UI.Image okButtonImage = okButtonObj.AddComponent<UnityEngine.UI.Image>();
+        okButtonImage.color = new Color(0.3f, 0.6f, 0.3f, 1f); // Green
+
+        UnityEngine.UI.Button okButton = okButtonObj.AddComponent<UnityEngine.UI.Button>();
+        okButton.targetGraphic = okButtonImage;
+
+        GameObject okButtonTextObj = new GameObject("Text");
+        okButtonTextObj.transform.SetParent(okButtonObj.transform);
+        RectTransform okButtonTextRect = okButtonTextObj.AddComponent<RectTransform>();
+        okButtonTextRect.anchorMin = Vector2.zero;
+        okButtonTextRect.anchorMax = Vector2.one;
+        okButtonTextRect.sizeDelta = Vector2.zero;
+        okButtonTextRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI okButtonText = okButtonTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        okButtonText.text = "OK";
+        okButtonText.fontSize = 28;
+        okButtonText.color = Color.white;
+        okButtonText.alignment = TMPro.TextAlignmentOptions.Center;
+        okButtonText.fontStyle = TMPro.FontStyles.Bold;
+
+        // Wire up LevelUpDialog component
+        SerializedObject levelUpDialogSO = new SerializedObject(levelUpDialog);
+        levelUpDialogSO.FindProperty("dialogPanel").objectReferenceValue = levelUpPanelObj;
+        levelUpDialogSO.FindProperty("titleText").objectReferenceValue = titleText;
+        levelUpDialogSO.FindProperty("messageText").objectReferenceValue = messageText;
+        levelUpDialogSO.FindProperty("okButton").objectReferenceValue = okButton;
+        levelUpDialogSO.ApplyModifiedProperties();
+
+        // Hide level up dialog by default
+        levelUpPanelObj.SetActive(false);
+
+        // Wire up PlayerManager to SidePanelManager
+        SerializedObject playerManagerSO = new SerializedObject(playerManager);
+        playerManagerSO.FindProperty("sidePanelManager").objectReferenceValue = sidePanelManager;
+        playerManagerSO.ApplyModifiedProperties();
+
         // Save scene
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
 
@@ -1152,6 +1412,14 @@ public class Match3Setup : EditorWindow
     {
         // Create a temporary GameObject
         GameObject piece = new GameObject("GamePiece");
+
+        // Scale to fit cell size with spacing
+        // Cell size is 1.0, we want gems to fill 75% of the cell (0.75)
+        // This leaves 12.5% gap on each side for clean separation
+        float cellSize = 1.0f;
+        float gemSizeRatio = 0.75f; // 75% of cell size
+        float gemScale = cellSize * gemSizeRatio;
+        piece.transform.localScale = new Vector3(gemScale, gemScale, 1f);
 
         // Add SpriteRenderer
         SpriteRenderer sr = piece.AddComponent<SpriteRenderer>();

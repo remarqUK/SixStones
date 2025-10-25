@@ -101,10 +101,16 @@ public class Board : MonoBehaviour
 
     private void InitializeBoard()
     {
-        Debug.Log("===== InitializeBoard CALLED =====");
-        Debug.Log($"Stack trace: {System.Environment.StackTrace}");
-
         pieces = new GamePiece[width, height];
+
+        // Log grid measurements
+        float gridWidth = width * cellSize;
+        float gridHeight = height * cellSize;
+        Debug.Log($"=== GRID INITIALIZED ===");
+        Debug.Log($"Grid Height: {gridHeight} world units");
+        Debug.Log($"Number of gems in height: {height}");
+        Debug.Log($"Height of each gem cell: {cellSize} world units");
+        Debug.Log($"Expected gem sprite height: {cellSize * 0.75f} world units (75% of cell)");
 
         // Create background
         CreateBackground();
@@ -187,37 +193,17 @@ public class Board : MonoBehaviour
 
     private void CreateBackground()
     {
-        if (cellBackgroundPrefab == null) return;
+        // Cell backgrounds disabled - using camera background color instead
+        // This provides a cleaner look with the dark side panels
 
-        // Destroy old background if it exists
+        // Clean up any existing background
         if (backgroundParent != null)
         {
             Destroy(backgroundParent);
+            backgroundParent = null;
         }
 
-        backgroundParent = new GameObject("Background");
-        backgroundParent.transform.SetParent(transform);
-        backgroundParent.transform.localPosition = Vector3.zero;
-
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                GameObject cell = Instantiate(cellBackgroundPrefab, backgroundParent.transform);
-                cell.transform.position = GridToWorld(x, y);
-                cell.name = $"Cell_{x}_{y}";
-
-                // Alternate colors for checkerboard pattern
-                if ((x + y) % 2 == 0)
-                {
-                    SpriteRenderer sr = cell.GetComponent<SpriteRenderer>();
-                    if (sr != null)
-                    {
-                        sr.color = new Color(0.3f, 0.3f, 0.4f);
-                    }
-                }
-            }
-        }
+        return;
     }
 
     private void CreatePiece(int x, int y, bool animate = false, bool visible = true)
@@ -412,7 +398,6 @@ public class Board : MonoBehaviour
         yield return new WaitForSeconds(GetAdjustedDuration(0.3f));
 
         // Make pieces fall
-        Debug.Log("ProcessMatches: Making pieces fall");
         yield return StartCoroutine(MakePiecesFall());
 
         // CRITICAL: Wait for all falling animations to complete
@@ -572,15 +557,12 @@ public class Board : MonoBehaviour
                             float adjustedFallDuration = GetAdjustedDuration(fallDuration);
                             fallingPiece.MoveTo(GridToWorld(x, y), adjustedFallDuration);
                             piecesMoved++;
-                            Debug.Log($"MakePiecesFall: Moving piece from ({x},{above}) to ({x},{y})");
                             break;
                         }
                     }
                 }
             }
         }
-
-        Debug.Log($"MakePiecesFall: Moved {piecesMoved} pieces");
 
         // Don't wait here - let WaitForAllAnimations() handle it properly
         yield break;
@@ -994,12 +976,63 @@ public class Board : MonoBehaviour
                 gameManager.UpdateUI();
             }
 
-            // Check if CPU should make a move
-            if (cpuPlayer != null)
+            // Check for possible moves before the next turn starts
+            StartCoroutine(CheckAndRegenerateBeforeTurn());
+        }
+    }
+
+    /// <summary>
+    /// Check if there are possible moves before a turn starts, regenerate if needed
+    /// </summary>
+    private IEnumerator CheckAndRegenerateBeforeTurn()
+    {
+        // Check if there are any possible moves
+        int possibleMoves = GetPossibleMovesCount();
+
+        if (possibleMoves == 0)
+        {
+            Debug.Log("===== NO POSSIBLE MOVES - Regenerating board before turn =====");
+            yield return StartCoroutine(RegenerateBoard());
+        }
+
+        // After ensuring moves exist, check if CPU should make a move
+        if (cpuPlayer != null)
+        {
+            cpuPlayer.CheckAndMakeMove();
+        }
+    }
+
+    /// <summary>
+    /// Regenerate the entire board
+    /// </summary>
+    private IEnumerator RegenerateBoard()
+    {
+        // Clear entire board
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
             {
-                cpuPlayer.CheckAndMakeMove();
+                if (pieces[x, y] != null)
+                {
+                    Destroy(pieces[x, y].gameObject);
+                    pieces[x, y] = null;
+                }
             }
         }
+
+        yield return new WaitForSeconds(GetAdjustedDuration(0.3f));
+
+        // Recreate board (invisible until clearing is complete)
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                CreatePiece(x, y, animate: false, visible: false);
+            }
+        }
+
+        // Clear any initial matches and ensure no drop gems on bottom
+        yield return StartCoroutine(ClearInitialMatches());
     }
 
     /// <summary>

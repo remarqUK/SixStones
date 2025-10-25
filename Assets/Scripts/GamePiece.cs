@@ -23,7 +23,10 @@ public class GamePiece : MonoBehaviour
     private Board board;
     private bool isMoving = false;
     private bool isPulsating = false;
+    private bool isPressed = false;
+    private Vector3 baseScale = Vector3.one; // The gem's normal scale (e.g., 0.75)
     private Coroutine pulsateCoroutine;
+    private Coroutine scaleAnimationCoroutine;
 
     public PieceType Type => pieceType;
     public Vector2Int GridPosition => gridPosition;
@@ -43,6 +46,9 @@ public class GamePiece : MonoBehaviour
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
+
+        // Capture the base scale this gem was created with (e.g., 0.75)
+        baseScale = transform.localScale;
     }
 
     private void OnDestroy()
@@ -53,7 +59,9 @@ public class GamePiece : MonoBehaviour
         // Reset state flags
         isMoving = false;
         isPulsating = false;
+        isPressed = false;
         pulsateCoroutine = null;
+        scaleAnimationCoroutine = null;
     }
 
     public void Initialize(PieceType type, Vector2Int position, Board parentBoard, GameSettings settings = null)
@@ -134,18 +142,98 @@ public class GamePiece : MonoBehaviour
         spriteRenderer.color = color;
     }
 
-    public void Highlight(bool enable)
+    /// <summary>
+    /// Set whether this piece is currently pressed/clicked
+    /// The piece manages its own highlight state
+    /// </summary>
+    public void SetPressed(bool pressed)
+    {
+        // Only update if state actually changed
+        if (isPressed == pressed) return;
+
+        isPressed = pressed;
+        UpdateVisualState();
+    }
+
+    /// <summary>
+    /// Update the visual appearance based on current state
+    /// </summary>
+    private void UpdateVisualState()
     {
         if (spriteRenderer == null) return;
 
-        if (enable)
+        // Don't interfere with pulsate animation
+        if (isPulsating) return;
+
+        // Calculate target scale
+        Vector3 targetScale;
+        if (isPressed)
         {
-            spriteRenderer.transform.localScale = Vector3.one * 1.1f;
+            // Gems are 75% of cell width (0.75), pressed should be max 85% (0.85)
+            // Scale factor: 0.85 / 0.75 = 1.133
+            targetScale = baseScale * 1.133f;
         }
         else
         {
-            spriteRenderer.transform.localScale = Vector3.one;
+            // Return to base scale
+            targetScale = baseScale;
         }
+
+        // Animate to target scale
+        AnimateToScale(targetScale);
+    }
+
+    /// <summary>
+    /// Smoothly animate to a target scale
+    /// </summary>
+    private void AnimateToScale(Vector3 targetScale)
+    {
+        // Stop any existing scale animation
+        if (scaleAnimationCoroutine != null)
+        {
+            StopCoroutine(scaleAnimationCoroutine);
+        }
+
+        scaleAnimationCoroutine = StartCoroutine(ScaleAnimationCoroutine(targetScale));
+    }
+
+    /// <summary>
+    /// Coroutine to animate scale change
+    /// </summary>
+    private System.Collections.IEnumerator ScaleAnimationCoroutine(Vector3 targetScale)
+    {
+        float baseDuration = 0.2f;
+        float duration = baseDuration;
+
+        // Apply game speed multiplier
+        if (GameSpeedSettings.Instance != null)
+        {
+            duration = GameSpeedSettings.Instance.GetAdjustedDuration(baseDuration);
+        }
+
+        Vector3 startScale = spriteRenderer.transform.localScale;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            // Smooth easing
+            t = Mathf.Sin(t * Mathf.PI * 0.5f);
+            spriteRenderer.transform.localScale = Vector3.Lerp(startScale, targetScale, t);
+            yield return null;
+        }
+
+        spriteRenderer.transform.localScale = targetScale;
+        scaleAnimationCoroutine = null;
+    }
+
+    /// <summary>
+    /// Legacy method for compatibility - use SetPressed instead
+    /// </summary>
+    public void Highlight(bool enable)
+    {
+        SetPressed(enable);
     }
 
     public void DestroyPiece()
@@ -184,9 +272,11 @@ public class GamePiece : MonoBehaviour
     public void ResetForPool()
     {
         isMoving = false;
+        isPulsating = false;
+        isPressed = false;
         gridPosition = Vector2Int.zero;
         board = null;
-        transform.localScale = Vector3.one;
+        transform.localScale = baseScale;
         if (spriteRenderer != null)
         {
             spriteRenderer.color = Color.white;
@@ -215,13 +305,16 @@ public class GamePiece : MonoBehaviour
             StopCoroutine(pulsateCoroutine);
             pulsateCoroutine = null;
         }
-        transform.localScale = Vector3.one;
+        // Restore correct visual state (respects isPressed)
+        UpdateVisualState();
     }
 
     private System.Collections.IEnumerator PulsateCoroutine()
     {
-        Vector3 normalScale = Vector3.one;
-        Vector3 enlargedScale = Vector3.one * 1.2f;
+        Vector3 normalScale = baseScale;
+        // Gems are 75% of cell width (0.75), hint should be max 85% (0.85)
+        // Scale factor: 0.85 / 0.75 = 1.133
+        Vector3 enlargedScale = baseScale * 1.133f;
 
         while (isPulsating)
         {
