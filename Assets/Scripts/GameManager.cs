@@ -15,22 +15,36 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentPlayerText;
     [SerializeField] private TextMeshProUGUI player1ScoreText;
     [SerializeField] private TextMeshProUGUI player2ScoreText;
+    [SerializeField] private TextMeshProUGUI player1HealthText;
+    [SerializeField] private TextMeshProUGUI player2HealthText;
 
     [Header("Game Settings")]
     [SerializeField] private int pointsPerPiece = 10;
     [SerializeField] private int maxMoves = 30;
+    [SerializeField] private int startingHealth = 100;
+
+    [Header("Player Strength")]
+    [SerializeField] [Range(0.1f, 5f)] private float player1Strength = 1.0f;
+    [SerializeField] [Range(0.1f, 5f)] private float player2Strength = 1.0f;
 
     private int player1Score = 0;
     private int player2Score = 0;
+    private int player1Health;
+    private int player2Health;
     private int player1RemainingMoves;
     private int player2RemainingMoves;
     private Dictionary<GamePiece.PieceType, int> player1ColorScores;
     private Dictionary<GamePiece.PieceType, int> player2ColorScores;
+    private bool isGameOver = false;
+
+    public bool IsGameOver => isGameOver;
 
     private void Start()
     {
         player1RemainingMoves = maxMoves;
         player2RemainingMoves = maxMoves;
+        player1Health = startingHealth;
+        player2Health = startingHealth;
         InitializeColorScores();
         UpdateUI();
     }
@@ -54,15 +68,15 @@ public class GameManager : MonoBehaviour
         // Get current game mode for scoring rules
         GameModeData mode = board != null ? board.CurrentMode : null;
 
-        // Drop mode: Score based on bottom row hits
+        // Bottom row scoring: Score based on gems hitting bottom row
         if (mode != null && mode.scoreOnBottomRowHit)
         {
             int totalPoints = matchedPieces.Count * mode.bottomRowHitPoints;
 
-            // Add to current player's score (always player 1 in drop mode since it's single player)
+            // Add to current player's score
             player1Score += totalPoints;
 
-            Debug.Log($"Drop mode scoring: {matchedPieces.Count} gems × {mode.bottomRowHitPoints} = {totalPoints} points");
+            Debug.Log($"Bottom row scoring: {matchedPieces.Count} gems × {mode.bottomRowHitPoints} = {totalPoints} points");
             UpdateUI();
             return;
         }
@@ -118,6 +132,62 @@ public class GameManager : MonoBehaviour
                 player1Score += totalMatchPoints;
             else
                 player2Score += totalMatchPoints;
+
+            // Damage calculation: Check all matched gem types for damage-dealing gems
+            int totalDamage = 0;
+            foreach (var kvp in colorGroups)
+            {
+                GamePiece.PieceType gemType = kvp.Key;
+                int matchCount = kvp.Value.Count;
+
+                // Check if this gem type can deal damage
+                if (mode != null && mode.CanGemDealDamage(gemType))
+                {
+                    // Get base damage for this match size
+                    int baseDamage = mode.GetDamageForMatch(matchCount);
+
+                    // Apply current player's strength multiplier
+                    float playerStrength = playerManager.CurrentPlayer == PlayerManager.Player.Player1
+                        ? player1Strength
+                        : player2Strength;
+
+                    int damage = Mathf.RoundToInt(baseDamage * playerStrength);
+                    totalDamage += damage;
+
+                    Debug.Log($"{playerManager.GetCurrentPlayerName()} matched {matchCount} {gemType} gems! Base damage: {baseDamage}, Strength: {playerStrength}x, Total: {damage}");
+                }
+            }
+
+            // Apply total damage to opponent
+            if (totalDamage > 0)
+            {
+                if (playerManager.CurrentPlayer == PlayerManager.Player.Player1)
+                {
+                    // Player 1 deals damage to Player 2
+                    player2Health -= totalDamage;
+                    Debug.Log($"Player 1 deals {totalDamage} damage! Player 2 HP: {player2Health}");
+                }
+                else
+                {
+                    // Player 2 deals damage to Player 1
+                    player1Health -= totalDamage;
+                    Debug.Log($"Player 2 deals {totalDamage} damage! Player 1 HP: {player1Health}");
+                }
+
+                // Check for game over
+                if (player1Health <= 0)
+                {
+                    Debug.Log("===== PLAYER 2 WINS - Player 1 HP reached 0! =====");
+                    GameOver();
+                    return;
+                }
+                else if (player2Health <= 0)
+                {
+                    Debug.Log("===== PLAYER 1 WINS - Player 2 HP reached 0! =====");
+                    GameOver();
+                    return;
+                }
+            }
 
             // Check if player earned a bonus turn (only for initial match, not cascades)
             if (checkBonusTurn)
@@ -213,33 +283,27 @@ public class GameManager : MonoBehaviour
         // Update Player 1 color scores
         if (player1ColorScoresText != null && player1ColorScores != null)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendLine("<b>Player 1 Colors:</b>");
-
-            foreach (var kvp in player1ColorScores)
-            {
-                string colorName = kvp.Key.ToString();
-                string colorHex = GetColorHex(kvp.Key);
-                sb.AppendLine($"<color={colorHex}>{colorName}:</color> {kvp.Value}");
-            }
-
-            player1ColorScoresText.text = sb.ToString();
+            player1ColorScoresText.text = FormatColorScores("Player 1", player1ColorScores);
         }
 
         // Update Player 2 color scores
         if (player2ColorScoresText != null && player2ColorScores != null)
         {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendLine("<b>Player 2 Colors:</b>");
+            player2ColorScoresText.text = FormatColorScores("Player 2", player2ColorScores);
+        }
 
-            foreach (var kvp in player2ColorScores)
-            {
-                string colorName = kvp.Key.ToString();
-                string colorHex = GetColorHex(kvp.Key);
-                sb.AppendLine($"<color={colorHex}>{colorName}:</color> {kvp.Value}");
-            }
+        // Update Player 1 health (clamp to 0)
+        if (player1HealthText != null)
+        {
+            int displayHealth = Mathf.Max(0, player1Health);
+            player1HealthText.text = $"HP: {displayHealth}";
+        }
 
-            player2ColorScoresText.text = sb.ToString();
+        // Update Player 2 health (clamp to 0)
+        if (player2HealthText != null)
+        {
+            int displayHealth = Mathf.Max(0, player2Health);
+            player2HealthText.text = $"HP: {displayHealth}";
         }
 
         // Log possible moves to console
@@ -248,6 +312,24 @@ public class GameManager : MonoBehaviour
             int possibleMoves = board.GetPossibleMovesCount();
             Debug.Log($"Possible Moves: {possibleMoves}");
         }
+    }
+
+    /// <summary>
+    /// Format color scores for display (DRY helper method)
+    /// </summary>
+    private string FormatColorScores(string playerName, Dictionary<GamePiece.PieceType, int> colorScores)
+    {
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        sb.AppendLine($"<b>{playerName} Colors:</b>");
+
+        foreach (var kvp in colorScores)
+        {
+            string colorName = kvp.Key.ToString();
+            string colorHex = GetColorHex(kvp.Key);
+            sb.AppendLine($"<color={colorHex}>{colorName}:</color> {kvp.Value}");
+        }
+
+        return sb.ToString();
     }
 
     private string GetColorHex(GamePiece.PieceType type)
@@ -260,6 +342,7 @@ public class GameManager : MonoBehaviour
             GamePiece.PieceType.Yellow => "#F2D933",
             GamePiece.PieceType.Purple => "#B333CC",
             GamePiece.PieceType.Orange => "#F28019",
+            GamePiece.PieceType.White => "#F2F2F2",
             _ => "#FFFFFF"
         };
     }
@@ -267,34 +350,80 @@ public class GameManager : MonoBehaviour
     private void GameOver()
     {
         Debug.Log("===== GAME OVER CALLED =====");
+        isGameOver = true;
+
+        string gameOverMessage = "";
 
         if (playerManager != null && playerManager.TwoPlayerMode)
         {
             Debug.Log($"Game Over! Player 1: {player1Score}, Player 2: {player2Score}");
-            if (player1Score > player2Score)
-                Debug.Log("Player 1 wins!");
+
+            // Determine winner by health (HP reached 0) or score
+            if (player1Health <= 0)
+            {
+                gameOverMessage = "GAME OVER - Player 2 Wins!";
+                Debug.Log("Player 2 wins by knockout!");
+            }
+            else if (player2Health <= 0)
+            {
+                gameOverMessage = "GAME OVER - Player 1 Wins!";
+                Debug.Log("Player 1 wins by knockout!");
+            }
+            else if (player1Score > player2Score)
+            {
+                gameOverMessage = "GAME OVER - Player 1 Wins!";
+                Debug.Log("Player 1 wins by score!");
+            }
             else if (player2Score > player1Score)
-                Debug.Log("Player 2 wins!");
+            {
+                gameOverMessage = "GAME OVER - Player 2 Wins!";
+                Debug.Log("Player 2 wins by score!");
+            }
             else
+            {
+                gameOverMessage = "GAME OVER - It's a Tie!";
                 Debug.Log("It's a tie!");
+            }
         }
         else
         {
+            gameOverMessage = $"GAME OVER - Score: {player1Score}";
             Debug.Log($"Game Over! Final Score: {player1Score}");
         }
-        // You can add game over UI here
+
+        // Display game over message in current player text
+        if (currentPlayerText != null)
+        {
+            currentPlayerText.text = gameOverMessage;
+        }
+
+        UpdateUI();
     }
 
     public void ResetGame()
     {
         player1Score = 0;
         player2Score = 0;
+        player1Health = startingHealth;
+        player2Health = startingHealth;
         player1RemainingMoves = maxMoves;
         player2RemainingMoves = maxMoves;
+        isGameOver = false;
         UpdateUI();
         // Reload the scene or reset the board
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
         );
+    }
+
+    /// <summary>
+    /// Reset health (called when grid is reset)
+    /// </summary>
+    public void ResetHealth()
+    {
+        player1Health = startingHealth;
+        player2Health = startingHealth;
+        Debug.Log($"Health reset to {startingHealth} for both players");
+        UpdateUI();
     }
 }

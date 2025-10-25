@@ -46,6 +46,9 @@ public class GameModeData : ScriptableObject
     [Tooltip("Are cascade/combo matches allowed?")]
     public bool allowCascades = true;
 
+    [Tooltip("Regenerate the entire grid if no possible moves are available")]
+    public bool regenerateOnNoMoves = false;
+
     [Header("Scoring")]
     [Tooltip("Score based on matches (standard) or bottom row hits (drop mode)")]
     public bool scoreOnBottomRowHit = false;
@@ -90,6 +93,23 @@ public class GameModeData : ScriptableObject
     [Tooltip("Target score to win (0 = no score target)")]
     public int targetScore = 0;
 
+    [Header("Damage System")]
+    [Tooltip("Gem types that deal damage to opponent")]
+    public GamePiece.PieceType[] damageGemTypes = new GamePiece.PieceType[] { GamePiece.PieceType.Red };
+
+    [Tooltip("Base damage for matching exactly 3 damage gems")]
+    public int match3Damage = 10;
+
+    [Tooltip("Base damage for matching exactly 4 damage gems")]
+    public int match4Damage = 15;
+
+    [Tooltip("Base damage for matching 5 or more damage gems")]
+    public int match5PlusDamage = 25;
+
+    [Tooltip("Damage multiplier for this mode")]
+    [Range(0.5f, 5f)]
+    public float damageMultiplier = 1f;
+
     [Header("Visual")]
     public Color modeColor = Color.white;
     public Sprite modeIcon;
@@ -109,6 +129,40 @@ public class GameModeData : ScriptableObject
             basePoints = match5PlusPoints;
 
         return Mathf.RoundToInt(basePoints * scoreMultiplier);
+    }
+
+    /// <summary>
+    /// Calculate base damage for a match based on number of pieces matched
+    /// </summary>
+    public int GetDamageForMatch(int pieceCount)
+    {
+        int baseDamage;
+
+        if (pieceCount == 3)
+            baseDamage = match3Damage;
+        else if (pieceCount == 4)
+            baseDamage = match4Damage;
+        else // 5 or more
+            baseDamage = match5PlusDamage;
+
+        return Mathf.RoundToInt(baseDamage * damageMultiplier);
+    }
+
+    /// <summary>
+    /// Check if a gem type can deal damage
+    /// </summary>
+    public bool CanGemDealDamage(GamePiece.PieceType gemType)
+    {
+        if (damageGemTypes == null || damageGemTypes.Length == 0)
+            return false;
+
+        foreach (var type in damageGemTypes)
+        {
+            if (type == gemType)
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>

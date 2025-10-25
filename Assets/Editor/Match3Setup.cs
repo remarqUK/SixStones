@@ -3,6 +3,7 @@ using UnityEditor;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using UnityEngine.Rendering.Universal;
+using UnityEditor.Events;
 
 public class Match3Setup : EditorWindow
 {
@@ -119,6 +120,23 @@ public class Match3Setup : EditorWindow
         cpuSO.FindProperty("playerManager").objectReferenceValue = playerManager;
         cpuSO.ApplyModifiedProperties();
 
+        // Create Hint System
+        GameObject hintSystemObj = new GameObject("HintSystem");
+        HintSystem hintSystem = hintSystemObj.AddComponent<HintSystem>();
+
+        SerializedObject hintSO = new SerializedObject(hintSystem);
+        hintSO.FindProperty("board").objectReferenceValue = board;
+        hintSO.ApplyModifiedProperties();
+
+        // Create Gem Selector (before InputManager so we can reference it)
+        GameObject gemSelectorObj = new GameObject("GemSelector");
+        GemSelector gemSelector = gemSelectorObj.AddComponent<GemSelector>();
+
+        SerializedObject gemSelectorSO = new SerializedObject(gemSelector);
+        gemSelectorSO.FindProperty("board").objectReferenceValue = board;
+        gemSelectorSO.FindProperty("playerManager").objectReferenceValue = playerManager;
+        gemSelectorSO.ApplyModifiedProperties();
+
         // Create Input Manager
         GameObject inputObj = new GameObject("InputManager");
         InputManager inputManager = inputObj.AddComponent<InputManager>();
@@ -126,6 +144,8 @@ public class Match3Setup : EditorWindow
         SerializedObject inputSO = new SerializedObject(inputManager);
         inputSO.FindProperty("board").objectReferenceValue = board;
         inputSO.FindProperty("mainCamera").objectReferenceValue = camera;
+        inputSO.FindProperty("gemSelector").objectReferenceValue = gemSelector;
+        inputSO.FindProperty("playerManager").objectReferenceValue = playerManager;
         inputSO.ApplyModifiedProperties();
 
         // Create Canvas for UI
@@ -134,6 +154,11 @@ public class Match3Setup : EditorWindow
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
         canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+        // Create EventSystem (required for UI interaction)
+        GameObject eventSystemObj = new GameObject("EventSystem");
+        eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
+        eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
         // Create Score Text
         GameObject scoreObj = new GameObject("ScoreText");
@@ -162,7 +187,7 @@ public class Match3Setup : EditorWindow
         player1ColorScoresRect.sizeDelta = new Vector2(250, 300);
 
         TMPro.TextMeshProUGUI player1ColorScoresText = player1ColorScoresObj.AddComponent<TMPro.TextMeshProUGUI>();
-        player1ColorScoresText.text = "<b>Player 1 Colors:</b>\nRed: 0\nBlue: 0\nGreen: 0\nYellow: 0\nPurple: 0\nOrange: 0";
+        player1ColorScoresText.text = "<b>Player 1 Colors:</b>\nRed: 0\nBlue: 0\nGreen: 0\nYellow: 0\nPurple: 0\nOrange: 0\nWhite: 0";
         player1ColorScoresText.fontSize = 24;
         player1ColorScoresText.color = new Color(0.5f, 0.8f, 1f); // Light blue
         player1ColorScoresText.alignment = TMPro.TextAlignmentOptions.TopLeft;
@@ -179,7 +204,7 @@ public class Match3Setup : EditorWindow
         player2ColorScoresRect.sizeDelta = new Vector2(250, 300);
 
         TMPro.TextMeshProUGUI player2ColorScoresText = player2ColorScoresObj.AddComponent<TMPro.TextMeshProUGUI>();
-        player2ColorScoresText.text = "<b>Player 2 Colors:</b>\nRed: 0\nBlue: 0\nGreen: 0\nYellow: 0\nPurple: 0\nOrange: 0";
+        player2ColorScoresText.text = "<b>Player 2 Colors:</b>\nRed: 0\nBlue: 0\nGreen: 0\nYellow: 0\nPurple: 0\nOrange: 0\nWhite: 0";
         player2ColorScoresText.fontSize = 24;
         player2ColorScoresText.color = new Color(1f, 0.5f, 0.5f); // Light red
         player2ColorScoresText.alignment = TMPro.TextAlignmentOptions.TopRight;
@@ -234,6 +259,40 @@ public class Match3Setup : EditorWindow
         player2ScoreText.color = new Color(1f, 0.5f, 0.5f); // Light red
         player2ScoreText.alignment = TMPro.TextAlignmentOptions.Right;
 
+        // Create Player 1 Health Text
+        GameObject player1HealthObj = new GameObject("Player1HealthText");
+        player1HealthObj.transform.SetParent(canvasObj.transform);
+        RectTransform player1HealthRect = player1HealthObj.AddComponent<RectTransform>();
+        player1HealthRect.anchorMin = new Vector2(0, 1);
+        player1HealthRect.anchorMax = new Vector2(0, 1);
+        player1HealthRect.pivot = new Vector2(0, 1);
+        player1HealthRect.anchoredPosition = new Vector2(20, -130);
+        player1HealthRect.sizeDelta = new Vector2(300, 50);
+
+        TMPro.TextMeshProUGUI player1HealthText = player1HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
+        player1HealthText.text = "HP: 100";
+        player1HealthText.fontSize = 32;
+        player1HealthText.color = new Color(0.3f, 1f, 0.3f); // Bright green
+        player1HealthText.alignment = TMPro.TextAlignmentOptions.Left;
+        player1HealthText.fontStyle = TMPro.FontStyles.Bold;
+
+        // Create Player 2 Health Text
+        GameObject player2HealthObj = new GameObject("Player2HealthText");
+        player2HealthObj.transform.SetParent(canvasObj.transform);
+        RectTransform player2HealthRect = player2HealthObj.AddComponent<RectTransform>();
+        player2HealthRect.anchorMin = new Vector2(1, 1);
+        player2HealthRect.anchorMax = new Vector2(1, 1);
+        player2HealthRect.pivot = new Vector2(1, 1);
+        player2HealthRect.anchoredPosition = new Vector2(-20, -130);
+        player2HealthRect.sizeDelta = new Vector2(300, 50);
+
+        TMPro.TextMeshProUGUI player2HealthText = player2HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
+        player2HealthText.text = "HP: 100";
+        player2HealthText.fontSize = 32;
+        player2HealthText.color = new Color(0.3f, 1f, 0.3f); // Bright green
+        player2HealthText.alignment = TMPro.TextAlignmentOptions.Right;
+        player2HealthText.fontStyle = TMPro.FontStyles.Bold;
+
         // Create Game Manager
         GameObject gameManagerObj = new GameObject("GameManager");
         GameManager gameManager = gameManagerObj.AddComponent<GameManager>();
@@ -247,8 +306,13 @@ public class Match3Setup : EditorWindow
         gmSO.FindProperty("currentPlayerText").objectReferenceValue = currentPlayerText;
         gmSO.FindProperty("player1ScoreText").objectReferenceValue = player1ScoreText;
         gmSO.FindProperty("player2ScoreText").objectReferenceValue = player2ScoreText;
+        gmSO.FindProperty("player1HealthText").objectReferenceValue = player1HealthText;
+        gmSO.FindProperty("player2HealthText").objectReferenceValue = player2HealthText;
         gmSO.FindProperty("pointsPerPiece").intValue = 1;
         gmSO.FindProperty("maxMoves").intValue = 30;
+        gmSO.FindProperty("startingHealth").intValue = 100;
+        gmSO.FindProperty("player1Strength").floatValue = 1.0f;
+        gmSO.FindProperty("player2Strength").floatValue = 1.0f;
         gmSO.ApplyModifiedProperties();
 
         // Connect GameManager, PlayerManager, and CPUPlayer to Board
@@ -256,6 +320,225 @@ public class Match3Setup : EditorWindow
         boardSO.FindProperty("playerManager").objectReferenceValue = playerManager;
         boardSO.FindProperty("cpuPlayer").objectReferenceValue = cpuPlayer;
         boardSO.ApplyModifiedProperties();
+
+        // Create CPU Control UI
+        GameObject cpuControlObj = new GameObject("CPUControlUI");
+        CPUControlUI cpuControlUI = cpuControlObj.AddComponent<CPUControlUI>();
+
+        SerializedObject cpuControlSO = new SerializedObject(cpuControlUI);
+        cpuControlSO.FindProperty("cpuPlayer").objectReferenceValue = cpuPlayer;
+
+        // Create Auto-Play Toggle Button
+        GameObject autoPlayButtonObj = new GameObject("AutoPlayButton");
+        autoPlayButtonObj.transform.SetParent(canvasObj.transform);
+        RectTransform autoPlayButtonRect = autoPlayButtonObj.AddComponent<RectTransform>();
+        autoPlayButtonRect.anchorMin = new Vector2(0.5f, 0);
+        autoPlayButtonRect.anchorMax = new Vector2(0.5f, 0);
+        autoPlayButtonRect.pivot = new Vector2(0.5f, 0);
+        autoPlayButtonRect.anchoredPosition = new Vector2(-80, 20);
+        autoPlayButtonRect.sizeDelta = new Vector2(150, 40);
+
+        UnityEngine.UI.Image autoPlayButtonImage = autoPlayButtonObj.AddComponent<UnityEngine.UI.Image>();
+        autoPlayButtonImage.color = new Color(0.2f, 0.3f, 0.8f);
+
+        UnityEngine.UI.Button autoPlayButton = autoPlayButtonObj.AddComponent<UnityEngine.UI.Button>();
+        UnityEngine.UI.ColorBlock autoPlayColors = autoPlayButton.colors;
+        autoPlayColors.normalColor = new Color(0.2f, 0.3f, 0.8f);
+        autoPlayColors.highlightedColor = new Color(0.3f, 0.4f, 0.9f);
+        autoPlayColors.pressedColor = new Color(0.1f, 0.2f, 0.7f);
+        autoPlayButton.colors = autoPlayColors;
+
+        // Add button text
+        GameObject autoPlayTextObj = new GameObject("Text");
+        autoPlayTextObj.transform.SetParent(autoPlayButtonObj.transform);
+        RectTransform autoPlayTextRect = autoPlayTextObj.AddComponent<RectTransform>();
+        autoPlayTextRect.anchorMin = Vector2.zero;
+        autoPlayTextRect.anchorMax = Vector2.one;
+        autoPlayTextRect.sizeDelta = Vector2.zero;
+        autoPlayTextRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI autoPlayButtonText = autoPlayTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        autoPlayButtonText.text = "Auto-Play: ON";
+        autoPlayButtonText.fontSize = 16;
+        autoPlayButtonText.color = Color.white;
+        autoPlayButtonText.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Wire up button click using UnityEventTools
+        UnityEventTools.AddPersistentListener(autoPlayButton.onClick, cpuControlUI.OnToggleAutoPlay);
+        EditorUtility.SetDirty(autoPlayButtonObj);
+
+        // Create Manual Move Button
+        GameObject manualMoveButtonObj = new GameObject("ManualMoveButton");
+        manualMoveButtonObj.transform.SetParent(canvasObj.transform);
+        RectTransform manualMoveButtonRect = manualMoveButtonObj.AddComponent<RectTransform>();
+        manualMoveButtonRect.anchorMin = new Vector2(0.5f, 0);
+        manualMoveButtonRect.anchorMax = new Vector2(0.5f, 0);
+        manualMoveButtonRect.pivot = new Vector2(0.5f, 0);
+        manualMoveButtonRect.anchoredPosition = new Vector2(80, 20);
+        manualMoveButtonRect.sizeDelta = new Vector2(150, 40);
+
+        UnityEngine.UI.Image manualMoveButtonImage = manualMoveButtonObj.AddComponent<UnityEngine.UI.Image>();
+        manualMoveButtonImage.color = new Color(0.3f, 0.7f, 0.3f);
+
+        UnityEngine.UI.Button manualMoveButton = manualMoveButtonObj.AddComponent<UnityEngine.UI.Button>();
+        UnityEngine.UI.ColorBlock manualMoveColors = manualMoveButton.colors;
+        manualMoveColors.normalColor = new Color(0.3f, 0.7f, 0.3f);
+        manualMoveColors.highlightedColor = new Color(0.4f, 0.8f, 0.4f);
+        manualMoveColors.pressedColor = new Color(0.2f, 0.6f, 0.2f);
+        manualMoveButton.colors = manualMoveColors;
+
+        // Add button text
+        GameObject manualMoveTextObj = new GameObject("Text");
+        manualMoveTextObj.transform.SetParent(manualMoveButtonObj.transform);
+        RectTransform manualMoveTextRect = manualMoveTextObj.AddComponent<RectTransform>();
+        manualMoveTextRect.anchorMin = Vector2.zero;
+        manualMoveTextRect.anchorMax = Vector2.one;
+        manualMoveTextRect.sizeDelta = Vector2.zero;
+        manualMoveTextRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI manualMoveButtonText = manualMoveTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        manualMoveButtonText.text = "CPU Move Now";
+        manualMoveButtonText.fontSize = 16;
+        manualMoveButtonText.color = Color.white;
+        manualMoveButtonText.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Wire up button click using UnityEventTools
+        UnityEventTools.AddPersistentListener(manualMoveButton.onClick, cpuControlUI.OnManualMove);
+        EditorUtility.SetDirty(manualMoveButtonObj);
+
+        // Connect button text to CPU control UI
+        cpuControlSO.FindProperty("buttonText").objectReferenceValue = autoPlayButtonText;
+        cpuControlSO.ApplyModifiedProperties();
+
+        // Create Restart Game Button (bottom center)
+        GameObject resetButtonObj = new GameObject("RestartGameButton");
+        resetButtonObj.transform.SetParent(canvasObj.transform);
+        RectTransform resetButtonRect = resetButtonObj.AddComponent<RectTransform>();
+        resetButtonRect.anchorMin = new Vector2(0.5f, 0);
+        resetButtonRect.anchorMax = new Vector2(0.5f, 0);
+        resetButtonRect.pivot = new Vector2(0.5f, 0);
+        resetButtonRect.anchoredPosition = new Vector2(0, 70);
+        resetButtonRect.sizeDelta = new Vector2(150, 40);
+
+        UnityEngine.UI.Image resetButtonImage = resetButtonObj.AddComponent<UnityEngine.UI.Image>();
+        resetButtonImage.color = new Color(0.8f, 0.3f, 0.3f);
+
+        UnityEngine.UI.Button resetButton = resetButtonObj.AddComponent<UnityEngine.UI.Button>();
+        UnityEngine.UI.ColorBlock resetColors = resetButton.colors;
+        resetColors.normalColor = new Color(0.8f, 0.3f, 0.3f);
+        resetColors.highlightedColor = new Color(0.9f, 0.4f, 0.4f);
+        resetColors.pressedColor = new Color(0.7f, 0.2f, 0.2f);
+        resetButton.colors = resetColors;
+
+        // Add button text
+        GameObject resetTextObj = new GameObject("Text");
+        resetTextObj.transform.SetParent(resetButtonObj.transform);
+        RectTransform resetTextRect = resetTextObj.AddComponent<RectTransform>();
+        resetTextRect.anchorMin = Vector2.zero;
+        resetTextRect.anchorMax = Vector2.one;
+        resetTextRect.sizeDelta = Vector2.zero;
+        resetTextRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI resetButtonText = resetTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        resetButtonText.text = "Restart Game";
+        resetButtonText.fontSize = 16;
+        resetButtonText.color = Color.white;
+        resetButtonText.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Wire up button click to GameManager.ResetGame() - full game restart
+        UnityEventTools.AddPersistentListener(resetButton.onClick, gameManager.ResetGame);
+        EditorUtility.SetDirty(resetButtonObj);
+
+        // Create Pause Menu
+        GameObject pauseMenuObj = new GameObject("PauseMenu");
+        PauseMenu pauseMenu = pauseMenuObj.AddComponent<PauseMenu>();
+
+        // Create pause menu panel (full screen, semi-transparent background)
+        GameObject pausePanelObj = new GameObject("PauseMenuPanel");
+        pausePanelObj.transform.SetParent(canvasObj.transform);
+        RectTransform pausePanelRect = pausePanelObj.AddComponent<RectTransform>();
+        pausePanelRect.anchorMin = Vector2.zero;
+        pausePanelRect.anchorMax = Vector2.one;
+        pausePanelRect.sizeDelta = Vector2.zero;
+        pausePanelRect.anchoredPosition = Vector2.zero;
+
+        UnityEngine.UI.Image pausePanelImage = pausePanelObj.AddComponent<UnityEngine.UI.Image>();
+        pausePanelImage.color = new Color(0f, 0f, 0f, 0.8f); // Semi-transparent black
+
+        // Create menu container (centered)
+        GameObject menuContainerObj = new GameObject("MenuContainer");
+        menuContainerObj.transform.SetParent(pausePanelObj.transform);
+        RectTransform menuContainerRect = menuContainerObj.AddComponent<RectTransform>();
+        menuContainerRect.anchorMin = new Vector2(0.5f, 0.5f);
+        menuContainerRect.anchorMax = new Vector2(0.5f, 0.5f);
+        menuContainerRect.pivot = new Vector2(0.5f, 0.5f);
+        menuContainerRect.anchoredPosition = Vector2.zero;
+        menuContainerRect.sizeDelta = new Vector2(300, 400);
+
+        // Helper method to create menu buttons
+        UnityEngine.UI.Button CreateMenuButton(string buttonName, string buttonText, float yPosition)
+        {
+            GameObject buttonObj = new GameObject(buttonName);
+            buttonObj.transform.SetParent(menuContainerObj.transform);
+            RectTransform buttonRect = buttonObj.AddComponent<RectTransform>();
+            buttonRect.anchorMin = new Vector2(0.5f, 0.5f);
+            buttonRect.anchorMax = new Vector2(0.5f, 0.5f);
+            buttonRect.pivot = new Vector2(0.5f, 0.5f);
+            buttonRect.anchoredPosition = new Vector2(0, yPosition);
+            buttonRect.sizeDelta = new Vector2(250, 60);
+
+            UnityEngine.UI.Image buttonImage = buttonObj.AddComponent<UnityEngine.UI.Image>();
+            buttonImage.color = new Color(0.3f, 0.3f, 0.3f);
+
+            UnityEngine.UI.Button button = buttonObj.AddComponent<UnityEngine.UI.Button>();
+            UnityEngine.UI.ColorBlock colors = button.colors;
+            colors.normalColor = new Color(0.3f, 0.3f, 0.3f);
+            colors.highlightedColor = new Color(0.4f, 0.4f, 0.4f);
+            colors.pressedColor = new Color(0.2f, 0.2f, 0.2f);
+            button.colors = colors;
+
+            // Add button text
+            GameObject textObj = new GameObject("Text");
+            textObj.transform.SetParent(buttonObj.transform);
+            RectTransform textRect = textObj.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.sizeDelta = Vector2.zero;
+            textRect.anchoredPosition = Vector2.zero;
+
+            TMPro.TextMeshProUGUI buttonTextComponent = textObj.AddComponent<TMPro.TextMeshProUGUI>();
+            buttonTextComponent.text = buttonText;
+            buttonTextComponent.fontSize = 24;
+            buttonTextComponent.color = Color.white;
+            buttonTextComponent.alignment = TMPro.TextAlignmentOptions.Center;
+
+            return button;
+        }
+
+        // Create the four menu buttons and wire them up
+        UnityEngine.UI.Button resumeButton = CreateMenuButton("ResumeButton", "Resume Game", 120);
+        UnityEventTools.AddPersistentListener(resumeButton.onClick, pauseMenu.ResumeGame);
+        EditorUtility.SetDirty(resumeButton.gameObject);
+
+        UnityEngine.UI.Button optionsButton = CreateMenuButton("OptionsButton", "Options", 40);
+        UnityEventTools.AddPersistentListener(optionsButton.onClick, pauseMenu.ShowOptions);
+        EditorUtility.SetDirty(optionsButton.gameObject);
+
+        UnityEngine.UI.Button saveContinueButton = CreateMenuButton("SaveContinueButton", "Save & Continue", -40);
+        UnityEventTools.AddPersistentListener(saveContinueButton.onClick, pauseMenu.SaveAndContinue);
+        EditorUtility.SetDirty(saveContinueButton.gameObject);
+
+        UnityEngine.UI.Button saveQuitButton = CreateMenuButton("SaveQuitButton", "Save & Quit", -120);
+        UnityEventTools.AddPersistentListener(saveQuitButton.onClick, pauseMenu.SaveAndQuit);
+        EditorUtility.SetDirty(saveQuitButton.gameObject);
+
+        // Connect pause menu panel to PauseMenu script
+        SerializedObject pauseMenuSO = new SerializedObject(pauseMenu);
+        pauseMenuSO.FindProperty("pauseMenuPanel").objectReferenceValue = pausePanelObj;
+        pauseMenuSO.ApplyModifiedProperties();
+
+        // Hide pause menu by default
+        pausePanelObj.SetActive(false);
 
         // Save scene
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());

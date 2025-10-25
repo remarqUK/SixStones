@@ -41,6 +41,15 @@ public class GamePieceModern : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        // Stop all coroutines to prevent memory leaks
+        StopAllCoroutines();
+
+        // Reset state flags
+        isMoving = false;
+    }
+
     /// <summary>
     /// Initialize piece with type data
     /// </summary>

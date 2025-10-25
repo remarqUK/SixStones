@@ -32,6 +32,8 @@ MonoBehaviour:
   match5PlusPoints: 10
   scoreMultiplier: 1.5
   boardClearBonus: 1000
+  showHints: 1
+  hintDelay: 5
   winOnBoardClear: 1
   loseOnNoMoves: 1
   targetScore: 0

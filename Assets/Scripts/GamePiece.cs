@@ -9,8 +9,12 @@ public class GamePiece : MonoBehaviour
         Green,
         Yellow,
         Purple,
-        Orange
+        Orange,
+        White
     }
+
+    // Pulse animation duration (one complete cycle: scale up + scale down)
+    public const float PULSE_CYCLE_DURATION = 0.8f;
 
     [SerializeField] private PieceType pieceType;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -39,6 +43,17 @@ public class GamePiece : MonoBehaviour
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
         }
+    }
+
+    private void OnDestroy()
+    {
+        // Stop all coroutines to prevent memory leaks
+        StopAllCoroutines();
+
+        // Reset state flags
+        isMoving = false;
+        isPulsating = false;
+        pulsateCoroutine = null;
     }
 
     public void Initialize(PieceType type, Vector2Int position, Board parentBoard, GameSettings settings = null)
@@ -100,6 +115,7 @@ public class GamePiece : MonoBehaviour
                 PieceType.Yellow => new Color(0.95f, 0.85f, 0.2f),
                 PieceType.Purple => new Color(0.7f, 0.2f, 0.8f),
                 PieceType.Orange => new Color(0.95f, 0.5f, 0.1f),
+                PieceType.White => new Color(0.95f, 0.95f, 0.95f),
                 _ => Color.white
             };
         }
@@ -185,7 +201,6 @@ public class GamePiece : MonoBehaviour
 
     private System.Collections.IEnumerator PulsateCoroutine()
     {
-        float pulseDuration = 0.8f; // Time for one pulse cycle
         Vector3 normalScale = Vector3.one;
         Vector3 enlargedScale = Vector3.one * 1.2f;
 
@@ -193,10 +208,10 @@ public class GamePiece : MonoBehaviour
         {
             // Scale up
             float elapsed = 0f;
-            while (elapsed < pulseDuration / 2f)
+            while (elapsed < PULSE_CYCLE_DURATION / 2f)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / (pulseDuration / 2f);
+                float t = elapsed / (PULSE_CYCLE_DURATION / 2f);
                 // Smooth easing
                 t = Mathf.Sin(t * Mathf.PI * 0.5f);
                 transform.localScale = Vector3.Lerp(normalScale, enlargedScale, t);
@@ -205,10 +220,10 @@ public class GamePiece : MonoBehaviour
 
             // Scale down
             elapsed = 0f;
-            while (elapsed < pulseDuration / 2f)
+            while (elapsed < PULSE_CYCLE_DURATION / 2f)
             {
                 elapsed += Time.deltaTime;
-                float t = elapsed / (pulseDuration / 2f);
+                float t = elapsed / (PULSE_CYCLE_DURATION / 2f);
                 // Smooth easing
                 t = Mathf.Sin(t * Mathf.PI * 0.5f);
                 transform.localScale = Vector3.Lerp(enlargedScale, normalScale, t);

@@ -5,8 +5,9 @@ public class InputManager : MonoBehaviour
 {
     [SerializeField] private Board board;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private GemSelector gemSelector;
+    [SerializeField] private PlayerManager playerManager;
 
-    private GamePiece selectedPiece = null;
     private Vector3 dragStartPosition;
     private bool isDragging = false;
     private bool isPointerDown = false;
@@ -22,8 +23,9 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
-        if (board == null || board.IsProcessing) return;
+        if (board == null) return;
 
+        // Allow input even during processing (cursor can move during animations)
         HandleInput();
     }
 
@@ -39,25 +41,36 @@ public class InputManager : MonoBehaviour
             Vector3 worldPos = GetPointerWorldPosition();
             if (worldPos != Vector3.zero)
             {
+                // Only query the gem at this position when clicking
                 GamePiece piece = GetPieceAtPosition(worldPos);
                 if (piece != null)
                 {
-                    selectedPiece = piece;
+                    // Update gem selector position to clicked gem (snap instantly, no animation)
+                    if (gemSelector != null)
+                    {
+                        gemSelector.SetPosition(piece.GridPosition, animate: false);
+                    }
+
                     dragStartPosition = worldPos;
                     isDragging = false;
-                    selectedPiece.Highlight(true);
+
+                    // Highlight the piece we just clicked
+                    piece.Highlight(true);
+
+                    // Notify player activity (e.g., for hint system)
+                    PlayerActivityNotifier.NotifyActivity();
                 }
             }
         }
 
         // Pointer held (dragging)
-        if (currentPointerDown && selectedPiece != null)
+        if (currentPointerDown && isDragging == false)
         {
             Vector3 worldPos = GetPointerWorldPosition();
             if (worldPos != Vector3.zero)
             {
                 float distance = Vector3.Distance(dragStartPosition, worldPos);
-                if (distance > DRAG_THRESHOLD && !isDragging)
+                if (distance > DRAG_THRESHOLD)
                 {
                     isDragging = true;
                     ProcessSwipe(worldPos);
@@ -68,10 +81,15 @@ public class InputManager : MonoBehaviour
         // Pointer up (released)
         if (!currentPointerDown && isPointerDown)
         {
-            if (selectedPiece != null)
+            // Turn off highlighting on the piece at current cursor position (if any)
+            if (gemSelector != null && board != null)
             {
-                selectedPiece.Highlight(false);
-                selectedPiece = null;
+                Vector2Int cursorPos = gemSelector.CurrentPosition;
+                GamePiece pieceAtCursor = board.GetPieceAt(cursorPos.x, cursorPos.y);
+                if (pieceAtCursor != null)
+                {
+                    pieceAtCursor.Highlight(false);
+                }
             }
             isDragging = false;
         }
@@ -104,7 +122,20 @@ public class InputManager : MonoBehaviour
 
     private void ProcessSwipe(Vector3 currentWorldPos)
     {
-        if (selectedPiece == null) return;
+        if (gemSelector == null || board == null) return;
+
+        // Block swaps if it's not the human player's turn
+        if (playerManager != null && playerManager.TwoPlayerMode)
+        {
+            if (playerManager.CurrentPlayer != PlayerManager.Player.Player1)
+            {
+                Debug.Log("Cannot swap - it's Player 2's turn");
+                return; // Block the swap, but allow other interactions
+            }
+        }
+
+        // Get cursor position (not the piece - cursor tracks position independently)
+        Vector2Int cursorPos = gemSelector.CurrentPosition;
 
         Vector3 swipeDirection = currentWorldPos - dragStartPosition;
         Vector2Int gridDirection = Vector2Int.zero;
@@ -121,16 +152,23 @@ public class InputManager : MonoBehaviour
             gridDirection = swipeDirection.y > 0 ? Vector2Int.up : Vector2Int.down;
         }
 
-        Vector2Int currentPos = selectedPiece.GridPosition;
-        Vector2Int targetPos = currentPos + gridDirection;
+        Vector2Int targetPos = cursorPos + gridDirection;
 
-        if (board.IsValidPosition(targetPos))
+        // Turn off highlighting on piece at cursor (if any)
+        GamePiece pieceAtCursor = board.GetPieceAt(cursorPos.x, cursorPos.y);
+        if (pieceAtCursor != null)
         {
-            board.SwapPieces(currentPos, targetPos);
-            selectedPiece.Highlight(false);
-            selectedPiece = null;
-            isDragging = false;
+            pieceAtCursor.Highlight(false);
         }
+
+        // Use unified swap method - it will query gems at action time
+        gemSelector.PerformSwap(cursorPos, targetPos);
+
+        // Move cursor to the target position after drag
+        gemSelector.SetPosition(targetPos);
+
+        // Keep isDragging = true until pointer is released (handled in pointer up section)
+        // This prevents multiple swipes while holding down the mouse/finger
     }
 
     private GamePiece GetPieceAtPosition(Vector3 worldPosition)

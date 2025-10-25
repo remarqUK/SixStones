@@ -26,18 +26,20 @@ public class Board : MonoBehaviour
     private GamePiece[,] pieces;
     private bool isProcessing = false;
     private MatchDetector matchDetector;
+    private GameObject backgroundParent; // Store reference for cleanup
 
     public int Width => width;
     public int Height => height;
     public bool IsProcessing => isProcessing;
     public GameModeData CurrentMode => currentMode;
+    public MatchDetector MatchDetector => matchDetector;
 
     private void Start()
     {
         Debug.Log("===== BOARD START() CALLED =====");
         Debug.Log($"Board Instance ID: {GetInstanceID()}");
         Debug.Log($"Frame: {Time.frameCount}, Time: {Time.time}");
-        Debug.Log($"Total Board objects in scene: {FindObjectsOfType<Board>().Length}");
+        Debug.Log($"Total Board objects in scene: {FindObjectsByType<Board>(FindObjectsSortMode.None).Length}");
 
         // Apply game mode settings if available
         if (currentMode != null)
@@ -67,6 +69,35 @@ public class Board : MonoBehaviour
         InitializeBoard();
     }
 
+    private void OnDestroy()
+    {
+        // Stop all running coroutines to prevent orphaned coroutines
+        StopAllCoroutines();
+
+        // Destroy all pieces
+        if (pieces != null)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null)
+                    {
+                        Destroy(pieces[x, y].gameObject);
+                        pieces[x, y] = null;
+                    }
+                }
+            }
+        }
+
+        // Destroy background
+        if (backgroundParent != null)
+        {
+            Destroy(backgroundParent);
+            backgroundParent = null;
+        }
+    }
+
     private void InitializeBoard()
     {
         Debug.Log("===== InitializeBoard CALLED =====");
@@ -86,10 +117,67 @@ public class Board : MonoBehaviour
             }
         }
 
-        // In drop mode, ensure no drop gems on bottom row
+        // If scoring on bottom row hits, ensure no target gems on bottom row initially
         if (currentMode != null && currentMode.scoreOnBottomRowHit)
         {
             EnsureNoDropGemsOnBottomRow();
+        }
+
+        // Ensure no initial matches
+        StartCoroutine(ClearInitialMatches());
+    }
+
+    /// <summary>
+    /// Public method to reset the grid - clears all pieces and regenerates the board
+    /// </summary>
+    public void ResetGrid()
+    {
+        Debug.Log("===== RESET GRID CALLED =====");
+
+        // Clear all existing pieces
+        if (pieces != null)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null)
+                    {
+                        Destroy(pieces[x, y].gameObject);
+                        pieces[x, y] = null;
+                    }
+                }
+            }
+        }
+
+        // Regenerate the board
+        pieces = new GamePiece[width, height];
+
+        // Fill board with new pieces
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                CreatePiece(x, y);
+            }
+        }
+
+        // If scoring on bottom row hits, ensure no target gems on bottom row initially
+        if (currentMode != null && currentMode.scoreOnBottomRowHit)
+        {
+            EnsureNoDropGemsOnBottomRow();
+        }
+
+        // Reset to Player 1's turn
+        if (playerManager != null)
+        {
+            playerManager.ResetToPlayer1();
+        }
+
+        // Reset health
+        if (gameManager != null)
+        {
+            gameManager.ResetHealth();
         }
 
         // Ensure no initial matches
@@ -100,7 +188,13 @@ public class Board : MonoBehaviour
     {
         if (cellBackgroundPrefab == null) return;
 
-        GameObject backgroundParent = new GameObject("Background");
+        // Destroy old background if it exists
+        if (backgroundParent != null)
+        {
+            Destroy(backgroundParent);
+        }
+
+        backgroundParent = new GameObject("Background");
         backgroundParent.transform.SetParent(transform);
         backgroundParent.transform.localPosition = Vector3.zero;
 
@@ -127,6 +221,13 @@ public class Board : MonoBehaviour
 
     private void CreatePiece(int x, int y, bool animate = false)
     {
+        // Safety check: don't create if a piece already exists at this position
+        if (pieces[x, y] != null)
+        {
+            Debug.LogWarning($"CreatePiece: Piece already exists at ({x},{y}), skipping creation");
+            return;
+        }
+
         GamePiece.PieceType randomType = GetRandomPieceType();
         Vector3 spawnPosition = animate ? GridToWorld(x, height + 2) : GridToWorld(x, y);
 
@@ -179,6 +280,7 @@ public class Board : MonoBehaviour
 
     public GamePiece GetPieceAt(int x, int y)
     {
+        if (pieces == null) return null; // Board not initialized yet
         if (!IsValidPosition(x, y)) return null;
         return pieces[x, y];
     }
@@ -192,6 +294,13 @@ public class Board : MonoBehaviour
     {
         if (!IsValidPosition(pos1) || !IsValidPosition(pos2)) return;
         if (isProcessing) return;
+
+        // Block swaps if game is over
+        if (gameManager != null && gameManager.IsGameOver)
+        {
+            Debug.Log("Cannot swap - game is over");
+            return;
+        }
 
         StartCoroutine(SwapPiecesCoroutine(pos1, pos2));
     }
@@ -231,8 +340,8 @@ public class Board : MonoBehaviour
             piece2.MoveTo(GridToWorld(pos2.x, pos2.y), swapDuration);
             yield return new WaitForSeconds(swapDuration);
 
-            // Invalid move - turn ends without scoring
-            EndTurn();
+            Debug.Log("Invalid move - no matches created. Turn continues.");
+            // Invalid move - DON'T end turn, let player try again
         }
         else
         {
@@ -248,7 +357,9 @@ public class Board : MonoBehaviour
 
     private IEnumerator ProcessMatches(List<GamePiece> matchedPieces, bool checkBonusTurn = false)
     {
-        // Report scores to GameManager (only if not in drop mode)
+        Debug.Log($"ProcessMatches: Processing {matchedPieces.Count} matched pieces");
+
+        // Report scores to GameManager (only if using standard match-based scoring)
         if (gameManager != null && currentMode != null && !currentMode.scoreOnBottomRowHit)
         {
             gameManager.AddScore(matchedPieces, checkBonusTurn);
@@ -265,35 +376,147 @@ public class Board : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
 
         // Make pieces fall
+        Debug.Log("ProcessMatches: Making pieces fall");
         yield return StartCoroutine(MakePiecesFall());
 
-        // Check for bottom row hits (drop mode)
+        // CRITICAL: Wait for all falling animations to complete
+        yield return StartCoroutine(WaitForAllAnimations());
+
+        // Check for bottom row hits (if mode scores on bottom row)
         yield return StartCoroutine(CheckBottomRowHits());
 
         // Fill empty spaces
+        Debug.Log("ProcessMatches: Filling empty spaces");
         FillEmptySpaces();
 
-        yield return new WaitForSeconds(fallDuration);
+        // CRITICAL: Wait for all new piece animations to complete before checking matches
+        yield return StartCoroutine(WaitForAllAnimations());
 
-        // Check for new matches (only if not in drop mode or matches still count)
+        // Final validation before checking for new matches
+        ValidateBoardIntegrity("After all animations completed");
+
+        // Check for new matches (only if using standard match-based scoring)
         if (currentMode == null || !currentMode.scoreOnBottomRowHit)
         {
             List<GamePiece> newMatches = matchDetector.FindAllMatches();
             if (newMatches.Count > 0)
             {
+                Debug.Log($"ProcessMatches: Found {newMatches.Count} cascade matches");
                 // Cascades don't give bonus turns
                 yield return StartCoroutine(ProcessMatches(newMatches, checkBonusTurn: false));
+            }
+            else
+            {
+                Debug.Log("ProcessMatches: No more cascades, checking for possible moves");
+                // No more cascades - check if we need to regenerate due to no possible moves
+                yield return StartCoroutine(CheckAndRegenerateIfNeeded());
             }
         }
         else
         {
-            // In drop mode, check bottom row again after spawning
+            // If scoring on bottom row, check again after pieces spawn
             yield return StartCoroutine(CheckBottomRowHits());
+        }
+    }
+
+    /// <summary>
+    /// Wait for all piece animations to complete before proceeding
+    /// CRITICAL: Ensures we never check for matches while pieces are moving
+    /// </summary>
+    private IEnumerator WaitForAllAnimations()
+    {
+        Debug.Log("WaitForAllAnimations: Starting wait");
+
+        // CRITICAL: Wait one frame to allow coroutines to start executing
+        // Without this, MoveTo() coroutines haven't started yet and IsMoving is still false
+        yield return null;
+
+        // Keep checking until no pieces are moving
+        bool anyMoving = true;
+        int checkCount = 0;
+
+        while (anyMoving)
+        {
+            anyMoving = false;
+            checkCount++;
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null && pieces[x, y].IsMoving)
+                    {
+                        anyMoving = true;
+                        break;
+                    }
+                }
+                if (anyMoving) break;
+            }
+
+            if (anyMoving)
+            {
+                yield return null; // Wait one frame
+            }
+        }
+
+        Debug.Log($"WaitForAllAnimations: All animations complete (checked {checkCount} times)");
+    }
+
+    /// <summary>
+    /// Check if there are no possible moves and regenerate the board if the mode allows it
+    /// </summary>
+    private IEnumerator CheckAndRegenerateIfNeeded()
+    {
+        // Only check if the mode has this feature enabled
+        if (currentMode == null || !currentMode.regenerateOnNoMoves)
+        {
+            yield break;
+        }
+
+        int possibleMoves = GetPossibleMovesCount();
+        if (possibleMoves == 0)
+        {
+            Debug.Log($"===== NO POSSIBLE MOVES - Regenerating board (mode: {currentMode.modeName}) =====");
+
+            // Clear entire board
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null)
+                    {
+                        Destroy(pieces[x, y].gameObject);
+                        pieces[x, y] = null;
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(0.3f);
+
+            // Recreate board
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    CreatePiece(x, y);
+                }
+            }
+
+            // Apply bottom-row scoring restrictions if needed
+            if (currentMode.scoreOnBottomRowHit)
+            {
+                EnsureNoDropGemsOnBottomRow();
+            }
+
+            // Clear any initial matches
+            yield return StartCoroutine(ClearInitialMatches());
         }
     }
 
     private IEnumerator MakePiecesFall()
     {
+        int piecesMoved = 0;
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -311,6 +534,8 @@ public class Board : MonoBehaviour
                             pieces[x, y] = fallingPiece;
                             fallingPiece.SetGridPosition(new Vector2Int(x, y));
                             fallingPiece.MoveTo(GridToWorld(x, y), fallDuration);
+                            piecesMoved++;
+                            Debug.Log($"MakePiecesFall: Moving piece from ({x},{above}) to ({x},{y})");
                             break;
                         }
                     }
@@ -318,7 +543,10 @@ public class Board : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(fallDuration);
+        Debug.Log($"MakePiecesFall: Moved {piecesMoved} pieces");
+
+        // Don't wait here - let WaitForAllAnimations() handle it properly
+        yield break;
     }
 
     private void FillEmptySpaces()
@@ -326,10 +554,11 @@ public class Board : MonoBehaviour
         // Check if current mode allows spawning new pieces
         if (currentMode != null && !currentMode.spawnNewPieces)
         {
-            // Solve mode - no new pieces spawn
+            Debug.Log($"FillEmptySpaces: Skipping - mode '{currentMode.modeName}' has spawnNewPieces=false");
             return;
         }
 
+        int piecesCreated = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -337,8 +566,43 @@ public class Board : MonoBehaviour
                 if (pieces[x, y] == null)
                 {
                     CreatePiece(x, y, true);
+                    piecesCreated++;
                 }
             }
+        }
+
+        if (piecesCreated > 0)
+        {
+            Debug.Log($"FillEmptySpaces: Created {piecesCreated} new pieces");
+        }
+
+        // Validate board has no null positions
+        ValidateBoardIntegrity("After FillEmptySpaces");
+    }
+
+    /// <summary>
+    /// Debug helper to validate board has no null positions
+    /// </summary>
+    private void ValidateBoardIntegrity(string context)
+    {
+        int nullCount = 0;
+        System.Text.StringBuilder nullPositions = new System.Text.StringBuilder();
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pieces[x, y] == null)
+                {
+                    nullCount++;
+                    nullPositions.Append($"({x},{y}) ");
+                }
+            }
+        }
+
+        if (nullCount > 0)
+        {
+            Debug.LogError($"BOARD INTEGRITY ERROR {context}: Found {nullCount} null positions: {nullPositions}");
         }
     }
 
@@ -353,6 +617,8 @@ public class Board : MonoBehaviour
             foreach (GamePiece piece in matches)
             {
                 Vector2Int pos = piece.GridPosition;
+                // CRITICAL: Clear the reference BEFORE creating new piece
+                pieces[pos.x, pos.y] = null;
                 Destroy(piece.gameObject);
                 CreatePiece(pos.x, pos.y, false);
             }
@@ -497,7 +763,7 @@ public class Board : MonoBehaviour
     }
 
     /// <summary>
-    /// Ensure no drop gems on bottom row (drop mode initialization)
+    /// Ensure no target gems on bottom row (for modes that score on bottom row hits)
     /// </summary>
     private void EnsureNoDropGemsOnBottomRow()
     {
@@ -512,7 +778,8 @@ public class Board : MonoBehaviour
             GamePiece piece = pieces[x, 0];
             if (piece != null && piece.Type == dropGem)
             {
-                // Destroy the drop gem
+                // CRITICAL: Clear reference before destroying and creating
+                pieces[x, 0] = null;
                 Destroy(piece.gameObject);
 
                 // Create a new piece that's NOT the drop gem type
@@ -554,11 +821,11 @@ public class Board : MonoBehaviour
     }
 
     /// <summary>
-    /// Check bottom row for target gems (drop mode)
+    /// Check bottom row for target gems (for modes that score on bottom row hits)
     /// </summary>
     private IEnumerator CheckBottomRowHits()
     {
-        // Only process if in drop mode
+        // Only process if mode scores on bottom row hits
         if (currentMode == null || !currentMode.scoreOnBottomRowHit)
         {
             yield break;
@@ -603,10 +870,14 @@ public class Board : MonoBehaviour
             // Make pieces fall to fill the gaps
             yield return StartCoroutine(MakePiecesFall());
 
+            // Wait for falling animations to complete
+            yield return StartCoroutine(WaitForAllAnimations());
+
             // Fill empty spaces
             FillEmptySpaces();
 
-            yield return new WaitForSeconds(fallDuration);
+            // Wait for new piece animations to complete
+            yield return StartCoroutine(WaitForAllAnimations());
 
             // Recursively check again
             yield return StartCoroutine(CheckBottomRowHits());

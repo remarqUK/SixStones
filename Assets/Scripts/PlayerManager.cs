@@ -41,6 +41,16 @@ public class PlayerManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Reset to Player 1's turn (e.g., when resetting the grid)
+    /// </summary>
+    public void ResetToPlayer1()
+    {
+        currentPlayer = Player.Player1;
+        bonusTurnEarned = false;
+        Debug.Log("Turn reset to Player 1");
+    }
+
+    /// <summary>
     /// Check if a match awards a bonus turn (4+ pieces matched)
     /// </summary>
     public void CheckForBonusTurn(int totalPiecesMatched)

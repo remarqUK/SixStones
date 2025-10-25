@@ -33,6 +33,7 @@ public class CreateGameModes : EditorWindow
         standardMode.moveLimit = 30;
         standardMode.minMatchLength = 3;
         standardMode.allowCascades = true;
+        standardMode.regenerateOnNoMoves = true;
         standardMode.match3Points = 3;
         standardMode.match4Points = 5;
         standardMode.match5PlusPoints = 10;
@@ -42,6 +43,14 @@ public class CreateGameModes : EditorWindow
         standardMode.loseOnNoMoves = false;
         standardMode.targetScore = 0;
         standardMode.modeColor = new Color(0.3f, 0.7f, 1f); // Blue
+        standardMode.showHints = true;
+        standardMode.hintDelay = 5f;
+        // Damage system configuration
+        standardMode.damageGemTypes = new GamePiece.PieceType[] { GamePiece.PieceType.Red };
+        standardMode.match3Damage = 10;
+        standardMode.match4Damage = 15;
+        standardMode.match5PlusDamage = 25;
+        standardMode.damageMultiplier = 1f;
 
         AssetDatabase.CreateAsset(standardMode, "Assets/Resources/GameModes/StandardMode.asset");
 
@@ -66,6 +75,14 @@ public class CreateGameModes : EditorWindow
         solveMode.loseOnNoMoves = true;
         solveMode.targetScore = 0;
         solveMode.modeColor = new Color(1f, 0.7f, 0.3f); // Orange
+        solveMode.showHints = true;
+        solveMode.hintDelay = 5f;
+        // Damage system configuration (no damage in single-player mode)
+        solveMode.damageGemTypes = new GamePiece.PieceType[] { };
+        solveMode.match3Damage = 0;
+        solveMode.match4Damage = 0;
+        solveMode.match5PlusDamage = 0;
+        solveMode.damageMultiplier = 1f;
 
         AssetDatabase.CreateAsset(solveMode, "Assets/Resources/GameModes/SolveMode.asset");
 
@@ -93,6 +110,14 @@ public class CreateGameModes : EditorWindow
         dropMode.loseOnNoMoves = false;
         dropMode.targetScore = 0;
         dropMode.modeColor = new Color(0.9f, 0.3f, 0.3f); // Red
+        dropMode.showHints = true;
+        dropMode.hintDelay = 5f;
+        // Damage system configuration (no damage in single-player mode)
+        dropMode.damageGemTypes = new GamePiece.PieceType[] { };
+        dropMode.match3Damage = 0;
+        dropMode.match4Damage = 0;
+        dropMode.match5PlusDamage = 0;
+        dropMode.damageMultiplier = 1f;
 
         AssetDatabase.CreateAsset(dropMode, "Assets/Resources/GameModes/DropMode.asset");
 

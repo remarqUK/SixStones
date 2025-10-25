@@ -13,7 +13,9 @@
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\CompileLog.txt\" -executeMethod BuildScript.ValidateScripts)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\SetupLog.txt\" -executeMethod Match3Setup.SetupMatch3Scene)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\BuildLog.txt\" -executeMethod BuildScript.BuildGameCommandLine)",
-      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\GameModesLog.txt\" -executeMethod BuildScript.CreateGameModesCommandLine)"
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\GameModesLog.txt\" -executeMethod BuildScript.CreateGameModesCommandLine)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\RegenerateLog.txt\" -executeMethod CreateGameModes.CreateDefaultModes)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

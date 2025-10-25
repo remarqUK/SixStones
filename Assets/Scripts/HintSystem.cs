@@ -4,7 +4,9 @@ using UnityEngine;
 
 /// <summary>
 /// Manages hint display after player inactivity
-/// Shows a pulsating gem that can be matched
+/// Shows a pulsating gem that can be matched for the delay duration,
+/// then hides it for twice the delay before showing the same hint again
+/// Subscribes to PlayerActivityNotifier events to reset timer
 /// </summary>
 public class HintSystem : MonoBehaviour
 {
@@ -12,7 +14,29 @@ public class HintSystem : MonoBehaviour
 
     private float timeSinceLastActivity;
     private GamePiece currentHintPiece;
-    private bool hintActive = false;
+    private Vector2Int hintPosition;
+    private Coroutine hintCycleCoroutine;
+
+    private void OnEnable()
+    {
+        // Subscribe to player activity events
+        PlayerActivityNotifier.OnPlayerActivity += ResetTimer;
+    }
+
+    private void OnDisable()
+    {
+        // Unsubscribe from player activity events
+        PlayerActivityNotifier.OnPlayerActivity -= ResetTimer;
+    }
+
+    private void OnDestroy()
+    {
+        // Ensure we unsubscribe from events
+        PlayerActivityNotifier.OnPlayerActivity -= ResetTimer;
+
+        // Stop hint cycle coroutine if running
+        StopHintCycle();
+    }
 
     private void Update()
     {
@@ -20,9 +44,9 @@ public class HintSystem : MonoBehaviour
         GameModeData mode = board != null ? board.CurrentMode : null;
         if (mode == null || !mode.showHints)
         {
-            if (hintActive)
+            if (hintCycleCoroutine != null)
             {
-                ClearHint();
+                StopHintCycle();
             }
             return;
         }
@@ -37,10 +61,10 @@ public class HintSystem : MonoBehaviour
         // Increment idle timer
         timeSinceLastActivity += Time.deltaTime;
 
-        // Show hint after delay
-        if (!hintActive && timeSinceLastActivity >= mode.hintDelay)
+        // Start hint cycle after initial delay
+        if (hintCycleCoroutine == null && timeSinceLastActivity >= mode.hintDelay)
         {
-            ShowHint();
+            StartHintCycle();
         }
     }
 
@@ -50,17 +74,17 @@ public class HintSystem : MonoBehaviour
     public void ResetTimer()
     {
         timeSinceLastActivity = 0f;
-        ClearHint();
+        StopHintCycle();
     }
 
     /// <summary>
-    /// Show a hint by pulsating a gem that can be matched
+    /// Start the hint cycle: show hint, hide, wait, repeat
     /// </summary>
-    private void ShowHint()
+    private void StartHintCycle()
     {
         if (board == null) return;
 
-        // Get a random possible move
+        // Get a random possible move and save it
         (Vector2Int pos1, Vector2Int pos2) = board.GetRandomPossibleMove();
 
         if (pos1.x == -1) // No moves available
@@ -69,28 +93,82 @@ public class HintSystem : MonoBehaviour
             return;
         }
 
-        // Pick one of the two pieces to pulsate
-        Vector2Int hintPos = Random.value > 0.5f ? pos1 : pos2;
-        currentHintPiece = board.GetPieceAt(hintPos.x, hintPos.y);
+        // Pick one of the two pieces to pulsate and save the position
+        hintPosition = Random.value > 0.5f ? pos1 : pos2;
 
-        if (currentHintPiece != null)
+        GameModeData mode = board.CurrentMode;
+
+        // Calculate display duration as a multiple of pulse cycle duration
+        // This ensures the animation completes fully before hiding
+        int numberOfPulseCycles = Mathf.CeilToInt(mode.hintDelay / GamePiece.PULSE_CYCLE_DURATION);
+        float displayDuration = numberOfPulseCycles * GamePiece.PULSE_CYCLE_DURATION;
+
+        hintCycleCoroutine = StartCoroutine(HintCycleCoroutine(displayDuration));
+
+        Debug.Log($"Starting hint cycle at ({hintPosition.x}, {hintPosition.y}) - Display: {displayDuration}s ({numberOfPulseCycles} cycles), Sleep: {displayDuration * 2f}s");
+    }
+
+    /// <summary>
+    /// Coroutine that manages the hint show/hide cycle
+    /// displayDuration is calculated to be a multiple of pulse cycle duration
+    /// </summary>
+    private IEnumerator HintCycleCoroutine(float displayDuration)
+    {
+        while (true)
         {
-            currentHintPiece.StartPulsate();
-            hintActive = true;
-            Debug.Log($"Showing hint at ({hintPos.x}, {hintPos.y})");
+            // Show hint for the calculated duration (multiple of pulse cycle)
+            ShowHint();
+            yield return new WaitForSeconds(displayDuration);
+
+            // Hide hint and wait for twice the display duration
+            HideHint();
+            yield return new WaitForSeconds(displayDuration * 2f);
         }
     }
 
     /// <summary>
-    /// Clear the current hint
+    /// Show the hint at the saved position
     /// </summary>
-    private void ClearHint()
+    private void ShowHint()
     {
+        if (board == null) return;
+
+        currentHintPiece = board.GetPieceAt(hintPosition.x, hintPosition.y);
+
+        if (currentHintPiece != null)
+        {
+            currentHintPiece.StartPulsate();
+            Debug.Log($"Showing hint at ({hintPosition.x}, {hintPosition.y})");
+        }
+    }
+
+    /// <summary>
+    /// Hide the current hint without stopping the cycle
+    /// </summary>
+    private void HideHint()
+    {
+        if (currentHintPiece != null)
+        {
+            currentHintPiece.StopPulsate();
+            Debug.Log("Hiding hint");
+        }
+    }
+
+    /// <summary>
+    /// Stop the hint cycle completely
+    /// </summary>
+    private void StopHintCycle()
+    {
+        if (hintCycleCoroutine != null)
+        {
+            StopCoroutine(hintCycleCoroutine);
+            hintCycleCoroutine = null;
+        }
+
         if (currentHintPiece != null)
         {
             currentHintPiece.StopPulsate();
             currentHintPiece = null;
         }
-        hintActive = false;
     }
 }
