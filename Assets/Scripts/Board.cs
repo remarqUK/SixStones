@@ -27,6 +27,7 @@ public class Board : MonoBehaviour
     private bool isProcessing = false;
     private MatchDetector matchDetector;
     private GameObject backgroundParent; // Store reference for cleanup
+    private int largestMatchThisTurn = 0; // Track largest match across entire turn (initial + cascades)
 
     public int Width => width;
     public int Height => height;
@@ -108,12 +109,12 @@ public class Board : MonoBehaviour
         // Create background
         CreateBackground();
 
-        // Fill board with pieces
+        // Fill board with pieces (invisible initially to prevent flicker)
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                CreatePiece(x, y);
+                CreatePiece(x, y, animate: false, visible: false);
             }
         }
 
@@ -123,7 +124,7 @@ public class Board : MonoBehaviour
             EnsureNoDropGemsOnBottomRow();
         }
 
-        // Ensure no initial matches
+        // Ensure no initial matches (pieces will be made visible after clearing)
         StartCoroutine(ClearInitialMatches());
     }
 
@@ -153,12 +154,12 @@ public class Board : MonoBehaviour
         // Regenerate the board
         pieces = new GamePiece[width, height];
 
-        // Fill board with new pieces
+        // Fill board with new pieces (invisible initially to prevent flicker)
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                CreatePiece(x, y);
+                CreatePiece(x, y, animate: false, visible: false);
             }
         }
 
@@ -180,7 +181,7 @@ public class Board : MonoBehaviour
             gameManager.ResetHealth();
         }
 
-        // Ensure no initial matches
+        // Ensure no initial matches (pieces will be made visible after clearing)
         StartCoroutine(ClearInitialMatches());
     }
 
@@ -219,7 +220,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void CreatePiece(int x, int y, bool animate = false)
+    private void CreatePiece(int x, int y, bool animate = false, bool visible = true)
     {
         // Safety check: don't create if a piece already exists at this position
         if (pieces[x, y] != null)
@@ -238,9 +239,13 @@ public class Board : MonoBehaviour
         piece.Initialize(randomType, new Vector2Int(x, y), this);
         pieces[x, y] = piece;
 
+        // Set visibility
+        piece.SetVisible(visible);
+
         if (animate)
         {
-            piece.MoveTo(GridToWorld(x, y), fallDuration);
+            float adjustedDuration = GetAdjustedDuration(fallDuration);
+            piece.MoveTo(GridToWorld(x, y), adjustedDuration);
         }
     }
 
@@ -271,6 +276,18 @@ public class Board : MonoBehaviour
     public bool IsValidPosition(int x, int y)
     {
         return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    /// <summary>
+    /// Get duration adjusted by current game speed setting
+    /// </summary>
+    private float GetAdjustedDuration(float baseDuration)
+    {
+        if (GameSpeedSettings.Instance != null)
+        {
+            return GameSpeedSettings.Instance.GetAdjustedDuration(baseDuration);
+        }
+        return baseDuration; // Fallback if no speed settings found
     }
 
     public bool IsValidPosition(Vector2Int pos)
@@ -309,6 +326,9 @@ public class Board : MonoBehaviour
     {
         isProcessing = true;
 
+        // Reset turn tracker - this is a new player action
+        largestMatchThisTurn = 0;
+
         GamePiece piece1 = pieces[pos1.x, pos1.y];
         GamePiece piece2 = pieces[pos2.x, pos2.y];
 
@@ -321,10 +341,11 @@ public class Board : MonoBehaviour
         piece2.SetGridPosition(pos1);
 
         // Animate swap
-        piece1.MoveTo(GridToWorld(pos2.x, pos2.y), swapDuration);
-        piece2.MoveTo(GridToWorld(pos1.x, pos1.y), swapDuration);
+        float adjustedSwapDuration = GetAdjustedDuration(swapDuration);
+        piece1.MoveTo(GridToWorld(pos2.x, pos2.y), adjustedSwapDuration);
+        piece2.MoveTo(GridToWorld(pos1.x, pos1.y), adjustedSwapDuration);
 
-        yield return new WaitForSeconds(swapDuration);
+        yield return new WaitForSeconds(adjustedSwapDuration);
 
         // Check for matches
         List<GamePiece> matches = matchDetector.FindAllMatches();
@@ -336,17 +357,25 @@ public class Board : MonoBehaviour
             pieces[pos2.x, pos2.y] = piece2;
             piece1.SetGridPosition(pos1);
             piece2.SetGridPosition(pos2);
-            piece1.MoveTo(GridToWorld(pos1.x, pos1.y), swapDuration);
-            piece2.MoveTo(GridToWorld(pos2.x, pos2.y), swapDuration);
-            yield return new WaitForSeconds(swapDuration);
+            float adjustedSwapBackDuration = GetAdjustedDuration(swapDuration);
+            piece1.MoveTo(GridToWorld(pos1.x, pos1.y), adjustedSwapBackDuration);
+            piece2.MoveTo(GridToWorld(pos2.x, pos2.y), adjustedSwapBackDuration);
+            yield return new WaitForSeconds(adjustedSwapBackDuration);
 
             Debug.Log("Invalid move - no matches created. Turn continues.");
             // Invalid move - DON'T end turn, let player try again
         }
         else
         {
-            // Process matches (check bonus turn only for initial match from player's swap)
-            yield return StartCoroutine(ProcessMatches(matches, checkBonusTurn: true));
+            // Process matches (tracks largest match across entire turn)
+            yield return StartCoroutine(ProcessMatches(matches));
+
+            // After all matches and cascades are done, check for bonus turn
+            if (playerManager != null && playerManager.TwoPlayerMode)
+            {
+                // Award bonus turn if ANY match in the sequence (initial or cascade) was 4+
+                playerManager.CheckForBonusTurn(largestMatchThisTurn);
+            }
 
             // Valid move completed - end turn
             EndTurn();
@@ -355,14 +384,21 @@ public class Board : MonoBehaviour
         isProcessing = false;
     }
 
-    private IEnumerator ProcessMatches(List<GamePiece> matchedPieces, bool checkBonusTurn = false)
+    private IEnumerator ProcessMatches(List<GamePiece> matchedPieces)
     {
         Debug.Log($"ProcessMatches: Processing {matchedPieces.Count} matched pieces");
+
+        // Track the largest match in this turn (for bonus turn calculation)
+        if (matchedPieces.Count > largestMatchThisTurn)
+        {
+            largestMatchThisTurn = matchedPieces.Count;
+            Debug.Log($"New largest match this turn: {largestMatchThisTurn} pieces");
+        }
 
         // Report scores to GameManager (only if using standard match-based scoring)
         if (gameManager != null && currentMode != null && !currentMode.scoreOnBottomRowHit)
         {
-            gameManager.AddScore(matchedPieces, checkBonusTurn);
+            gameManager.AddScore(matchedPieces);
         }
 
         // Clear matched pieces
@@ -373,7 +409,7 @@ public class Board : MonoBehaviour
             piece.DestroyPiece();
         }
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(GetAdjustedDuration(0.3f));
 
         // Make pieces fall
         Debug.Log("ProcessMatches: Making pieces fall");
@@ -402,8 +438,8 @@ public class Board : MonoBehaviour
             if (newMatches.Count > 0)
             {
                 Debug.Log($"ProcessMatches: Found {newMatches.Count} cascade matches");
-                // Cascades don't give bonus turns
-                yield return StartCoroutine(ProcessMatches(newMatches, checkBonusTurn: false));
+                // Process cascade matches (bonus turn check happens after all cascades)
+                yield return StartCoroutine(ProcessMatches(newMatches));
             }
             else
             {
@@ -491,14 +527,14 @@ public class Board : MonoBehaviour
                 }
             }
 
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(GetAdjustedDuration(0.3f));
 
-            // Recreate board
+            // Recreate board (invisible until clearing is complete)
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    CreatePiece(x, y);
+                    CreatePiece(x, y, animate: false, visible: false);
                 }
             }
 
@@ -508,7 +544,7 @@ public class Board : MonoBehaviour
                 EnsureNoDropGemsOnBottomRow();
             }
 
-            // Clear any initial matches
+            // Clear any initial matches (will make pieces visible when done)
             yield return StartCoroutine(ClearInitialMatches());
         }
     }
@@ -533,7 +569,8 @@ public class Board : MonoBehaviour
                             pieces[x, above] = null;
                             pieces[x, y] = fallingPiece;
                             fallingPiece.SetGridPosition(new Vector2Int(x, y));
-                            fallingPiece.MoveTo(GridToWorld(x, y), fallDuration);
+                            float adjustedFallDuration = GetAdjustedDuration(fallDuration);
+                            fallingPiece.MoveTo(GridToWorld(x, y), adjustedFallDuration);
                             piecesMoved++;
                             Debug.Log($"MakePiecesFall: Moving piece from ({x},{above}) to ({x},{y})");
                             break;
@@ -608,22 +645,22 @@ public class Board : MonoBehaviour
 
     private IEnumerator ClearInitialMatches()
     {
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(GetAdjustedDuration(0.1f));
 
         List<GamePiece> matches = matchDetector.FindAllMatches();
         while (matches.Count > 0)
         {
-            // Replace matched pieces with random different types
+            // Replace matched pieces with random different types (keep invisible)
             foreach (GamePiece piece in matches)
             {
                 Vector2Int pos = piece.GridPosition;
                 // CRITICAL: Clear the reference BEFORE creating new piece
                 pieces[pos.x, pos.y] = null;
                 Destroy(piece.gameObject);
-                CreatePiece(pos.x, pos.y, false);
+                CreatePiece(pos.x, pos.y, animate: false, visible: false);
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(GetAdjustedDuration(0.1f));
             matches = matchDetector.FindAllMatches();
         }
 
@@ -647,12 +684,12 @@ public class Board : MonoBehaviour
                 }
             }
 
-            // Recreate board
+            // Recreate board (keep invisible until clearing is complete)
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    CreatePiece(x, y);
+                    CreatePiece(x, y, animate: false, visible: false);
                 }
             }
 
@@ -661,11 +698,68 @@ public class Board : MonoBehaviour
             yield break;
         }
 
+        // All clearing complete - animate pieces dropping from above
+        yield return StartCoroutine(AnimateInitialDrop());
+
+        Debug.Log("Board initialization complete - all pieces dropped");
+
         // Update UI now that board is initialized
         if (gameManager != null)
         {
             gameManager.UpdateUI();
         }
+    }
+
+    /// <summary>
+    /// Animate all pieces dropping from above the board (used during initial setup)
+    /// Drops row by row from bottom to top with staggered timing
+    /// </summary>
+    private IEnumerator AnimateInitialDrop()
+    {
+        // Position all pieces above the board
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (pieces[x, y] != null)
+                {
+                    GamePiece piece = pieces[x, y];
+
+                    // All pieces start 2 cells above the top of the board
+                    Vector3 startPosition = GridToWorld(x, height + 2);
+
+                    // Move piece to start position instantly
+                    piece.transform.position = startPosition;
+                }
+            }
+        }
+
+        // Drop rows one at a time from bottom (y=0) to top (y=height-1)
+        for (int y = 0; y < height; y++)
+        {
+            // Make this row visible and start dropping
+            for (int x = 0; x < width; x++)
+            {
+                if (pieces[x, y] != null)
+                {
+                    GamePiece piece = pieces[x, y];
+
+                    // Make visible
+                    piece.SetVisible(true);
+
+                    // Start falling animation
+                    Vector3 targetPosition = GridToWorld(x, y);
+                    float adjustedDuration = GetAdjustedDuration(fallDuration);
+                    piece.MoveTo(targetPosition, adjustedDuration);
+                }
+            }
+
+            // Wait before dropping next row
+            yield return new WaitForSeconds(GetAdjustedDuration(0.1f));
+        }
+
+        // Wait for all animations to complete
+        yield return StartCoroutine(WaitForAllAnimations());
     }
 
     /// <summary>
@@ -782,8 +876,8 @@ public class Board : MonoBehaviour
                 pieces[x, 0] = null;
                 Destroy(piece.gameObject);
 
-                // Create a new piece that's NOT the drop gem type
-                GamePiece newPiece = CreatePieceAvoidingType(x, 0, dropGem);
+                // Create a new piece that's NOT the drop gem type (invisible during initialization)
+                GamePiece newPiece = CreatePieceAvoidingType(x, 0, dropGem, visible: false);
                 pieces[x, 0] = newPiece;
                 replacementCount++;
             }
@@ -798,7 +892,7 @@ public class Board : MonoBehaviour
     /// <summary>
     /// Create a piece avoiding a specific type
     /// </summary>
-    private GamePiece CreatePieceAvoidingType(int x, int y, GamePiece.PieceType avoidType)
+    private GamePiece CreatePieceAvoidingType(int x, int y, GamePiece.PieceType avoidType, bool visible = true)
     {
         GamePiece.PieceType[] allTypes = (GamePiece.PieceType[])System.Enum.GetValues(typeof(GamePiece.PieceType));
         GamePiece.PieceType selectedType;
@@ -816,6 +910,7 @@ public class Board : MonoBehaviour
 
         GamePiece piece = pieceObj.GetComponent<GamePiece>();
         piece.Initialize(selectedType, new Vector2Int(x, y), this);
+        piece.SetVisible(visible);
 
         return piece;
     }
@@ -865,7 +960,7 @@ public class Board : MonoBehaviour
                 piece.DestroyPiece();
             }
 
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(GetAdjustedDuration(0.3f));
 
             // Make pieces fall to fill the gaps
             yield return StartCoroutine(MakePiecesFall());

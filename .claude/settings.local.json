@@ -15,7 +15,9 @@
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\BuildLog.txt\" -executeMethod BuildScript.BuildGameCommandLine)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\GameModesLog.txt\" -executeMethod BuildScript.CreateGameModesCommandLine)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\RegenerateLog.txt\" -executeMethod CreateGameModes.CreateDefaultModes)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(del \"C:\\Users\\mouse\\Test2D\\Assets\\Scripts\\OptionsMenuController.cs\")",
+      "Bash(del \"C:\\Users\\mouse\\Test2D\\Assets\\Scripts\\StatusEffect.cs\")"
     ],
     "deny": [],
     "ask": []

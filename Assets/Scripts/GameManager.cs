@@ -17,6 +17,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI player2ScoreText;
     [SerializeField] private TextMeshProUGUI player1HealthText;
     [SerializeField] private TextMeshProUGUI player2HealthText;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI xpText;
+    [SerializeField] private TextMeshProUGUI goldText;
 
     [Header("Game Settings")]
     [SerializeField] private int pointsPerPiece = 10;
@@ -47,6 +50,94 @@ public class GameManager : MonoBehaviour
         player2Health = startingHealth;
         InitializeColorScores();
         UpdateUI();
+
+        // Subscribe to health depletion events
+        HealthEventSystem.OnHealthDepleted += OnHealthDepletedHandler;
+
+        // Subscribe to level system events
+        if (LevelSystem.Instance != null)
+        {
+            LevelSystem.Instance.onXPChanged.AddListener(UpdateLevelUI);
+            LevelSystem.Instance.onLevelUp.AddListener(OnLevelUp);
+        }
+
+        // Subscribe to currency system events
+        if (CurrencyManager.Instance != null)
+        {
+            CurrencyManager.Instance.onGoldChanged.AddListener(UpdateGoldUI);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        HealthEventSystem.OnHealthDepleted -= OnHealthDepletedHandler;
+
+        // Unsubscribe from level system events
+        if (LevelSystem.Instance != null)
+        {
+            LevelSystem.Instance.onXPChanged.RemoveListener(UpdateLevelUI);
+            LevelSystem.Instance.onLevelUp.RemoveListener(OnLevelUp);
+        }
+
+        // Unsubscribe from currency system events
+        if (CurrencyManager.Instance != null)
+        {
+            CurrencyManager.Instance.onGoldChanged.RemoveListener(UpdateGoldUI);
+        }
+    }
+
+    /// <summary>
+    /// Event handler for when a player's health is depleted
+    /// </summary>
+    private void OnHealthDepletedHandler(object sender, HealthDepletedEventArgs e)
+    {
+        GameOver();
+    }
+
+    /// <summary>
+    /// Updates the level and XP UI display
+    /// </summary>
+    private void UpdateLevelUI(int currentXP, int requiredXP, int level)
+    {
+        if (levelText != null)
+        {
+            levelText.text = $"Level: {level}";
+        }
+
+        if (xpText != null)
+        {
+            xpText.text = $"XP: {currentXP}/{requiredXP}";
+        }
+    }
+
+    /// <summary>
+    /// Updates the gold UI display
+    /// </summary>
+    private void UpdateGoldUI(int currentGold)
+    {
+        if (goldText != null)
+        {
+            goldText.text = $"Gold: {currentGold}";
+        }
+    }
+
+    /// <summary>
+    /// Event handler for when player levels up
+    /// </summary>
+    private void OnLevelUp(int newLevel)
+    {
+        Debug.Log($"Congratulations! You reached level {newLevel}!");
+
+        // Award gold bonus for leveling up
+        if (CurrencyManager.Instance != null)
+        {
+            int goldBonus = CurrencyManager.CalculateLevelUpBonus(newLevel);
+            CurrencyManager.Instance.AddGold(goldBonus);
+            Debug.Log($"Level up bonus: {goldBonus} gold!");
+        }
+
+        // Could add visual/audio effects here later
     }
 
     private void InitializeColorScores()
@@ -61,7 +152,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddScore(List<GamePiece> matchedPieces, bool checkBonusTurn = false)
+    public void AddScore(List<GamePiece> matchedPieces)
     {
         if (matchedPieces == null || matchedPieces.Count == 0) return;
 
@@ -95,7 +186,6 @@ public class GameManager : MonoBehaviour
 
         // Calculate points based on match size using game mode scoring
         int totalMatchPoints = 0;
-        int totalPiecesMatched = matchedPieces.Count;
 
         // Determine which player's color scores to update
         Dictionary<GamePiece.PieceType, int> currentPlayerColorScores = player1ColorScores;
@@ -158,42 +248,26 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            // Apply total damage to opponent
+            // Apply total damage to opponent using event-driven system
             if (totalDamage > 0)
             {
-                if (playerManager.CurrentPlayer == PlayerManager.Player.Player1)
-                {
-                    // Player 1 deals damage to Player 2
-                    player2Health -= totalDamage;
-                    Debug.Log($"Player 1 deals {totalDamage} damage! Player 2 HP: {player2Health}");
-                }
-                else
-                {
-                    // Player 2 deals damage to Player 1
-                    player1Health -= totalDamage;
-                    Debug.Log($"Player 2 deals {totalDamage} damage! Player 1 HP: {player1Health}");
-                }
+                // Determine opponent
+                PlayerManager.Player opponent = playerManager.CurrentPlayer == PlayerManager.Player.Player1
+                    ? PlayerManager.Player.Player2
+                    : PlayerManager.Player.Player1;
 
-                // Check for game over
-                if (player1Health <= 0)
+                // Apply damage through centralized system (fires events automatically)
+                TakeDamage(opponent, totalDamage);
+
+                // If game over was triggered by health depletion, stop processing
+                if (isGameOver)
                 {
-                    Debug.Log("===== PLAYER 2 WINS - Player 1 HP reached 0! =====");
-                    GameOver();
-                    return;
-                }
-                else if (player2Health <= 0)
-                {
-                    Debug.Log("===== PLAYER 1 WINS - Player 2 HP reached 0! =====");
-                    GameOver();
                     return;
                 }
             }
 
-            // Check if player earned a bonus turn (only for initial match, not cascades)
-            if (checkBonusTurn)
-            {
-                playerManager.CheckForBonusTurn(totalPiecesMatched);
-            }
+            // NOTE: Bonus turn checking moved to Board.cs after all cascades complete
+            // This allows rewarding strategic play that creates cascade matches
         }
         else
         {
@@ -201,7 +275,63 @@ public class GameManager : MonoBehaviour
             player1Score += totalMatchPoints;
         }
 
+        // Award XP based on matches
+        if (LevelSystem.Instance != null)
+        {
+            int totalXP = 0;
+            foreach (var kvp in colorGroups)
+            {
+                int matchCount = kvp.Value.Count;
+                // XP reward based on match size
+                int xpReward = CalculateXPReward(matchCount);
+                totalXP += xpReward;
+            }
+
+            if (totalXP > 0)
+            {
+                LevelSystem.Instance.AddXP(totalXP);
+            }
+        }
+
+        // Award gold based on gem types
+        if (CurrencyManager.Instance != null && GemTypeManager.Instance != null)
+        {
+            int totalGold = GemTypeManager.Instance.CalculateTotalGold(colorGroups);
+
+            if (totalGold > 0)
+            {
+                CurrencyManager.Instance.AddGold(totalGold);
+            }
+        }
+
+        // Charge spell gems based on matches
+        if (SpellManager.Instance != null)
+        {
+            foreach (var kvp in colorGroups)
+            {
+                GamePiece.PieceType gemType = kvp.Key;
+                int matchCount = kvp.Value.Count;
+                SpellManager.Instance.AddGemCharge(gemType, matchCount);
+            }
+        }
+
         UpdateUI();
+    }
+
+    private int CalculateXPReward(int matchCount)
+    {
+        // XP rewards scale with match size
+        // 3 gems = 10 XP
+        // 4 gems = 25 XP
+        // 5 gems = 50 XP
+        // 6+ gems = 100 XP
+        return matchCount switch
+        {
+            3 => 10,
+            4 => 25,
+            5 => 50,
+            _ => matchCount >= 6 ? 100 : 0
+        };
     }
 
     public void UseMove()
@@ -241,6 +371,70 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
+    /// <summary>
+    /// Centralized method to modify a player's health
+    /// ALWAYS use this method instead of directly modifying health fields
+    /// Fires health change events for other systems to react to
+    /// </summary>
+    public void ModifyHealth(PlayerManager.Player player, int amount, HealthChangeReason reason)
+    {
+        if (isGameOver) return; // Don't modify health after game over
+
+        int oldHealth = player == PlayerManager.Player.Player1 ? player1Health : player2Health;
+        int newHealth = oldHealth + amount;
+
+        // Update the health value
+        if (player == PlayerManager.Player.Player1)
+        {
+            player1Health = newHealth;
+        }
+        else
+        {
+            player2Health = newHealth;
+        }
+
+        // Fire health changed event
+        HealthEventSystem.NotifyHealthChanged(player, oldHealth, newHealth, reason);
+
+        // Check if health depleted
+        if (newHealth <= 0)
+        {
+            // Determine winner
+            PlayerManager.Player winner = player == PlayerManager.Player.Player1
+                ? PlayerManager.Player.Player2
+                : PlayerManager.Player.Player1;
+
+            // Fire health depleted event
+            HealthEventSystem.NotifyHealthDepleted(player, winner);
+        }
+
+        UpdateUI();
+    }
+
+    /// <summary>
+    /// Apply damage to a player (convenience method)
+    /// </summary>
+    public void TakeDamage(PlayerManager.Player player, int damage)
+    {
+        ModifyHealth(player, -damage, HealthChangeReason.Damage);
+    }
+
+    /// <summary>
+    /// Heal a player (convenience method)
+    /// </summary>
+    public void Heal(PlayerManager.Player player, int healAmount)
+    {
+        ModifyHealth(player, healAmount, HealthChangeReason.Healing);
+    }
+
+    /// <summary>
+    /// Apply poison damage (convenience method)
+    /// </summary>
+    public void ApplyPoisonDamage(PlayerManager.Player player, int damage)
+    {
+        ModifyHealth(player, -damage, HealthChangeReason.Poison);
+    }
+
     public void UpdateUI()
     {
         // Update legacy score text for backward compatibility
@@ -270,15 +464,7 @@ public class GameManager : MonoBehaviour
             currentPlayerText.text = $"Current: {playerManager.GetCurrentPlayerName()}{bonusText}";
         }
 
-        // Log moves to console
-        if (playerManager != null && playerManager.TwoPlayerMode)
-        {
-            Debug.Log($"Player 1 Moves: {player1RemainingMoves}, Player 2 Moves: {player2RemainingMoves}");
-        }
-        else
-        {
-            Debug.Log($"Moves Remaining: {player1RemainingMoves}");
-        }
+        // Debug logging removed for performance (was called on every UI update)
 
         // Update Player 1 color scores
         if (player1ColorScoresText != null && player1ColorScores != null)
@@ -306,12 +492,8 @@ public class GameManager : MonoBehaviour
             player2HealthText.text = $"HP: {displayHealth}";
         }
 
-        // Log possible moves to console
-        if (board != null)
-        {
-            int possibleMoves = board.GetPossibleMovesCount();
-            Debug.Log($"Possible Moves: {possibleMoves}");
-        }
+        // Removed expensive GetPossibleMovesCount() debug logging for performance
+        // (was scanning entire board on every UI update)
     }
 
     /// <summary>
@@ -421,9 +603,18 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetHealth()
     {
+        int oldP1Health = player1Health;
+        int oldP2Health = player2Health;
+
         player1Health = startingHealth;
         player2Health = startingHealth;
+
         Debug.Log($"Health reset to {startingHealth} for both players");
+
+        // Fire reset events (won't trigger game over since health is being restored)
+        HealthEventSystem.NotifyHealthChanged(PlayerManager.Player.Player1, oldP1Health, startingHealth, HealthChangeReason.Reset);
+        HealthEventSystem.NotifyHealthChanged(PlayerManager.Player.Player2, oldP2Health, startingHealth, HealthChangeReason.Reset);
+
         UpdateUI();
     }
 }

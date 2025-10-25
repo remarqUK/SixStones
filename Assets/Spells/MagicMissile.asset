@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854f9e76b6f305f4190ef8d5eb97e25b, type: 3}
+  m_Name: MagicMissile
+  m_EditorClassIdentifier: Assembly-CSharp::SpellData
+  spellName: Magic Missile
+  description: You create three glowing darts of magical force. Each dart hits a
+    creature of your choice that you can see within range. A dart deals 1d4+1 force
+    damage.
+  school: 4
+  level: 1
+  castingTime: 0
+  isRitual: 0
+  components: 3
+  materialComponent: 
+  materialConsumed: 0
+  range: 4
+  targetType: 1
+  areaRadius: 0
+  durationType: 0
+  durationValue: 0
+  requiresConcentration: 0
+  savingThrow: 0
+  requiresAttackRoll: 0
+  isMeleeSpellAttack: 0
+  primaryEffect: 0
+  damageType: 5
+  baseDice:
+    count: 3
+    sides: 4
+    modifier: 3
+  scalesWithLevel: 1
+  additionalDicePerLevel:
+    count: 1
+    sides: 4
+    modifier: 1
+  appliedEffect: {fileID: 0}
+  effectSeverity: 1
+  effectDuration: 3
+  minimumPlayerLevel: 1
+  manaCost: 15
+  cooldownTurns: 0
+  associatedGemTypes: 01000000
+  gemsRequiredToCast: 4
+  spellIcon: {fileID: 0}

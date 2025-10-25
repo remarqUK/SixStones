@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00360f1bcb311a54096213bd1f70a873, type: 3}
+  m_Name: Weakened
+  m_EditorClassIdentifier: Assembly-CSharp::StatusEffectData
+  effectType: 17
+  effectName: Weakened
+  descriptionTemplate: Damage output reduced.
+  category: 5
+  stackingType: 2
+  triggerTiming: 6
+  affectsHealthPerTurn: 0
+  damageType: 9
+  damagePerSeverity: 1
+  modifiesStats: 1
+  statModifierPerSeverity: -10
+  modifiedStat: damage
+  preventsActions: 0
+  preventsSpellCasting: 0
+  blockedComponents: 0
+  allowsSaveToRemove: 0
+  saveType: 3
+  baseSaveDC: 15
+  maxSeverity: 5
+  effectColor: {r: 0.6, g: 0.3, b: 0.3, a: 1}
+  effectIcon: {fileID: 0}

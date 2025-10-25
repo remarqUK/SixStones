@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class InputManager : MonoBehaviour
 {
@@ -31,6 +32,12 @@ public class InputManager : MonoBehaviour
 
     private void HandleInput()
     {
+        // Don't process gem input if pointer is over UI
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+
         // Check if pointer (mouse/touch) is pressed
         bool currentPointerDown = Mouse.current != null && Mouse.current.leftButton.isPressed ||
                                    Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed;

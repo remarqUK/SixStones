@@ -16,6 +16,7 @@ public class HintSystem : MonoBehaviour
     private GamePiece currentHintPiece;
     private Vector2Int hintPosition;
     private Coroutine hintCycleCoroutine;
+    private bool hasCheckedForMoves = false; // Track if we've already checked this cycle
 
     private void OnEnable()
     {
@@ -61,8 +62,8 @@ public class HintSystem : MonoBehaviour
         // Increment idle timer
         timeSinceLastActivity += Time.deltaTime;
 
-        // Start hint cycle after initial delay
-        if (hintCycleCoroutine == null && timeSinceLastActivity >= mode.hintDelay)
+        // Start hint cycle after initial delay (only check once per activity cycle)
+        if (hintCycleCoroutine == null && !hasCheckedForMoves && timeSinceLastActivity >= mode.hintDelay)
         {
             StartHintCycle();
         }
@@ -74,6 +75,7 @@ public class HintSystem : MonoBehaviour
     public void ResetTimer()
     {
         timeSinceLastActivity = 0f;
+        hasCheckedForMoves = false; // Allow checking again on next cycle
         StopHintCycle();
     }
 
@@ -84,12 +86,15 @@ public class HintSystem : MonoBehaviour
     {
         if (board == null) return;
 
+        // Mark that we've checked for moves this cycle (prevents spamming checks every frame)
+        hasCheckedForMoves = true;
+
         // Get a random possible move and save it
         (Vector2Int pos1, Vector2Int pos2) = board.GetRandomPossibleMove();
 
         if (pos1.x == -1) // No moves available
         {
-            Debug.Log("No possible moves for hint");
+            Debug.Log("No possible moves for hint (board may need regeneration)");
             return;
         }
 

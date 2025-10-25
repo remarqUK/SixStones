@@ -75,6 +75,20 @@ public class PlayerManager : MonoBehaviour
     {
         if (!twoPlayerMode) return;
 
+        // Process status effects at end of turn
+        if (StatusEffectManager.Instance != null)
+        {
+            StatusEffectManager.Instance.ProcessEndOfTurn(currentPlayer);
+        }
+
+        // Update spell system (cooldowns, concentration, etc.)
+        if (SpellManager.Instance != null)
+        {
+            SpellManager.Instance.OnTurnEnd();
+        }
+
+        Player previousPlayer = currentPlayer;
+
         if (bonusTurnEarned)
         {
             Debug.Log($"{currentPlayer} gets a bonus turn!");
@@ -86,6 +100,12 @@ public class PlayerManager : MonoBehaviour
             // Switch player
             currentPlayer = currentPlayer == Player.Player1 ? Player.Player2 : Player.Player1;
             Debug.Log($"Turn switched to {currentPlayer}");
+        }
+
+        // Process status effects at start of new turn
+        if (StatusEffectManager.Instance != null)
+        {
+            StatusEffectManager.Instance.ProcessStartOfTurn(currentPlayer);
         }
     }
 

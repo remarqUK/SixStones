@@ -11,6 +11,7 @@ public class GemSelector : MonoBehaviour
     [Header("References")]
     [SerializeField] private Board board;
     [SerializeField] private PlayerManager playerManager;
+    [SerializeField] private GameManager gameManager;
 
     [Header("Selection Settings")]
     [SerializeField] private Vector2Int startPosition = new Vector2Int(3, 3); // 4th across, 4th down (0-indexed)
@@ -186,6 +187,13 @@ public class GemSelector : MonoBehaviour
     public void PerformSwap(Vector2Int pos1, Vector2Int pos2)
     {
         if (board == null) return;
+
+        // Block swaps if game is over
+        if (gameManager != null && gameManager.IsGameOver)
+        {
+            Debug.Log("Cannot swap - game is over");
+            return;
+        }
 
         // Block swaps if it's not the human player's turn
         if (playerManager != null && playerManager.TwoPlayerMode)

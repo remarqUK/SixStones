@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject optionsPanel;
 
     private bool isPaused = false;
 
@@ -29,6 +30,14 @@ public class PauseMenu : MonoBehaviour
 
     private void TogglePause()
     {
+        // If options menu is open, close it and return to pause menu
+        if (optionsPanel != null && optionsPanel.activeSelf)
+        {
+            CloseOptions();
+            return;
+        }
+
+        // Otherwise, toggle pause menu normally
         isPaused = !isPaused;
 
         if (isPaused)
@@ -76,11 +85,39 @@ public class PauseMenu : MonoBehaviour
     }
 
     /// <summary>
-    /// Placeholder for Options menu (not implemented yet)
+    /// Show options menu (hides pause menu)
     /// </summary>
     public void ShowOptions()
     {
-        Debug.Log("Options clicked (not implemented yet)");
+        Debug.Log("Options clicked - showing options panel");
+
+        if (pauseMenuPanel != null)
+        {
+            pauseMenuPanel.SetActive(false);
+        }
+
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(true);
+        }
+    }
+
+    /// <summary>
+    /// Close options menu and return to pause menu
+    /// </summary>
+    public void CloseOptions()
+    {
+        Debug.Log("Closing options panel");
+
+        if (optionsPanel != null)
+        {
+            optionsPanel.SetActive(false);
+        }
+
+        if (pauseMenuPanel != null)
+        {
+            pauseMenuPanel.SetActive(true);
+        }
     }
 
     /// <summary>

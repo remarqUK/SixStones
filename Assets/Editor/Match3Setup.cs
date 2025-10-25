@@ -135,6 +135,7 @@ public class Match3Setup : EditorWindow
         SerializedObject gemSelectorSO = new SerializedObject(gemSelector);
         gemSelectorSO.FindProperty("board").objectReferenceValue = board;
         gemSelectorSO.FindProperty("playerManager").objectReferenceValue = playerManager;
+        // gameManager will be wired up later after it's created
         gemSelectorSO.ApplyModifiedProperties();
 
         // Create Input Manager
@@ -160,14 +161,14 @@ public class Match3Setup : EditorWindow
         eventSystemObj.AddComponent<UnityEngine.EventSystems.EventSystem>();
         eventSystemObj.AddComponent<UnityEngine.InputSystem.UI.InputSystemUIInputModule>();
 
-        // Create Score Text
+        // Create Score Text (Player 1 - left side)
         GameObject scoreObj = new GameObject("ScoreText");
         scoreObj.transform.SetParent(canvasObj.transform);
         RectTransform scoreRect = scoreObj.AddComponent<RectTransform>();
         scoreRect.anchorMin = new Vector2(0, 1);
         scoreRect.anchorMax = new Vector2(0, 1);
         scoreRect.pivot = new Vector2(0, 1);
-        scoreRect.anchoredPosition = new Vector2(20, -20);
+        scoreRect.anchoredPosition = new Vector2(20, -110);
         scoreRect.sizeDelta = new Vector2(300, 60);
 
         TMPro.TextMeshProUGUI scoreText = scoreObj.AddComponent<TMPro.TextMeshProUGUI>();
@@ -175,6 +176,54 @@ public class Match3Setup : EditorWindow
         scoreText.fontSize = 36;
         scoreText.color = Color.white;
         scoreText.alignment = TMPro.TextAlignmentOptions.Left;
+
+        // Create Level Text (Player 1 - left side)
+        GameObject levelObj = new GameObject("LevelText");
+        levelObj.transform.SetParent(canvasObj.transform);
+        RectTransform levelRect = levelObj.AddComponent<RectTransform>();
+        levelRect.anchorMin = new Vector2(0, 1);
+        levelRect.anchorMax = new Vector2(0, 1);
+        levelRect.pivot = new Vector2(0, 1);
+        levelRect.anchoredPosition = new Vector2(20, -180);
+        levelRect.sizeDelta = new Vector2(300, 40);
+
+        TMPro.TextMeshProUGUI levelText = levelObj.AddComponent<TMPro.TextMeshProUGUI>();
+        levelText.text = "Level: 1";
+        levelText.fontSize = 28;
+        levelText.color = new Color(1f, 0.9f, 0.3f); // Yellow
+        levelText.alignment = TMPro.TextAlignmentOptions.Left;
+
+        // Create XP Text (Player 1 - left side)
+        GameObject xpObj = new GameObject("XPText");
+        xpObj.transform.SetParent(canvasObj.transform);
+        RectTransform xpRect = xpObj.AddComponent<RectTransform>();
+        xpRect.anchorMin = new Vector2(0, 1);
+        xpRect.anchorMax = new Vector2(0, 1);
+        xpRect.pivot = new Vector2(0, 1);
+        xpRect.anchoredPosition = new Vector2(20, -220);
+        xpRect.sizeDelta = new Vector2(300, 40);
+
+        TMPro.TextMeshProUGUI xpText = xpObj.AddComponent<TMPro.TextMeshProUGUI>();
+        xpText.text = "XP: 0/100";
+        xpText.fontSize = 24;
+        xpText.color = new Color(0.5f, 1f, 0.5f); // Light green
+        xpText.alignment = TMPro.TextAlignmentOptions.Left;
+
+        // Create Gold Text (Player 1 - left side)
+        GameObject goldObj = new GameObject("GoldText");
+        goldObj.transform.SetParent(canvasObj.transform);
+        RectTransform goldRect = goldObj.AddComponent<RectTransform>();
+        goldRect.anchorMin = new Vector2(0, 1);
+        goldRect.anchorMax = new Vector2(0, 1);
+        goldRect.pivot = new Vector2(0, 1);
+        goldRect.anchoredPosition = new Vector2(20, -260);
+        goldRect.sizeDelta = new Vector2(300, 40);
+
+        TMPro.TextMeshProUGUI goldText = goldObj.AddComponent<TMPro.TextMeshProUGUI>();
+        goldText.text = "Gold: 100";
+        goldText.fontSize = 24;
+        goldText.color = new Color(1f, 0.84f, 0f); // Gold color
+        goldText.alignment = TMPro.TextAlignmentOptions.Left;
 
         // Create Player 1 Color Scores Text (bottom left)
         GameObject player1ColorScoresObj = new GameObject("Player1ColorScoresText");
@@ -234,7 +283,7 @@ public class Match3Setup : EditorWindow
         player1ScoreRect.anchorMin = new Vector2(0, 1);
         player1ScoreRect.anchorMax = new Vector2(0, 1);
         player1ScoreRect.pivot = new Vector2(0, 1);
-        player1ScoreRect.anchoredPosition = new Vector2(20, -80);
+        player1ScoreRect.anchoredPosition = new Vector2(20, -20);
         player1ScoreRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player1ScoreText = player1ScoreObj.AddComponent<TMPro.TextMeshProUGUI>();
@@ -250,7 +299,7 @@ public class Match3Setup : EditorWindow
         player2ScoreRect.anchorMin = new Vector2(1, 1);
         player2ScoreRect.anchorMax = new Vector2(1, 1);
         player2ScoreRect.pivot = new Vector2(1, 1);
-        player2ScoreRect.anchoredPosition = new Vector2(-20, -80);
+        player2ScoreRect.anchoredPosition = new Vector2(-20, -20);
         player2ScoreRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player2ScoreText = player2ScoreObj.AddComponent<TMPro.TextMeshProUGUI>();
@@ -266,7 +315,7 @@ public class Match3Setup : EditorWindow
         player1HealthRect.anchorMin = new Vector2(0, 1);
         player1HealthRect.anchorMax = new Vector2(0, 1);
         player1HealthRect.pivot = new Vector2(0, 1);
-        player1HealthRect.anchoredPosition = new Vector2(20, -130);
+        player1HealthRect.anchoredPosition = new Vector2(20, -300);
         player1HealthRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player1HealthText = player1HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
@@ -283,7 +332,7 @@ public class Match3Setup : EditorWindow
         player2HealthRect.anchorMin = new Vector2(1, 1);
         player2HealthRect.anchorMax = new Vector2(1, 1);
         player2HealthRect.pivot = new Vector2(1, 1);
-        player2HealthRect.anchoredPosition = new Vector2(-20, -130);
+        player2HealthRect.anchoredPosition = new Vector2(-20, -60);
         player2HealthRect.sizeDelta = new Vector2(300, 50);
 
         TMPro.TextMeshProUGUI player2HealthText = player2HealthObj.AddComponent<TMPro.TextMeshProUGUI>();
@@ -308,6 +357,9 @@ public class Match3Setup : EditorWindow
         gmSO.FindProperty("player2ScoreText").objectReferenceValue = player2ScoreText;
         gmSO.FindProperty("player1HealthText").objectReferenceValue = player1HealthText;
         gmSO.FindProperty("player2HealthText").objectReferenceValue = player2HealthText;
+        gmSO.FindProperty("levelText").objectReferenceValue = levelText;
+        gmSO.FindProperty("xpText").objectReferenceValue = xpText;
+        gmSO.FindProperty("goldText").objectReferenceValue = goldText;
         gmSO.FindProperty("pointsPerPiece").intValue = 1;
         gmSO.FindProperty("maxMoves").intValue = 30;
         gmSO.FindProperty("startingHealth").intValue = 100;
@@ -315,11 +367,73 @@ public class Match3Setup : EditorWindow
         gmSO.FindProperty("player2Strength").floatValue = 1.0f;
         gmSO.ApplyModifiedProperties();
 
+        // Create GameSpeedSettings
+        GameObject gameSpeedSettingsObj = new GameObject("GameSpeedSettings");
+        GameSpeedSettings gameSpeedSettings = gameSpeedSettingsObj.AddComponent<GameSpeedSettings>();
+
+        // Create LevelSystem
+        GameObject levelSystemObj = new GameObject("LevelSystem");
+        LevelSystem levelSystem = levelSystemObj.AddComponent<LevelSystem>();
+
+        // Create CurrencyManager
+        GameObject currencyManagerObj = new GameObject("CurrencyManager");
+        CurrencyManager currencyManager = currencyManagerObj.AddComponent<CurrencyManager>();
+
+        // Create GemTypeManager
+        GameObject gemTypeManagerObj = new GameObject("GemTypeManager");
+        GemTypeManager gemTypeManager = gemTypeManagerObj.AddComponent<GemTypeManager>();
+
+        // Load gem types from Assets/GemTypes folder
+        string[] gemTypeGuids = AssetDatabase.FindAssets("t:GemTypeData", new[] { "Assets/GemTypes" });
+        SerializedObject gemTypeSO = new SerializedObject(gemTypeManager);
+        SerializedProperty gemTypesArray = gemTypeSO.FindProperty("gemTypes");
+        gemTypesArray.ClearArray();
+
+        foreach (string guid in gemTypeGuids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            GemTypeData gemTypeData = AssetDatabase.LoadAssetAtPath<GemTypeData>(path);
+            if (gemTypeData != null)
+            {
+                gemTypesArray.InsertArrayElementAtIndex(gemTypesArray.arraySize);
+                gemTypesArray.GetArrayElementAtIndex(gemTypesArray.arraySize - 1).objectReferenceValue = gemTypeData;
+            }
+        }
+        gemTypeSO.ApplyModifiedProperties();
+
+        // Create SpellManager
+        GameObject spellManagerObj = new GameObject("SpellManager");
+        SpellManager spellManager = spellManagerObj.AddComponent<SpellManager>();
+
+        // Create SpellEffectHandler
+        GameObject spellEffectHandlerObj = new GameObject("SpellEffectHandler");
+        SpellEffectHandler spellEffectHandler = spellEffectHandlerObj.AddComponent<SpellEffectHandler>();
+
+        SerializedObject spellEffectSO = new SerializedObject(spellEffectHandler);
+        spellEffectSO.FindProperty("gameManager").objectReferenceValue = gameManager;
+        spellEffectSO.FindProperty("board").objectReferenceValue = board;
+        spellEffectSO.FindProperty("playerManager").objectReferenceValue = playerManager;
+        spellEffectSO.ApplyModifiedProperties();
+
+        // Create StatusEffectManager
+        GameObject statusEffectManagerObj = new GameObject("StatusEffectManager");
+        StatusEffectManager statusEffectManager = statusEffectManagerObj.AddComponent<StatusEffectManager>();
+
+        SerializedObject statusEffectSO = new SerializedObject(statusEffectManager);
+        statusEffectSO.FindProperty("gameManager").objectReferenceValue = gameManager;
+        statusEffectSO.FindProperty("playerManager").objectReferenceValue = playerManager;
+        statusEffectSO.ApplyModifiedProperties();
+
         // Connect GameManager, PlayerManager, and CPUPlayer to Board
         boardSO.FindProperty("gameManager").objectReferenceValue = gameManager;
         boardSO.FindProperty("playerManager").objectReferenceValue = playerManager;
         boardSO.FindProperty("cpuPlayer").objectReferenceValue = cpuPlayer;
         boardSO.ApplyModifiedProperties();
+
+        // Wire up GameManager to GemSelector (now that it exists)
+        gemSelectorSO.Update();
+        gemSelectorSO.FindProperty("gameManager").objectReferenceValue = gameManager;
+        gemSelectorSO.ApplyModifiedProperties();
 
         // Create CPU Control UI
         GameObject cpuControlObj = new GameObject("CPUControlUI");
@@ -536,6 +650,490 @@ public class Match3Setup : EditorWindow
         SerializedObject pauseMenuSO = new SerializedObject(pauseMenu);
         pauseMenuSO.FindProperty("pauseMenuPanel").objectReferenceValue = pausePanelObj;
         pauseMenuSO.ApplyModifiedProperties();
+
+        // Create Options Panel (full screen, semi-transparent background)
+        GameObject optionsPanelObj = new GameObject("OptionsPanel");
+        optionsPanelObj.transform.SetParent(canvasObj.transform);
+        RectTransform optionsPanelRect = optionsPanelObj.AddComponent<RectTransform>();
+        optionsPanelRect.anchorMin = Vector2.zero;
+        optionsPanelRect.anchorMax = Vector2.one;
+        optionsPanelRect.sizeDelta = Vector2.zero;
+        optionsPanelRect.anchoredPosition = Vector2.zero;
+
+        UnityEngine.UI.Image optionsPanelImage = optionsPanelObj.AddComponent<UnityEngine.UI.Image>();
+        optionsPanelImage.color = new Color(0f, 0f, 0f, 0.9f); // Semi-transparent black
+
+        // Create options container (centered, larger than pause menu)
+        GameObject optionsContainerObj = new GameObject("OptionsContainer");
+        optionsContainerObj.transform.SetParent(optionsPanelObj.transform);
+        RectTransform optionsContainerRect = optionsContainerObj.AddComponent<RectTransform>();
+        optionsContainerRect.anchorMin = new Vector2(0.5f, 0.5f);
+        optionsContainerRect.anchorMax = new Vector2(0.5f, 0.5f);
+        optionsContainerRect.pivot = new Vector2(0.5f, 0.5f);
+        optionsContainerRect.anchoredPosition = Vector2.zero;
+        optionsContainerRect.sizeDelta = new Vector2(500, 600);
+
+        // Add background to options container
+        UnityEngine.UI.Image optionsContainerBg = optionsContainerObj.AddComponent<UnityEngine.UI.Image>();
+        optionsContainerBg.color = new Color(0.2f, 0.2f, 0.2f);
+
+        // Options title
+        GameObject optionsTitleObj = new GameObject("OptionsTitle");
+        optionsTitleObj.transform.SetParent(optionsContainerObj.transform);
+        RectTransform optionsTitleRect = optionsTitleObj.AddComponent<RectTransform>();
+        optionsTitleRect.anchorMin = new Vector2(0.5f, 1f);
+        optionsTitleRect.anchorMax = new Vector2(0.5f, 1f);
+        optionsTitleRect.pivot = new Vector2(0.5f, 1f);
+        optionsTitleRect.anchoredPosition = new Vector2(0, -20);
+        optionsTitleRect.sizeDelta = new Vector2(400, 50);
+
+        TMPro.TextMeshProUGUI optionsTitle = optionsTitleObj.AddComponent<TMPro.TextMeshProUGUI>();
+        optionsTitle.text = "OPTIONS";
+        optionsTitle.fontSize = 36;
+        optionsTitle.color = Color.white;
+        optionsTitle.alignment = TMPro.TextAlignmentOptions.Center;
+        optionsTitle.fontStyle = TMPro.FontStyles.Bold;
+
+        float yPos = -100;
+        float ySpacing = 70;
+
+        // Helper to create a label
+        TMPro.TextMeshProUGUI CreateLabel(string labelName, string labelText, float y)
+        {
+            GameObject labelObj = new GameObject(labelName);
+            labelObj.transform.SetParent(optionsContainerObj.transform);
+            RectTransform labelRect = labelObj.AddComponent<RectTransform>();
+            labelRect.anchorMin = new Vector2(0f, 1f);
+            labelRect.anchorMax = new Vector2(0f, 1f);
+            labelRect.pivot = new Vector2(0f, 0.5f);
+            labelRect.anchoredPosition = new Vector2(30, y);
+            labelRect.sizeDelta = new Vector2(150, 30);
+
+            TMPro.TextMeshProUGUI label = labelObj.AddComponent<TMPro.TextMeshProUGUI>();
+            label.text = labelText;
+            label.fontSize = 18;
+            label.color = Color.white;
+            label.alignment = TMPro.TextAlignmentOptions.Left;
+
+            return label;
+        }
+
+        // Helper to create a slider
+        UnityEngine.UI.Slider CreateSlider(string sliderName, float y)
+        {
+            GameObject sliderObj = new GameObject(sliderName);
+            sliderObj.transform.SetParent(optionsContainerObj.transform);
+            RectTransform sliderRect = sliderObj.AddComponent<RectTransform>();
+            sliderRect.anchorMin = new Vector2(0f, 1f);
+            sliderRect.anchorMax = new Vector2(0f, 1f);
+            sliderRect.pivot = new Vector2(0f, 0.5f);
+            sliderRect.anchoredPosition = new Vector2(200, y);
+            sliderRect.sizeDelta = new Vector2(250, 20);
+
+            UnityEngine.UI.Slider slider = sliderObj.AddComponent<UnityEngine.UI.Slider>();
+            slider.minValue = 0f;
+            slider.maxValue = 1f;
+            slider.value = 1f;
+
+            // Background
+            GameObject bgObj = new GameObject("Background");
+            bgObj.transform.SetParent(sliderObj.transform);
+            RectTransform bgRect = bgObj.AddComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.sizeDelta = Vector2.zero;
+            bgRect.anchoredPosition = Vector2.zero;
+            UnityEngine.UI.Image bgImage = bgObj.AddComponent<UnityEngine.UI.Image>();
+            bgImage.color = new Color(0.1f, 0.1f, 0.1f);
+
+            // Fill Area
+            GameObject fillAreaObj = new GameObject("Fill Area");
+            fillAreaObj.transform.SetParent(sliderObj.transform);
+            RectTransform fillAreaRect = fillAreaObj.AddComponent<RectTransform>();
+            fillAreaRect.anchorMin = Vector2.zero;
+            fillAreaRect.anchorMax = Vector2.one;
+            fillAreaRect.sizeDelta = new Vector2(-10, -10);
+            fillAreaRect.anchoredPosition = Vector2.zero;
+
+            // Fill
+            GameObject fillObj = new GameObject("Fill");
+            fillObj.transform.SetParent(fillAreaObj.transform);
+            RectTransform fillRect = fillObj.AddComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.sizeDelta = Vector2.zero;
+            fillRect.anchoredPosition = Vector2.zero;
+            UnityEngine.UI.Image fillImage = fillObj.AddComponent<UnityEngine.UI.Image>();
+            fillImage.color = new Color(0f, 0.7f, 0f);
+
+            // Handle Slide Area
+            GameObject handleSlideAreaObj = new GameObject("Handle Slide Area");
+            handleSlideAreaObj.transform.SetParent(sliderObj.transform);
+            RectTransform handleSlideAreaRect = handleSlideAreaObj.AddComponent<RectTransform>();
+            handleSlideAreaRect.anchorMin = Vector2.zero;
+            handleSlideAreaRect.anchorMax = Vector2.one;
+            handleSlideAreaRect.sizeDelta = new Vector2(-10, 0);
+            handleSlideAreaRect.anchoredPosition = Vector2.zero;
+
+            // Handle
+            GameObject handleObj = new GameObject("Handle");
+            handleObj.transform.SetParent(handleSlideAreaObj.transform);
+            RectTransform handleRect = handleObj.AddComponent<RectTransform>();
+            handleRect.anchorMin = new Vector2(0f, 0.5f);
+            handleRect.anchorMax = new Vector2(0f, 0.5f);
+            handleRect.pivot = new Vector2(0.5f, 0.5f);
+            handleRect.sizeDelta = new Vector2(20, 20);
+            UnityEngine.UI.Image handleImage = handleObj.AddComponent<UnityEngine.UI.Image>();
+            handleImage.color = Color.white;
+
+            // Wire up slider components
+            slider.fillRect = fillRect;
+            slider.handleRect = handleRect;
+            slider.targetGraphic = handleImage;
+
+            return slider;
+        }
+
+        // Game Volume
+        CreateLabel("GameVolumeLabel", "Game Volume:", yPos);
+        UnityEngine.UI.Slider gameVolumeSlider = CreateSlider("GameVolumeSlider", yPos);
+
+        yPos -= ySpacing;
+
+        // Music Volume
+        CreateLabel("MusicVolumeLabel", "Music Volume:", yPos);
+        UnityEngine.UI.Slider musicVolumeSlider = CreateSlider("MusicVolumeSlider", yPos);
+
+        yPos -= ySpacing;
+
+        // Dialog Volume
+        CreateLabel("DialogVolumeLabel", "Dialog Volume:", yPos);
+        UnityEngine.UI.Slider dialogVolumeSlider = CreateSlider("DialogVolumeSlider", yPos);
+
+        yPos -= ySpacing;
+
+        // Game Speed Dropdown
+        CreateLabel("GameSpeedLabel", "Game Speed:", yPos);
+
+        GameObject gameSpeedDropdownObj = new GameObject("GameSpeedDropdown");
+        gameSpeedDropdownObj.transform.SetParent(optionsContainerObj.transform);
+        RectTransform gameSpeedDropdownRect = gameSpeedDropdownObj.AddComponent<RectTransform>();
+        gameSpeedDropdownRect.anchorMin = new Vector2(0f, 1f);
+        gameSpeedDropdownRect.anchorMax = new Vector2(0f, 1f);
+        gameSpeedDropdownRect.pivot = new Vector2(0f, 0.5f);
+        gameSpeedDropdownRect.anchoredPosition = new Vector2(200, yPos);
+        gameSpeedDropdownRect.sizeDelta = new Vector2(250, 30);
+
+        UnityEngine.UI.Image dropdownBg = gameSpeedDropdownObj.AddComponent<UnityEngine.UI.Image>();
+        dropdownBg.color = new Color(0.3f, 0.3f, 0.3f);
+
+        TMPro.TMP_Dropdown gameSpeedDropdown = gameSpeedDropdownObj.AddComponent<TMPro.TMP_Dropdown>();
+
+        // Dropdown label (selected text)
+        GameObject dropdownLabelObj = new GameObject("Label");
+        dropdownLabelObj.transform.SetParent(gameSpeedDropdownObj.transform);
+        RectTransform dropdownLabelRect = dropdownLabelObj.AddComponent<RectTransform>();
+        dropdownLabelRect.anchorMin = Vector2.zero;
+        dropdownLabelRect.anchorMax = Vector2.one;
+        dropdownLabelRect.offsetMin = new Vector2(10, 2);
+        dropdownLabelRect.offsetMax = new Vector2(-25, -2);
+
+        TMPro.TextMeshProUGUI dropdownLabel = dropdownLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
+        dropdownLabel.text = ""; // Will be filled by dropdown
+        dropdownLabel.fontSize = 16;
+        dropdownLabel.color = Color.white;
+        dropdownLabel.alignment = TMPro.TextAlignmentOptions.Left;
+        dropdownLabel.enableAutoSizing = false;
+        dropdownLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+
+        // Dropdown arrow
+        GameObject dropdownArrowObj = new GameObject("Arrow");
+        dropdownArrowObj.transform.SetParent(gameSpeedDropdownObj.transform);
+        RectTransform dropdownArrowRect = dropdownArrowObj.AddComponent<RectTransform>();
+        dropdownArrowRect.anchorMin = new Vector2(1f, 0.5f);
+        dropdownArrowRect.anchorMax = new Vector2(1f, 0.5f);
+        dropdownArrowRect.pivot = new Vector2(0.5f, 0.5f);
+        dropdownArrowRect.anchoredPosition = new Vector2(-15, 0);
+        dropdownArrowRect.sizeDelta = new Vector2(10, 10);
+
+        TMPro.TextMeshProUGUI dropdownArrow = dropdownArrowObj.AddComponent<TMPro.TextMeshProUGUI>();
+        dropdownArrow.text = "▼";
+        dropdownArrow.fontSize = 12;
+        dropdownArrow.color = Color.white;
+        dropdownArrow.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Dropdown template
+        GameObject dropdownTemplateObj = new GameObject("Template");
+        dropdownTemplateObj.transform.SetParent(gameSpeedDropdownObj.transform);
+        RectTransform dropdownTemplateRect = dropdownTemplateObj.AddComponent<RectTransform>();
+        dropdownTemplateRect.anchorMin = new Vector2(0f, 0f);
+        dropdownTemplateRect.anchorMax = new Vector2(1f, 0f);
+        dropdownTemplateRect.pivot = new Vector2(0.5f, 1f);
+        dropdownTemplateRect.anchoredPosition = new Vector2(0, 2);
+        dropdownTemplateRect.sizeDelta = new Vector2(0, 90);
+
+        UnityEngine.UI.Image dropdownTemplateBg = dropdownTemplateObj.AddComponent<UnityEngine.UI.Image>();
+        dropdownTemplateBg.color = new Color(0.3f, 0.3f, 0.3f);
+
+        // Add CanvasGroup for fade animations (required by TMP_Dropdown)
+        CanvasGroup dropdownTemplateCanvasGroup = dropdownTemplateObj.AddComponent<CanvasGroup>();
+
+        UnityEngine.UI.ScrollRect scrollRect = dropdownTemplateObj.AddComponent<UnityEngine.UI.ScrollRect>();
+        scrollRect.horizontal = false;
+        scrollRect.movementType = UnityEngine.UI.ScrollRect.MovementType.Clamped;
+        scrollRect.scrollSensitivity = 10;
+
+        // Viewport
+        GameObject viewportObj = new GameObject("Viewport");
+        viewportObj.transform.SetParent(dropdownTemplateObj.transform);
+        RectTransform viewportRect = viewportObj.AddComponent<RectTransform>();
+        viewportRect.anchorMin = Vector2.zero;
+        viewportRect.anchorMax = Vector2.one;
+        viewportRect.offsetMin = new Vector2(0, 0);
+        viewportRect.offsetMax = new Vector2(0, 0);
+
+        UnityEngine.UI.Image viewportImage = viewportObj.AddComponent<UnityEngine.UI.Image>();
+        viewportImage.color = new Color(0.3f, 0.3f, 0.3f);
+        UnityEngine.UI.Mask viewportMask = viewportObj.AddComponent<UnityEngine.UI.Mask>();
+        viewportMask.showMaskGraphic = false;
+
+        // Content
+        GameObject contentObj = new GameObject("Content");
+        contentObj.transform.SetParent(viewportObj.transform);
+        RectTransform contentRect = contentObj.AddComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0f, 1f);
+        contentRect.anchorMax = new Vector2(1f, 1f);
+        contentRect.pivot = new Vector2(0.5f, 1f);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(0, 90);
+
+        // Add ToggleGroup to content for dropdown items
+        UnityEngine.UI.ToggleGroup toggleGroup = contentObj.AddComponent<UnityEngine.UI.ToggleGroup>();
+
+        // Item
+        GameObject itemObj = new GameObject("Item");
+        itemObj.transform.SetParent(contentObj.transform);
+        RectTransform itemRect = itemObj.AddComponent<RectTransform>();
+        itemRect.anchorMin = new Vector2(0f, 0.5f);
+        itemRect.anchorMax = new Vector2(1f, 0.5f);
+        itemRect.pivot = new Vector2(0.5f, 0.5f);
+        itemRect.sizeDelta = new Vector2(0, 30);
+
+        UnityEngine.UI.Toggle itemToggle = itemObj.AddComponent<UnityEngine.UI.Toggle>();
+        itemToggle.group = toggleGroup;
+        itemToggle.isOn = true;
+        itemToggle.transition = UnityEngine.UI.Selectable.Transition.ColorTint;
+
+        // Item Background (child GameObject with Image for targetGraphic)
+        GameObject itemBgObj = new GameObject("Item Background");
+        itemBgObj.transform.SetParent(itemObj.transform);
+        RectTransform itemBgRect = itemBgObj.AddComponent<RectTransform>();
+        itemBgRect.anchorMin = Vector2.zero;
+        itemBgRect.anchorMax = Vector2.one;
+        itemBgRect.offsetMin = Vector2.zero;
+        itemBgRect.offsetMax = Vector2.zero;
+
+        UnityEngine.UI.Image itemBg = itemBgObj.AddComponent<UnityEngine.UI.Image>();
+        itemBg.color = new Color(0.3f, 0.3f, 0.3f);
+        itemToggle.targetGraphic = itemBg;
+
+        UnityEngine.UI.ColorBlock itemColors = itemToggle.colors;
+        itemColors.normalColor = new Color(0.3f, 0.3f, 0.3f);
+        itemColors.highlightedColor = new Color(0.4f, 0.4f, 0.4f);
+        itemColors.pressedColor = new Color(0.25f, 0.25f, 0.25f);
+        itemColors.selectedColor = new Color(0.35f, 0.35f, 0.35f);
+        itemToggle.colors = itemColors;
+
+        // Item Checkmark (Image component, not TextMeshProUGUI)
+        GameObject itemCheckmarkObj = new GameObject("Item Checkmark");
+        itemCheckmarkObj.transform.SetParent(itemObj.transform);
+        RectTransform itemCheckmarkRect = itemCheckmarkObj.AddComponent<RectTransform>();
+        itemCheckmarkRect.anchorMin = new Vector2(0f, 0.5f);
+        itemCheckmarkRect.anchorMax = new Vector2(0f, 0.5f);
+        itemCheckmarkRect.pivot = new Vector2(0.5f, 0.5f);
+        itemCheckmarkRect.anchoredPosition = new Vector2(15, 0);
+        itemCheckmarkRect.sizeDelta = new Vector2(15, 15);
+
+        UnityEngine.UI.Image itemCheckmark = itemCheckmarkObj.AddComponent<UnityEngine.UI.Image>();
+        itemCheckmark.color = Color.white;
+
+        itemToggle.graphic = itemCheckmark;
+
+        // Item label
+        GameObject itemLabelObj = new GameObject("Item Label");
+        itemLabelObj.transform.SetParent(itemObj.transform);
+        RectTransform itemLabelRect = itemLabelObj.AddComponent<RectTransform>();
+        itemLabelRect.anchorMin = new Vector2(0f, 0f);
+        itemLabelRect.anchorMax = new Vector2(1f, 1f);
+        itemLabelRect.pivot = new Vector2(0.5f, 0.5f);
+        itemLabelRect.offsetMin = new Vector2(30, 1);
+        itemLabelRect.offsetMax = new Vector2(-5, -2);
+        itemLabelRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI itemLabel = itemLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
+        itemLabel.text = "Option";
+        itemLabel.fontSize = 16;
+        itemLabel.color = Color.white;
+        itemLabel.alignment = TMPro.TextAlignmentOptions.MidlineLeft;
+        itemLabel.enableAutoSizing = false;
+        itemLabel.overflowMode = TMPro.TextOverflowModes.Overflow;
+        itemLabel.textWrappingMode = TMPro.TextWrappingModes.NoWrap;
+
+        // Ensure font is assigned
+        if (itemLabel.font == null)
+        {
+            itemLabel.font = TMPro.TMP_Settings.defaultFontAsset;
+        }
+
+        // Wire up ScrollRect
+        scrollRect.viewport = viewportRect;
+        scrollRect.content = contentRect;
+
+        dropdownTemplateObj.SetActive(false);
+
+        // Wire up dropdown components
+        gameSpeedDropdown.captionText = dropdownLabel;
+        gameSpeedDropdown.itemText = itemLabel;
+        gameSpeedDropdown.template = dropdownTemplateRect;
+
+        // Add options AFTER all components are wired up
+        gameSpeedDropdown.options.Clear();
+        gameSpeedDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Slow"));
+        gameSpeedDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Medium"));
+        gameSpeedDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("Fast"));
+
+        // Set default value and refresh (must be done AFTER components are wired and options added)
+        gameSpeedDropdown.value = 1; // Default to Medium (matches GameSpeedSettings default)
+        gameSpeedDropdown.RefreshShownValue();
+
+        // Wire up dropdown to GameSpeedSettings
+        UnityEventTools.AddPersistentListener(gameSpeedDropdown.onValueChanged, gameSpeedSettings.SetGameSpeedFromDropdown);
+        EditorUtility.SetDirty(gameSpeedDropdownObj);
+
+        yPos -= ySpacing;
+
+        // Helper to create a toggle
+        UnityEngine.UI.Toggle CreateToggle(string toggleName, string labelText, float y)
+        {
+            GameObject toggleObj = new GameObject(toggleName);
+            toggleObj.transform.SetParent(optionsContainerObj.transform);
+            RectTransform toggleRect = toggleObj.AddComponent<RectTransform>();
+            toggleRect.anchorMin = new Vector2(0f, 1f);
+            toggleRect.anchorMax = new Vector2(0f, 1f);
+            toggleRect.pivot = new Vector2(0f, 0.5f);
+            toggleRect.anchoredPosition = new Vector2(200, y);
+            toggleRect.sizeDelta = new Vector2(250, 30);
+
+            UnityEngine.UI.Toggle toggle = toggleObj.AddComponent<UnityEngine.UI.Toggle>();
+
+            // Background
+            GameObject toggleBgObj = new GameObject("Background");
+            toggleBgObj.transform.SetParent(toggleObj.transform);
+            RectTransform toggleBgRect = toggleBgObj.AddComponent<RectTransform>();
+            toggleBgRect.anchorMin = new Vector2(0f, 0.5f);
+            toggleBgRect.anchorMax = new Vector2(0f, 0.5f);
+            toggleBgRect.pivot = new Vector2(0f, 0.5f);
+            toggleBgRect.anchoredPosition = Vector2.zero;
+            toggleBgRect.sizeDelta = new Vector2(30, 30);
+
+            UnityEngine.UI.Image toggleBgImage = toggleBgObj.AddComponent<UnityEngine.UI.Image>();
+            toggleBgImage.color = new Color(0.3f, 0.3f, 0.3f);
+
+            // Checkmark
+            GameObject checkmarkObj = new GameObject("Checkmark");
+            checkmarkObj.transform.SetParent(toggleBgObj.transform);
+            RectTransform checkmarkRect = checkmarkObj.AddComponent<RectTransform>();
+            checkmarkRect.anchorMin = Vector2.zero;
+            checkmarkRect.anchorMax = Vector2.one;
+            checkmarkRect.sizeDelta = Vector2.zero;
+            checkmarkRect.anchoredPosition = Vector2.zero;
+
+            TMPro.TextMeshProUGUI checkmark = checkmarkObj.AddComponent<TMPro.TextMeshProUGUI>();
+            checkmark.text = "X";
+            checkmark.fontSize = 24;
+            checkmark.color = new Color(0f, 0.7f, 0f);
+            checkmark.alignment = TMPro.TextAlignmentOptions.Center;
+
+            // Label
+            GameObject toggleLabelObj = new GameObject("Label");
+            toggleLabelObj.transform.SetParent(toggleObj.transform);
+            RectTransform toggleLabelRect = toggleLabelObj.AddComponent<RectTransform>();
+            toggleLabelRect.anchorMin = new Vector2(0f, 0.5f);
+            toggleLabelRect.anchorMax = new Vector2(1f, 0.5f);
+            toggleLabelRect.pivot = new Vector2(0f, 0.5f);
+            toggleLabelRect.anchoredPosition = new Vector2(40, 0);
+            toggleLabelRect.sizeDelta = new Vector2(-40, 30);
+
+            TMPro.TextMeshProUGUI toggleLabel = toggleLabelObj.AddComponent<TMPro.TextMeshProUGUI>();
+            toggleLabel.text = labelText;
+            toggleLabel.fontSize = 18;
+            toggleLabel.color = Color.white;
+            toggleLabel.alignment = TMPro.TextAlignmentOptions.Left;
+
+            toggle.graphic = checkmark;
+            toggle.isOn = false;
+
+            return toggle;
+        }
+
+        // Subtitles toggle
+        CreateLabel("SubtitlesLabel", "Subtitles:", yPos);
+        UnityEngine.UI.Toggle subtitlesToggle = CreateToggle("SubtitlesToggle", "Enable Subtitles", yPos);
+
+        yPos -= ySpacing;
+
+        // Color Blind Mode toggle
+        CreateLabel("ColorBlindModeLabel", "Color Blind Mode:", yPos);
+        UnityEngine.UI.Toggle colorBlindToggle = CreateToggle("ColorBlindModeToggle", "Enable Color Blind Mode", yPos);
+
+        yPos -= 80;
+
+        // Back button
+        GameObject backButtonObj = new GameObject("BackButton");
+        backButtonObj.transform.SetParent(optionsContainerObj.transform);
+        RectTransform backButtonRect = backButtonObj.AddComponent<RectTransform>();
+        backButtonRect.anchorMin = new Vector2(0.5f, 0f);
+        backButtonRect.anchorMax = new Vector2(0.5f, 0f);
+        backButtonRect.pivot = new Vector2(0.5f, 0f);
+        backButtonRect.anchoredPosition = new Vector2(0, 20);
+        backButtonRect.sizeDelta = new Vector2(200, 50);
+
+        UnityEngine.UI.Image backButtonImage = backButtonObj.AddComponent<UnityEngine.UI.Image>();
+        backButtonImage.color = new Color(0.3f, 0.3f, 0.3f);
+
+        UnityEngine.UI.Button backButton = backButtonObj.AddComponent<UnityEngine.UI.Button>();
+        UnityEngine.UI.ColorBlock backButtonColors = backButton.colors;
+        backButtonColors.normalColor = new Color(0.3f, 0.3f, 0.3f);
+        backButtonColors.highlightedColor = new Color(0.4f, 0.4f, 0.4f);
+        backButtonColors.pressedColor = new Color(0.2f, 0.2f, 0.2f);
+        backButton.colors = backButtonColors;
+
+        // Back button text
+        GameObject backButtonTextObj = new GameObject("Text");
+        backButtonTextObj.transform.SetParent(backButtonObj.transform);
+        RectTransform backButtonTextRect = backButtonTextObj.AddComponent<RectTransform>();
+        backButtonTextRect.anchorMin = Vector2.zero;
+        backButtonTextRect.anchorMax = Vector2.one;
+        backButtonTextRect.sizeDelta = Vector2.zero;
+        backButtonTextRect.anchoredPosition = Vector2.zero;
+
+        TMPro.TextMeshProUGUI backButtonText = backButtonTextObj.AddComponent<TMPro.TextMeshProUGUI>();
+        backButtonText.text = "Back";
+        backButtonText.fontSize = 24;
+        backButtonText.color = Color.white;
+        backButtonText.alignment = TMPro.TextAlignmentOptions.Center;
+
+        // Wire up back button to close options
+        UnityEventTools.AddPersistentListener(backButton.onClick, pauseMenu.CloseOptions);
+        EditorUtility.SetDirty(backButtonObj);
+
+        // Connect options panel to PauseMenu script
+        pauseMenuSO.Update();
+        pauseMenuSO.FindProperty("optionsPanel").objectReferenceValue = optionsPanelObj;
+        pauseMenuSO.ApplyModifiedProperties();
+
+        // Hide options panel by default
+        optionsPanelObj.SetActive(false);
 
         // Hide pause menu by default
         pausePanelObj.SetActive(false);

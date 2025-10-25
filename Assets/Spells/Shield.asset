@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854f9e76b6f305f4190ef8d5eb97e25b, type: 3}
+  m_Name: Shield
+  m_EditorClassIdentifier: Assembly-CSharp::SpellData
+  spellName: Shield
+  description: An invisible barrier of magical force appears and protects you. Until
+    the start of your next turn, you have +5 to AC.
+  school: 0
+  level: 1
+  castingTime: 2
+  isRitual: 0
+  components: 3
+  materialComponent: 
+  materialConsumed: 0
+  range: 0
+  targetType: 0
+  areaRadius: 0
+  durationType: 1
+  durationValue: 1
+  requiresConcentration: 0
+  savingThrow: 0
+  requiresAttackRoll: 0
+  isMeleeSpellAttack: 0
+  primaryEffect: 2
+  damageType: 4
+  baseDice:
+    count: 3
+    sides: 6
+    modifier: 0
+  scalesWithLevel: 0
+  additionalDicePerLevel:
+    count: 1
+    sides: 6
+    modifier: 0
+  appliedEffect: {fileID: 0}
+  effectSeverity: 1
+  effectDuration: 3
+  minimumPlayerLevel: 2
+  manaCost: 15
+  cooldownTurns: 0
+  associatedGemTypes: 0600000001000000
+  gemsRequiredToCast: 4
+  spellIcon: {fileID: 0}

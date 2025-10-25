@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 854f9e76b6f305f4190ef8d5eb97e25b, type: 3}
+  m_Name: TransmuteGems
+  m_EditorClassIdentifier: Assembly-CSharp::SpellData
+  spellName: Transmute Gems
+  description: You touch the game board and transform gems of one color into another.
+    This spell allows strategic board manipulation.
+  school: 7
+  level: 2
+  castingTime: 0
+  isRitual: 0
+  components: 3
+  materialComponent: 
+  materialConsumed: 0
+  range: 0
+  targetType: 7
+  areaRadius: 0
+  durationType: 0
+  durationValue: 0
+  requiresConcentration: 0
+  savingThrow: 0
+  requiresAttackRoll: 0
+  isMeleeSpellAttack: 0
+  primaryEffect: 6
+  damageType: 4
+  baseDice:
+    count: 3
+    sides: 6
+    modifier: 0
+  scalesWithLevel: 0
+  additionalDicePerLevel:
+    count: 1
+    sides: 6
+    modifier: 0
+  appliedEffect: {fileID: 0}
+  effectSeverity: 1
+  effectDuration: 3
+  minimumPlayerLevel: 3
+  manaCost: 25
+  cooldownTurns: 2
+  associatedGemTypes: 0200000004000000
+  gemsRequiredToCast: 6
+  spellIcon: {fileID: 0}

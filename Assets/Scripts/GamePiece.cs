@@ -69,6 +69,17 @@ public class GamePiece : MonoBehaviour
         gridPosition = position;
     }
 
+    /// <summary>
+    /// Set visibility of the piece (used during initial board setup)
+    /// </summary>
+    public void SetVisible(bool visible)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.enabled = visible;
+        }
+    }
+
     public void MoveTo(Vector3 targetPosition, float duration)
     {
         if (isMoving) return;
@@ -144,7 +155,15 @@ public class GamePiece : MonoBehaviour
 
     private System.Collections.IEnumerator DestroyAnimation()
     {
-        float duration = 0.3f;
+        float baseDuration = 0.3f;
+        float duration = baseDuration;
+
+        // Apply game speed multiplier
+        if (GameSpeedSettings.Instance != null)
+        {
+            duration = GameSpeedSettings.Instance.GetAdjustedDuration(baseDuration);
+        }
+
         float elapsed = 0f;
         Vector3 startScale = transform.localScale;
 
