@@ -18,11 +18,7 @@ public class MainMenuManager : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private string gameSceneName = "Match3";
     [SerializeField] private string loadingSceneName = "LoadingScreen";
-    [SerializeField] private bool useLoadingScreen = true;
-
-    [Header("Settings Panel")]
-    [SerializeField] private GameObject settingsPanel;
-    [SerializeField] private Button settingsBackButton;
+    [SerializeField] private bool useLoadingScreen = false; // Go directly to Match3, not through loading screen
 
     private void Start()
     {
@@ -39,15 +35,11 @@ public class MainMenuManager : MonoBehaviour
         if (exitButton != null)
             exitButton.onClick.AddListener(OnExit);
 
-        if (settingsBackButton != null)
-            settingsBackButton.onClick.AddListener(OnSettingsBack);
-
         // Check if save game exists
         UpdateContinueButton();
 
-        // Hide settings panel initially
-        if (settingsPanel != null)
-            settingsPanel.SetActive(false);
+        // Initialize global options manager (ensures it exists)
+        _ = GlobalOptionsManager.Instance;
     }
 
     private void UpdateContinueButton()
@@ -91,21 +83,16 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnSettings()
     {
-        Debug.Log("Opening settings...");
+        Debug.Log("Opening settings from main menu...");
 
-        if (settingsPanel != null)
+        // Use global options manager singleton
+        if (GlobalOptionsManager.Instance != null)
         {
-            settingsPanel.SetActive(true);
+            GlobalOptionsManager.Instance.OpenOptions();
         }
-    }
-
-    private void OnSettingsBack()
-    {
-        Debug.Log("Closing settings...");
-
-        if (settingsPanel != null)
+        else
         {
-            settingsPanel.SetActive(false);
+            Debug.LogError("GlobalOptionsManager not found! Run Tools > Create Persistent Options Menu");
         }
     }
 

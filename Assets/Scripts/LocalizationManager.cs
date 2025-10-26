@@ -348,6 +348,21 @@ public class LocalizationManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Get current language as dropdown index
+    /// </summary>
+    public int GetCurrentLanguageIndex()
+    {
+        return currentLanguage switch
+        {
+            SystemLanguage.English => 0,
+            SystemLanguage.Spanish => 1,
+            SystemLanguage.French => 2,
+            SystemLanguage.German => 3,
+            _ => 0 // Default to English
+        };
+    }
+
+    /// <summary>
     /// Get current language
     /// </summary>
     public SystemLanguage GetCurrentLanguage()

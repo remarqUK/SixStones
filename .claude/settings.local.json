@@ -21,7 +21,9 @@
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\LoadingScreenLog.txt\" -executeMethod LoadingScreenSetup.CreateLoadingScreen)",
       "Bash(del \"C:\\Users\\mouse\\Test2D\\Assets\\Scripts\\CreateDefaultGemTypes.cs\")",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\MainMenuLog.txt\" -executeMethod MainMenuSetup.CreateMainMenu)",
-      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\RegenerateLog.txt\" -executeMethod Match3Setup.SetupMatch3Scene)"
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\RegenerateLog.txt\" -executeMethod Match3Setup.SetupMatch3Scene)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\CameraFixLog.txt\" -executeMethod FixMainMenuCamera.FixCamera)",
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\UpdateOptionsLog.txt\" -executeMethod UpdateOptionsMenuBothScenes.UpdateOptionsMenuCommandLine)"
     ],
     "deny": [],
     "ask": []

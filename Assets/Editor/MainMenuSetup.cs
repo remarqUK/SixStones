@@ -56,7 +56,7 @@ public class MainMenuSetup : EditorWindow
         // Create Menu Container
         GameObject menuContainer = new GameObject("MenuContainer");
         menuContainer.transform.SetParent(canvasObj.transform, false);
-        RectTransform menuRect = menuContainer.GetComponent<RectTransform>();
+        RectTransform menuRect = menuContainer.AddComponent<RectTransform>();
         menuRect.anchorMin = new Vector2(0.5f, 0.5f);
         menuRect.anchorMax = new Vector2(0.5f, 0.5f);
         menuRect.pivot = new Vector2(0.5f, 0.5f);
@@ -69,42 +69,20 @@ public class MainMenuSetup : EditorWindow
         GameObject settingsBtn = CreateMenuButton("SettingsButton", "Settings", menuContainer, 2);
         GameObject exitBtn = CreateMenuButton("ExitButton", "Exit", menuContainer, 3);
 
-        // Create Settings Panel (hidden by default)
-        GameObject settingsPanel = CreateSettingsPanel(canvasObj);
+        // Note: Settings panel is no longer needed - GlobalOptionsManager handles options globally
 
         // Create MainMenuManager
         GameObject managerObj = new GameObject("MainMenuManager");
         MainMenuManager menuManager = managerObj.AddComponent<MainMenuManager>();
 
-        // Wire up references using reflection
-        var newGameField = typeof(MainMenuManager).GetField("newGameButton",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var continueField = typeof(MainMenuManager).GetField("continueButton",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var settingsField = typeof(MainMenuManager).GetField("settingsButton",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var exitField = typeof(MainMenuManager).GetField("exitButton",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var continueTextField = typeof(MainMenuManager).GetField("continueButtonText",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var settingsPanelField = typeof(MainMenuManager).GetField("settingsPanel",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var settingsBackField = typeof(MainMenuManager).GetField("settingsBackButton",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-        if (newGameField != null) newGameField.SetValue(menuManager, newGameBtn.GetComponent<Button>());
-        if (continueField != null) continueField.SetValue(menuManager, continueBtn.GetComponent<Button>());
-        if (settingsField != null) settingsField.SetValue(menuManager, settingsBtn.GetComponent<Button>());
-        if (exitField != null) exitField.SetValue(menuManager, exitBtn.GetComponent<Button>());
-        if (continueTextField != null) continueTextField.SetValue(menuManager, continueBtn.GetComponentInChildren<TextMeshProUGUI>());
-        if (settingsPanelField != null) settingsPanelField.SetValue(menuManager, settingsPanel);
-
-        // Find Back button in settings panel
-        Transform backBtnTransform = settingsPanel.transform.Find("BackButton");
-        if (backBtnTransform != null && settingsBackField != null)
-        {
-            settingsBackField.SetValue(menuManager, backBtnTransform.GetComponent<Button>());
-        }
+        // Wire up references using SerializedObject
+        SerializedObject so = new SerializedObject(menuManager);
+        so.FindProperty("newGameButton").objectReferenceValue = newGameBtn.GetComponent<Button>();
+        so.FindProperty("continueButton").objectReferenceValue = continueBtn.GetComponent<Button>();
+        so.FindProperty("settingsButton").objectReferenceValue = settingsBtn.GetComponent<Button>();
+        so.FindProperty("exitButton").objectReferenceValue = exitBtn.GetComponent<Button>();
+        so.FindProperty("continueButtonText").objectReferenceValue = continueBtn.GetComponentInChildren<TextMeshProUGUI>();
+        so.ApplyModifiedProperties();
 
         // Create EventSystem
         if (GameObject.FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)

@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc8dc0e6b7fadcc47b3b2dcf031206f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadingManager
-  sceneToLoad: Match3
+  sceneToLoad: MainMenu
   minimumLoadTime: 2
   canvasGroup: {fileID: 1289962186}
 --- !u!4 &533292086

@@ -7,10 +7,15 @@ using UnityEngine.InputSystem;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
-    [SerializeField] private GameObject optionsPanel;
     [SerializeField] private GameManager gameManager;
 
     private bool isPaused = false;
+
+    private void Start()
+    {
+        // Initialize global options manager (ensures it exists)
+        _ = GlobalOptionsManager.Instance;
+    }
 
     private void Update()
     {
@@ -32,7 +37,7 @@ public class PauseMenu : MonoBehaviour
     private void TogglePause()
     {
         // If options menu is open, close it and return to pause menu
-        if (optionsPanel != null && optionsPanel.activeSelf)
+        if (GlobalOptionsManager.Instance != null && GlobalOptionsManager.Instance.IsOpen)
         {
             CloseOptions();
             return;
@@ -97,10 +102,65 @@ public class PauseMenu : MonoBehaviour
             pauseMenuPanel.SetActive(false);
         }
 
-        if (optionsPanel != null)
+        if (GlobalOptionsManager.Instance != null)
         {
-            optionsPanel.SetActive(true);
+            // Check if options controller is available
+            if (GlobalOptionsManager.Instance.IsOpen || HasOptionsController())
+            {
+                // Open global options with callback to return to pause menu
+                GlobalOptionsManager.Instance.OpenOptions(OnOptionsClose);
+            }
+            else
+            {
+                // Options controller not set up - restore pause menu
+                Debug.LogError("GlobalOptionsManager exists but OptionsMenuController is not set up!\n" +
+                              "Run Tools > Create Persistent Options Menu");
+
+                if (pauseMenuPanel != null)
+                {
+                    pauseMenuPanel.SetActive(true);
+                }
+            }
         }
+        else
+        {
+            Debug.LogError("GlobalOptionsManager not found! Run Tools > Create Persistent Options Menu");
+
+            // Restore pause menu
+            if (pauseMenuPanel != null)
+            {
+                pauseMenuPanel.SetActive(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check if GlobalOptionsManager has an OptionsMenuController set up
+    /// </summary>
+    private bool HasOptionsController()
+    {
+        if (GlobalOptionsManager.Instance == null)
+            return false;
+
+        // Try to get the OptionsMenuController component
+        var controller = GlobalOptionsManager.Instance.GetComponent<OptionsMenuController>();
+        return controller != null;
+    }
+
+    /// <summary>
+    /// Called when options menu closes - return to pause menu
+    /// </summary>
+    private void OnOptionsClose()
+    {
+        Debug.Log("Closing options panel - returning to pause menu");
+
+        if (pauseMenuPanel != null)
+        {
+            pauseMenuPanel.SetActive(true);
+        }
+
+        // Re-pause the game (we want pause menu to keep it paused)
+        Time.timeScale = 0f;
     }
 
     /// <summary>
@@ -108,17 +168,13 @@ public class PauseMenu : MonoBehaviour
     /// </summary>
     public void CloseOptions()
     {
-        Debug.Log("Closing options panel");
-
-        if (optionsPanel != null)
+        if (GlobalOptionsManager.Instance != null)
         {
-            optionsPanel.SetActive(false);
+            GlobalOptionsManager.Instance.CloseOptions();
         }
 
-        if (pauseMenuPanel != null)
-        {
-            pauseMenuPanel.SetActive(true);
-        }
+        // Return to pause menu
+        OnOptionsClose();
     }
 
     /// <summary>
