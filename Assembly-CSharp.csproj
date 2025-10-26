@@ -88,6 +88,7 @@
     <Compile Include="Assets\Scripts\PieceTypeDatabase.cs" />
     <Compile Include="Assets\Scripts\CreateExampleSpells.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
+    <Compile Include="Assets\Scripts\Maze3DBuilder.cs" />
     <Compile Include="Assets\Scripts\EquipmentSlot.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_B.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\SkewTextExample.cs" />
@@ -144,6 +145,7 @@
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\SpellData.cs" />
     <Compile Include="Assets\Scripts\MatchDetector.cs" />
+    <Compile Include="Assets\Scripts\FirstPersonMazeController.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshProFloatingText.cs" />
     <Compile Include="Assets\Scripts\PieceTypeData.cs" />
   </ItemGroup>
