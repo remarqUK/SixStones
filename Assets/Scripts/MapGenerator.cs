@@ -43,15 +43,15 @@ public class MapGenerator : MonoBehaviour
         startPosition = new Vector2Int(width / 2, 0);
         grid[startPosition.x, startPosition.y].isStart = true;
 
-        // STEP 2: Place boss position (far from start, top area)
-        bossPosition = new Vector2Int(Random.Range(1, width - 1), height - 1);
-        grid[bossPosition.x, bossPosition.y].isBoss = true;
-
-        // STEP 3: Place secret rooms (random locations, not on start/boss)
+        // STEP 2: Place secret rooms (random locations, not on start)
         PlaceSecretRooms();
 
-        // STEP 4: Generate maze around these fixed points
+        // STEP 3: Generate maze from start (skipping secret rooms)
         RecursiveBacktrack(startPosition.x, startPosition.y);
+
+        // STEP 4: Place boss at furthest point from start (end of longest path)
+        bossPosition = FindFurthestCellFromStart();
+        grid[bossPosition.x, bossPosition.y].isBoss = true;
 
         // STEP 5: Connect secret rooms to adjacent maze cells with buttons
         ConnectSecretRooms();
@@ -59,7 +59,9 @@ public class MapGenerator : MonoBehaviour
         // Spawn enemies and treasure
         SpawnEnemiesAndTreasure();
 
-        Debug.Log($"Maze generated: {width}x{height}, Start: {startPosition}, Boss: {bossPosition}, Secret Rooms: {secretRoomPositions.Count}");
+        // Log generation details
+        int openPassages = CountOpenPassages(bossPosition);
+        Debug.Log($"Maze generated: {width}x{height}, Start: {startPosition}, Boss: {bossPosition} ({openPassages} open passage(s)), Secret Rooms: {secretRoomPositions.Count}");
     }
 
     // Place secret rooms before generating maze
@@ -80,8 +82,8 @@ public class MapGenerator : MonoBehaviour
 
             MapCell cell = grid[x, y];
 
-            // Don't place on start or boss
-            if (cell.isStart || cell.isBoss)
+            // Don't place on start (boss not placed yet)
+            if (cell.isStart)
                 continue;
 
             // Don't place duplicate
@@ -110,40 +112,34 @@ public class MapGenerator : MonoBehaviour
             secretCell.wallWest = true;
 
             // Find adjacent maze cells (visited, not secret)
-            List<(Vector2Int pos, string secretWallDirection)> adjacentMazeCells = new List<(Vector2Int, string)>();
+            List<(Vector2Int pos, string direction)> adjacentMazeCells = new List<(Vector2Int, string)>();
 
-            // Check North - secret room's NORTH wall connects to maze cell above
-            if (secretPos.y + 1 < height) CheckAdjacentForConnection(secretPos, new Vector2Int(0, 1), "North", adjacentMazeCells);
-
-            // Check South - secret room's SOUTH wall connects to maze cell below
-            if (secretPos.y - 1 >= 0) CheckAdjacentForConnection(secretPos, new Vector2Int(0, -1), "South", adjacentMazeCells);
-
-            // Check East - secret room's EAST wall connects to maze cell to the right
-            if (secretPos.x + 1 < width) CheckAdjacentForConnection(secretPos, new Vector2Int(1, 0), "East", adjacentMazeCells);
-
-            // Check West - secret room's WEST wall connects to maze cell to the left
-            if (secretPos.x - 1 >= 0) CheckAdjacentForConnection(secretPos, new Vector2Int(-1, 0), "West", adjacentMazeCells);
+            if (secretPos.y + 1 < height) CheckAdjacentForConnection(secretPos, new Vector2Int(0, 1), "South", adjacentMazeCells);
+            if (secretPos.y - 1 >= 0) CheckAdjacentForConnection(secretPos, new Vector2Int(0, -1), "North", adjacentMazeCells);
+            if (secretPos.x + 1 < width) CheckAdjacentForConnection(secretPos, new Vector2Int(1, 0), "West", adjacentMazeCells);
+            if (secretPos.x - 1 >= 0) CheckAdjacentForConnection(secretPos, new Vector2Int(-1, 0), "East", adjacentMazeCells);
 
             // Connect to a random adjacent maze cell
             if (adjacentMazeCells.Count > 0)
             {
-                var (mazePos, secretWallDirection) = adjacentMazeCells[Random.Range(0, adjacentMazeCells.Count)];
+                var (mazePos, direction) = adjacentMazeCells[Random.Range(0, adjacentMazeCells.Count)];
+                MapCell mazeCell = grid[mazePos.x, mazePos.y];
 
-                // Mark which wall of the SECRET ROOM has the button
-                switch (secretWallDirection)
+                // Add secret button to the MAZE CELL's wall
+                switch (direction)
                 {
-                    case "North": secretCell.hasSecretButtonNorth = true; break;
-                    case "South": secretCell.hasSecretButtonSouth = true; break;
-                    case "East": secretCell.hasSecretButtonEast = true; break;
-                    case "West": secretCell.hasSecretButtonWest = true; break;
+                    case "North": mazeCell.hasSecretButtonNorth = true; break;
+                    case "South": mazeCell.hasSecretButtonSouth = true; break;
+                    case "East": mazeCell.hasSecretButtonEast = true; break;
+                    case "West": mazeCell.hasSecretButtonWest = true; break;
                 }
 
-                Debug.Log($"Secret room at ({secretPos.x}, {secretPos.y}) has button on {secretWallDirection} wall (connects to maze at {mazePos.x}, {mazePos.y})");
+                Debug.Log($"Secret room at ({secretPos.x}, {secretPos.y}) connected from maze cell ({mazePos.x}, {mazePos.y}) via {direction} wall");
             }
         }
     }
 
-    private void CheckAdjacentForConnection(Vector2Int secretPos, Vector2Int dir, string secretWallDirection, List<(Vector2Int, string)> results)
+    private void CheckAdjacentForConnection(Vector2Int secretPos, Vector2Int dir, string direction, List<(Vector2Int, string)> results)
     {
         int nx = secretPos.x + dir.x;
         int ny = secretPos.y + dir.y;
@@ -156,7 +152,7 @@ public class MapGenerator : MonoBehaviour
         // Must be part of maze and not a secret room
         if (adjacent.visited && !adjacent.isSecretRoom)
         {
-            results.Add((new Vector2Int(nx, ny), secretWallDirection));
+            results.Add((new Vector2Int(nx, ny), direction));
         }
     }
 
@@ -249,6 +245,71 @@ public class MapGenerator : MonoBehaviour
         return x >= 0 && x < width && y >= 0 && y < height;
     }
 
+    // Find furthest cell from start using BFS (for boss placement)
+    private Vector2Int FindFurthestCellFromStart()
+    {
+        int[,] distances = new int[width, height];
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                distances[x, y] = -1;
+
+        Queue<Vector2Int> queue = new Queue<Vector2Int>();
+        queue.Enqueue(startPosition);
+        distances[startPosition.x, startPosition.y] = 0;
+
+        Vector2Int furthest = startPosition;
+        int maxDistance = 0;
+
+        while (queue.Count > 0)
+        {
+            Vector2Int current = queue.Dequeue();
+            int currentDist = distances[current.x, current.y];
+
+            if (currentDist > maxDistance)
+            {
+                maxDistance = currentDist;
+                furthest = current;
+            }
+
+            // Check all four directions through open passages only
+            TryEnqueueForBFS(current, new Vector2Int(0, 1), distances, queue);   // North
+            TryEnqueueForBFS(current, new Vector2Int(1, 0), distances, queue);   // East
+            TryEnqueueForBFS(current, new Vector2Int(0, -1), distances, queue);  // South
+            TryEnqueueForBFS(current, new Vector2Int(-1, 0), distances, queue);  // West
+        }
+
+        return furthest;
+    }
+
+    private void TryEnqueueForBFS(Vector2Int current, Vector2Int dir, int[,] distances, Queue<Vector2Int> queue)
+    {
+        int nx = current.x + dir.x;
+        int ny = current.y + dir.y;
+
+        if (!IsValidCell(nx, ny) || distances[nx, ny] != -1)
+            return;
+
+        MapCell currentCell = grid[current.x, current.y];
+        MapCell neighborCell = grid[nx, ny];
+
+        // Don't traverse into secret rooms
+        if (neighborCell.isSecretRoom)
+            return;
+
+        // Check if we can move through the wall (no wall = open passage)
+        bool canMove = false;
+        if (dir.y == 1) canMove = currentCell.CanMoveNorth();
+        else if (dir.y == -1) canMove = currentCell.CanMoveSouth();
+        else if (dir.x == 1) canMove = currentCell.CanMoveEast();
+        else if (dir.x == -1) canMove = currentCell.CanMoveWest();
+
+        if (canMove)
+        {
+            distances[nx, ny] = distances[current.x, current.y] + 1;
+            queue.Enqueue(new Vector2Int(nx, ny));
+        }
+    }
+
     // Spawn enemies and treasure in random cells
     private void SpawnEnemiesAndTreasure()
     {
@@ -258,8 +319,12 @@ public class MapGenerator : MonoBehaviour
             {
                 MapCell cell = grid[x, y];
 
-                // Don't spawn on start or boss cells
-                if (cell.isStart || cell.isBoss)
+                // Don't spawn on start, boss, or secret room cells
+                if (cell.isStart || cell.isBoss || cell.isSecretRoom)
+                    continue;
+
+                // Only spawn in visited cells (part of the maze)
+                if (!cell.visited)
                     continue;
 
                 // Spawn enemy
@@ -289,5 +354,17 @@ public class MapGenerator : MonoBehaviour
     public MapCell GetCell(Vector2Int pos)
     {
         return GetCell(pos.x, pos.y);
+    }
+
+    // Count how many open passages a cell has (for boss placement verification)
+    private int CountOpenPassages(Vector2Int pos)
+    {
+        MapCell cell = grid[pos.x, pos.y];
+        int count = 0;
+        if (!cell.wallNorth) count++;
+        if (!cell.wallSouth) count++;
+        if (!cell.wallEast) count++;
+        if (!cell.wallWest) count++;
+        return count;
     }
 }
