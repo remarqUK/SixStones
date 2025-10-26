@@ -48,33 +48,13 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Editor\FixCameraBackground.cs" />
-    <Compile Include="Assets\Editor\FixEventSystemInput.cs" />
-    <Compile Include="Assets\Editor\CreateDefaultGemTypes.cs" />
-    <Compile Include="Assets\Editor\UpdateOptionsMenuBothScenes.cs" />
-    <Compile Include="Assets\Editor\CreatePersistentOptionsMenuPrefab.cs" />
-    <Compile Include="Assets\Editor\CreatePersistentOptionsMenu.cs" />
-    <Compile Include="Assets\Editor\AddCameraScaler.cs" />
     <Compile Include="Assets\Editor\CreateSimpleOptionsMenuPrefab.cs" />
-    <Compile Include="Assets\Editor\CleanupOldOptionsMenus.cs" />
-    <Compile Include="Assets\Editor\DiagnoseGridMeasurements.cs" />
-    <Compile Include="Assets\Editor\RemoveCellBackgrounds.cs" />
     <Compile Include="Assets\Editor\BuildScript.cs" />
-    <Compile Include="Assets\Editor\FixLoadingScreen.cs" />
-    <Compile Include="Assets\Editor\SetupBuildScenes.cs" />
-    <Compile Include="Assets\Editor\CleanupMainMenuScene.cs" />
     <Compile Include="Assets\Editor\CreateMatch3Assets.cs" />
-    <Compile Include="Assets\Editor\FixCameraURP.cs" />
-    <Compile Include="Assets\Editor\FixGemSize.cs" />
-    <Compile Include="Assets\Editor\ValidateMainMenuScene.cs" />
-    <Compile Include="Assets\Editor\DiagnoseBoardPosition.cs" />
     <Compile Include="Assets\Editor\MainMenuSetup.cs" />
     <Compile Include="Assets\Editor\ItemCreator.cs" />
-    <Compile Include="Assets\Editor\CenterCamera.cs" />
     <Compile Include="Assets\Editor\Match3Setup.cs" />
     <Compile Include="Assets\Editor\CreateGameModes.cs" />
-    <Compile Include="Assets\Editor\CreateOptionsMenu.cs" />
-    <Compile Include="Assets\Editor\FixMainMenuCamera.cs" />
     <Compile Include="Assets\Editor\InventorySetup.cs" />
     <Compile Include="Assets\Editor\LoadingScreenSetup.cs" />
   </ItemGroup>

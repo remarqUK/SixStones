@@ -120,7 +120,6 @@
     <Compile Include="Assets\Scripts\LevelUpDialog.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark03.cs" />
     <Compile Include="Assets\Scripts\GemTypeManager.cs" />
-    <Compile Include="Assets\Scripts\GlobalOptionsAccess.cs" />
     <Compile Include="Assets\Scripts\CPUPlayer.cs" />
     <Compile Include="Assets\Scripts\RandomItemTester.cs" />
     <Compile Include="Assets\Scripts\RandomItemGenerator.cs" />

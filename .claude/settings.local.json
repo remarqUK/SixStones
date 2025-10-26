@@ -23,7 +23,8 @@
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\MainMenuLog.txt\" -executeMethod MainMenuSetup.CreateMainMenu)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\RegenerateLog.txt\" -executeMethod Match3Setup.SetupMatch3Scene)",
       "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\CameraFixLog.txt\" -executeMethod FixMainMenuCamera.FixCamera)",
-      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\UpdateOptionsLog.txt\" -executeMethod UpdateOptionsMenuBothScenes.UpdateOptionsMenuCommandLine)"
+      "Bash(\"C:\\Program Files\\Unity\\Hub\\Editor\\6000.2.9f1\\Editor\\Unity.exe\" -quit -batchmode -projectPath \"C:\\Users\\mouse\\Test2D\" -logFile \"C:\\Users\\mouse\\Test2D\\Logs\\UpdateOptionsLog.txt\" -executeMethod UpdateOptionsMenuBothScenes.UpdateOptionsMenuCommandLine)",
+      "Bash(del CreateOptionsMenu.cs CreatePersistentOptionsMenu.cs CreatePersistentOptionsMenuPrefab.cs UpdateOptionsMenuBothScenes.cs CleanupOldOptionsMenus.cs CleanupMainMenuScene.cs)"
     ],
     "deny": [],
     "ask": []
