@@ -10,13 +10,13 @@ public class MapVisualizer : MonoBehaviour
     public float wallThickness = 0.1f;
 
     [Header("Colors")]
-    public Color wallColor = Color.white;
+    public Color wallCellColor = new Color(0.533f, 0.533f, 0.533f); // #888 gray for wall cells
     public Color startColor = Color.green;
     public Color bossColor = Color.red;
     public Color enemyColor = new Color(1f, 0.5f, 0f); // Orange
     public Color treasureColor = Color.yellow;
     public Color currentPositionColor = Color.cyan;
-    public Color pathColor = new Color(0.3f, 0.3f, 0.3f); // Dark gray
+    public Color pathColor = new Color(0.3f, 0.3f, 0.3f); // Dark gray for floor cells
     public Color secretRoomColor = new Color(0.5f, 0f, 0.5f); // Purple
     public Color secretButtonColor = new Color(1f, 0f, 1f); // Magenta
 
@@ -46,90 +46,39 @@ public class MapVisualizer : MonoBehaviour
 
                 Vector3 cellCenter = GetCellWorldPosition(x, y);
 
-                // Draw cell background
+                // Draw cell background (wall or floor)
                 DrawCellBackground(cell, cellCenter);
 
-                // Draw walls
-                DrawCellWalls(cell, cellCenter);
-
-                // Draw special markers
-                DrawCellMarkers(cell, cellCenter);
+                // Draw special markers (only on non-wall cells)
+                if (!cell.isWall)
+                {
+                    DrawCellMarkers(cell, cellCenter);
+                }
             }
         }
     }
 
     private void DrawCellBackground(MapCell cell, Vector3 center)
     {
-        // Draw floor/path - secret rooms are purple
-        if (cell.isSecretRoom)
+        // Determine cell color based on type
+        if (cell.isWall)
+        {
+            // Wall cells are gray
+            Gizmos.color = wallCellColor;
+        }
+        else if (cell.isSecretRoom)
+        {
+            // Secret room floors are purple
             Gizmos.color = secretRoomColor;
+        }
         else
+        {
+            // Regular floor cells are dark gray
             Gizmos.color = pathColor;
+        }
 
+        // Draw cell as a square
         Gizmos.DrawCube(center, new Vector3(cellSize * 0.9f, cellSize * 0.9f, 0.01f));
-    }
-
-    private void DrawCellWalls(MapCell cell, Vector3 center)
-    {
-        float halfSize = cellSize / 2f;
-        float buttonSize = cellSize * 0.15f;
-
-        // North wall
-        if (cell.wallNorth)
-        {
-            Gizmos.color = wallColor;
-            Vector3 wallCenter = center + new Vector3(0, halfSize, 0);
-            Gizmos.DrawCube(wallCenter, new Vector3(cellSize, wallThickness, wallThickness));
-
-            // Draw secret button if present
-            if (cell.hasSecretButtonNorth)
-            {
-                Gizmos.color = secretButtonColor;
-                Gizmos.DrawWireSphere(wallCenter, buttonSize);
-            }
-        }
-
-        // South wall
-        if (cell.wallSouth)
-        {
-            Gizmos.color = wallColor;
-            Vector3 wallCenter = center + new Vector3(0, -halfSize, 0);
-            Gizmos.DrawCube(wallCenter, new Vector3(cellSize, wallThickness, wallThickness));
-
-            if (cell.hasSecretButtonSouth)
-            {
-                Gizmos.color = secretButtonColor;
-                Gizmos.DrawWireSphere(wallCenter, buttonSize);
-            }
-        }
-
-        // East wall
-        if (cell.wallEast)
-        {
-            Gizmos.color = wallColor;
-            Vector3 wallCenter = center + new Vector3(halfSize, 0, 0);
-            Gizmos.DrawCube(wallCenter, new Vector3(wallThickness, cellSize, wallThickness));
-
-            if (cell.hasSecretButtonEast)
-            {
-                Gizmos.color = secretButtonColor;
-                Gizmos.DrawWireSphere(wallCenter, buttonSize);
-            }
-        }
-
-        // West wall
-        if (cell.wallWest)
-        {
-            Gizmos.color = wallColor;
-            Vector3 wallCenter = center + new Vector3(-halfSize, 0, 0);
-            Gizmos.DrawCube(wallCenter, new Vector3(wallThickness, cellSize, wallThickness));
-
-            if (cell.hasSecretButtonWest)
-            {
-                Gizmos.color = secretButtonColor;
-                Gizmos.DrawWireSphere(wallCenter, buttonSize);
-            }
-        }
     }
 
     private void DrawCellMarkers(MapCell cell, Vector3 center)
@@ -227,40 +176,48 @@ public class MapVisualizer : MonoBehaviour
     {
         MapCell cell = mapGenerator.grid[x, y];
 
-        // Only visualize visited cells (main maze) or secret rooms
-        if (!cell.visited && !cell.isSecretRoom)
+        // Only visualize visited cells
+        if (!cell.visited)
             return;
 
         Vector3 pos = GetCellWorldPosition(x, y);
 
-        // Create cell floor - purple for secret rooms
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        floor.name = $"Cell_{x}_{y}";
-        floor.transform.SetParent(parent);
-        floor.transform.position = pos;
-        floor.transform.localScale = new Vector3(cellSize * 0.9f, cellSize * 0.9f, 1f);
-        floor.GetComponent<Renderer>().material.color = cell.isSecretRoom ? secretRoomColor : pathColor;
+        // Determine cell color based on type
+        Color cellColor;
+        string cellName;
 
-        // Create walls as needed
-        if (cell.wallNorth) CreateWall(pos + Vector3.up * cellSize / 2f, new Vector3(cellSize, wallThickness, wallThickness), parent);
-        if (cell.wallSouth) CreateWall(pos + Vector3.down * cellSize / 2f, new Vector3(cellSize, wallThickness, wallThickness), parent);
-        if (cell.wallEast) CreateWall(pos + Vector3.right * cellSize / 2f, new Vector3(wallThickness, cellSize, wallThickness), parent);
-        if (cell.wallWest) CreateWall(pos + Vector3.left * cellSize / 2f, new Vector3(wallThickness, cellSize, wallThickness), parent);
+        if (cell.isWall)
+        {
+            cellColor = wallCellColor;
+            cellName = $"Wall_{x}_{y}";
+        }
+        else if (cell.isSecretRoom)
+        {
+            cellColor = secretRoomColor;
+            cellName = $"SecretRoom_{x}_{y}";
+        }
+        else
+        {
+            cellColor = pathColor;
+            cellName = $"Floor_{x}_{y}";
+        }
 
-        // Create markers
-        if (cell.isStart) CreateMarker(pos, startColor, "Start", parent);
-        if (cell.isBoss) CreateMarker(pos, bossColor, "Boss", parent);
-        if (cell.hasEnemy) CreateMarker(pos, enemyColor, "Enemy", parent, 0.6f);
-        if (cell.hasTreasure) CreateMarker(pos, treasureColor, "Treasure", parent, 0.5f);
-    }
+        // Create cell quad
+        GameObject cellQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        cellQuad.name = cellName;
+        cellQuad.transform.SetParent(parent);
+        cellQuad.transform.position = pos;
+        cellQuad.transform.localScale = new Vector3(cellSize * 0.9f, cellSize * 0.9f, 1f);
+        cellQuad.GetComponent<Renderer>().material.color = cellColor;
 
-    private void CreateWall(Vector3 position, Vector3 scale, Transform parent)
-    {
-        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.transform.SetParent(parent);
-        wall.transform.position = position;
-        wall.transform.localScale = scale;
-        wall.GetComponent<Renderer>().material.color = wallColor;
+        // Create markers (only on non-wall cells)
+        if (!cell.isWall)
+        {
+            if (cell.isStart) CreateMarker(pos, startColor, "Start", parent);
+            if (cell.isBoss) CreateMarker(pos, bossColor, "Boss", parent);
+            if (cell.hasEnemy) CreateMarker(pos, enemyColor, "Enemy", parent, 0.6f);
+            if (cell.hasTreasure) CreateMarker(pos, treasureColor, "Treasure", parent, 0.5f);
+        }
     }
 
     private void CreateMarker(Vector3 position, Color color, string label, Transform parent, float sizeMultiplier = 0.4f)

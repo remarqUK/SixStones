@@ -9,10 +9,10 @@ public class MinimapRenderer : MonoBehaviour
     public FirstPersonMazeController player;
 
     [Header("Minimap Settings")]
-    public int cellPixelSize = 10; // Size of each cell in pixels
+    public int cellPixelSize = 5; // Size of each cell in pixels (smaller since grid is larger now)
     public Color visitedCellColor = new Color(0.3f, 0.3f, 0.3f); // Dark gray
     public Color currentCellColor = Color.cyan;
-    public Color wallColor = Color.white;
+    public Color wallCellColor = new Color(0.533f, 0.533f, 0.533f); // #888 gray for wall cells
     public Color unvisitedColor = Color.black;
 
     [Header("UI References")]
@@ -23,6 +23,7 @@ public class MinimapRenderer : MonoBehaviour
     private HashSet<Vector2Int> visitedCells = new HashSet<Vector2Int>();
     private Vector2Int lastPlayerPosition;
     private int lastPlayerFacing;
+    private bool initialized = false;
 
     private void Start()
     {
@@ -32,12 +33,23 @@ public class MinimapRenderer : MonoBehaviour
             return;
         }
 
-        InitializeMinimap();
-        UpdateMinimap();
+        // Don't initialize yet - wait for grid to be ready
     }
 
     private void Update()
     {
+        // Initialize on first frame when grid is ready
+        if (!initialized && mapGenerator != null && mapGenerator.grid != null)
+        {
+            InitializeMinimap();
+            UpdateMinimap();
+            initialized = true;
+            Debug.Log("Minimap initialized in Update()");
+        }
+
+        if (!initialized)
+            return;
+
         // Check if player position or facing changed
         Vector2Int currentPos = new Vector2Int(player.GridX, player.GridZ);
         int currentFacing = player.Facing;
@@ -56,8 +68,15 @@ public class MinimapRenderer : MonoBehaviour
 
     private void InitializeMinimap()
     {
-        int width = mapGenerator.width;
-        int height = mapGenerator.height;
+        if (mapGenerator.grid == null)
+        {
+            Debug.LogError("MapGenerator grid is null!");
+            return;
+        }
+
+        // Use actual grid dimensions (not room dimensions)
+        int width = mapGenerator.grid.GetLength(0);
+        int height = mapGenerator.grid.GetLength(1);
 
         // Create texture
         minimapTexture = new Texture2D(width * cellPixelSize, height * cellPixelSize);
@@ -71,12 +90,9 @@ public class MinimapRenderer : MonoBehaviour
         }
 
         // Mark starting position as visited
-        if (mapGenerator.grid != null)
-        {
-            visitedCells.Add(mapGenerator.startPosition);
-        }
+        visitedCells.Add(mapGenerator.startPosition);
 
-        Debug.Log($"Minimap initialized: {width}x{height} grid, {width * cellPixelSize}x{height * cellPixelSize} pixels");
+        Debug.Log($"Minimap initialized: {width}x{height} grid (expected 21x21), texture: {width * cellPixelSize}x{height * cellPixelSize} pixels, start position: {mapGenerator.startPosition}");
     }
 
     private void UpdateMinimap()
@@ -84,8 +100,9 @@ public class MinimapRenderer : MonoBehaviour
         if (mapGenerator == null || mapGenerator.grid == null || minimapTexture == null)
             return;
 
-        int width = mapGenerator.width;
-        int height = mapGenerator.height;
+        // Use actual grid dimensions
+        int width = mapGenerator.grid.GetLength(0);
+        int height = mapGenerator.grid.GetLength(1);
 
         // Clear texture
         Color[] pixels = new Color[minimapTexture.width * minimapTexture.height];
@@ -111,14 +128,24 @@ public class MinimapRenderer : MonoBehaviour
                 if (!cell.visited && !cell.isSecretRoom)
                     continue;
 
-                // Draw cell background
+                // Determine cell color
                 Vector2Int currentPlayerPos = new Vector2Int(player.GridX, player.GridZ);
-                Color cellColor = (pos == currentPlayerPos) ? currentCellColor : visitedCellColor;
+                Color cellColor;
+
+                if (pos == currentPlayerPos)
+                {
+                    cellColor = currentCellColor; // Player position is cyan
+                }
+                else if (cell.isWall)
+                {
+                    cellColor = wallCellColor; // Wall cells are gray
+                }
+                else
+                {
+                    cellColor = visitedCellColor; // Floor cells are dark gray
+                }
 
                 DrawCell(x, y, cellColor, pixels);
-
-                // Draw walls
-                DrawWalls(x, y, cell, pixels);
 
                 // Draw player direction indicator
                 if (pos == currentPlayerPos)
@@ -153,55 +180,6 @@ public class MinimapRenderer : MonoBehaviour
         }
     }
 
-    private void DrawWalls(int gridX, int gridY, MapCell cell, Color[] pixels)
-    {
-        int startX = gridX * cellPixelSize;
-        int startY = gridY * cellPixelSize;
-
-        // Draw north wall (top)
-        if (cell.wallNorth)
-        {
-            for (int x = 0; x < cellPixelSize; x++)
-            {
-                int index = (startY + cellPixelSize - 1) * minimapTexture.width + (startX + x);
-                if (index >= 0 && index < pixels.Length)
-                    pixels[index] = wallColor;
-            }
-        }
-
-        // Draw south wall (bottom)
-        if (cell.wallSouth)
-        {
-            for (int x = 0; x < cellPixelSize; x++)
-            {
-                int index = startY * minimapTexture.width + (startX + x);
-                if (index >= 0 && index < pixels.Length)
-                    pixels[index] = wallColor;
-            }
-        }
-
-        // Draw east wall (right)
-        if (cell.wallEast)
-        {
-            for (int y = 0; y < cellPixelSize; y++)
-            {
-                int index = (startY + y) * minimapTexture.width + (startX + cellPixelSize - 1);
-                if (index >= 0 && index < pixels.Length)
-                    pixels[index] = wallColor;
-            }
-        }
-
-        // Draw west wall (left)
-        if (cell.wallWest)
-        {
-            for (int y = 0; y < cellPixelSize; y++)
-            {
-                int index = (startY + y) * minimapTexture.width + startX;
-                if (index >= 0 && index < pixels.Length)
-                    pixels[index] = wallColor;
-            }
-        }
-    }
 
     private void DrawPlayerDirection(int gridX, int gridY, Color[] pixels)
     {

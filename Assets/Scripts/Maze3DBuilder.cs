@@ -50,26 +50,30 @@ public class Maze3DBuilder : MonoBehaviour
             {
                 MapCell cell = mapGenerator.grid[x, z];
 
-                // Only build visited cells (maze) or secret rooms
-                if (!cell.visited && !cell.isSecretRoom)
+                // Skip unvisited cells
+                if (!cell.visited)
                     continue;
 
                 cellsBuilt++;
                 Vector3 cellPos = GetCell3DPosition(x, z);
 
-                // Create floor
-                CreateFloor(cellPos, cell);
-                floorsBuilt++;
+                // Build based on cell type
+                if (cell.isWall)
+                {
+                    // Create full cell-sized wall
+                    CreateWallCell(cellPos, cell);
+                    wallsBuilt++;
+                }
+                else
+                {
+                    // Create floor for non-wall cells
+                    CreateFloor(cellPos, cell);
+                    floorsBuilt++;
 
-                // Create walls
-                if (cell.wallNorth) { CreateWall(cellPos, Vector3.forward, "North"); wallsBuilt++; }
-                if (cell.wallSouth) { CreateWall(cellPos, Vector3.back, "South"); wallsBuilt++; }
-                if (cell.wallEast) { CreateWall(cellPos, Vector3.right, "East"); wallsBuilt++; }
-                if (cell.wallWest) { CreateWall(cellPos, Vector3.left, "West"); wallsBuilt++; }
-
-                // Create markers
-                if (cell.isStart) CreateMarker(cellPos, startMarkerMaterial, "Start", Color.green);
-                if (cell.isBoss) CreateMarker(cellPos, bossMarkerMaterial, "Boss", Color.red);
+                    // Create markers
+                    if (cell.isStart) CreateMarker(cellPos, startMarkerMaterial, "Start", Color.green);
+                    if (cell.isBoss) CreateMarker(cellPos, bossMarkerMaterial, "Boss", Color.red);
+                }
             }
         }
 
@@ -115,34 +119,24 @@ public class Maze3DBuilder : MonoBehaviour
         floor.GetComponent<BoxCollider>().enabled = true;
     }
 
-    private void CreateWall(Vector3 cellCenter, Vector3 direction, string wallName)
+    private void CreateWallCell(Vector3 position, MapCell cell)
     {
         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.name = $"Wall_{wallName}";
+        wall.name = $"Wall_{cell.x}_{cell.y}";
         wall.transform.SetParent(mazeContainer.transform);
 
-        // Position wall at edge of cell
-        Vector3 wallPos = cellCenter + direction * (cellSize / 2f);
-        wall.transform.position = wallPos + Vector3.up * (wallHeight / 2f - 0.5f);
+        // Position at cell center, slightly raised
+        wall.transform.position = position + Vector3.up * (wallHeight / 2f - 0.5f);
 
-        // Shrink walls slightly to create border gaps
+        // Shrink slightly to create black border between cells
         float borderSize = 0.1f;
-
-        // Scale wall (thin in movement direction, wide perpendicular)
-        if (direction == Vector3.forward || direction == Vector3.back)
-        {
-            wall.transform.localScale = new Vector3(cellSize - borderSize, wallHeight, wallThickness);
-        }
-        else
-        {
-            wall.transform.localScale = new Vector3(wallThickness, wallHeight, cellSize - borderSize);
-        }
+        wall.transform.localScale = new Vector3(cellSize - borderSize, wallHeight, cellSize - borderSize);
 
         // Apply material
         if (wallMaterial != null)
             wall.GetComponent<Renderer>().material = wallMaterial;
         else
-            wall.GetComponent<Renderer>().material.color = Color.white;
+            wall.GetComponent<Renderer>().material.color = new Color(0.533f, 0.533f, 0.533f); // #888
 
         // Add collider
         wall.GetComponent<BoxCollider>().enabled = true;

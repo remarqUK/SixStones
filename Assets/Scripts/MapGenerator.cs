@@ -18,6 +18,7 @@ public class MapGenerator : MonoBehaviour
 
     [Header("Generated Map")]
     public MapCell[,] grid;
+    public MapCell[,] roomGrid; // Original room-based grid (before wall expansion)
     public Vector2Int startPosition;
     public Vector2Int bossPosition;
     public List<Vector2Int> secretRoomPositions = new List<Vector2Int>();
@@ -59,9 +60,22 @@ public class MapGenerator : MonoBehaviour
         // Spawn enemies and treasure
         SpawnEnemiesAndTreasure();
 
+        // STEP 6: Convert to wall-as-cell grid
+        roomGrid = grid; // Store original room grid
+        grid = ConvertToWallGrid(roomGrid);
+
+        // Update positions to new grid coordinates (offset by 1 for border, multiply by 2 for spacing)
+        startPosition = new Vector2Int(1 + startPosition.x * 2, 1 + startPosition.y * 2);
+        bossPosition = new Vector2Int(1 + bossPosition.x * 2, 1 + bossPosition.y * 2);
+        for (int i = 0; i < secretRoomPositions.Count; i++)
+        {
+            Vector2Int oldPos = secretRoomPositions[i];
+            secretRoomPositions[i] = new Vector2Int(1 + oldPos.x * 2, 1 + oldPos.y * 2);
+        }
+
         // Log generation details
         int openPassages = CountOpenPassages(bossPosition);
-        Debug.Log($"Maze generated: {width}x{height}, Start: {startPosition}, Boss: {bossPosition} ({openPassages} open passage(s)), Secret Rooms: {secretRoomPositions.Count}");
+        Debug.Log($"Maze generated: {width}x{height} rooms → {grid.GetLength(0)}x{grid.GetLength(1)} grid, Start: {startPosition}, Boss: {bossPosition} ({openPassages} open passage(s)), Secret Rooms: {secretRoomPositions.Count}");
     }
 
     // Place secret rooms before generating maze
@@ -359,12 +373,122 @@ public class MapGenerator : MonoBehaviour
     // Count how many open passages a cell has (for boss placement verification)
     private int CountOpenPassages(Vector2Int pos)
     {
-        MapCell cell = grid[pos.x, pos.y];
+        // In the wall-as-cell grid, check adjacent cells to see if they're passable
         int count = 0;
-        if (!cell.wallNorth) count++;
-        if (!cell.wallSouth) count++;
-        if (!cell.wallEast) count++;
-        if (!cell.wallWest) count++;
+        int x = pos.x;
+        int y = pos.y;
+        int gridWidth = grid.GetLength(0);
+        int gridHeight = grid.GetLength(1);
+
+        // Check North
+        if (y + 1 < gridHeight && !grid[x, y + 1].isWall) count++;
+
+        // Check South
+        if (y - 1 >= 0 && !grid[x, y - 1].isWall) count++;
+
+        // Check East
+        if (x + 1 < gridWidth && !grid[x + 1, y].isWall) count++;
+
+        // Check West
+        if (x - 1 >= 0 && !grid[x - 1, y].isWall) count++;
+
         return count;
+    }
+
+    // Convert room-based grid to wall-as-cell grid
+    // Imagine entire map is solid stone, then carve out the maze
+    private MapCell[,] ConvertToWallGrid(MapCell[,] roomGrid)
+    {
+        int roomWidth = roomGrid.GetLength(0);
+        int roomHeight = roomGrid.GetLength(1);
+
+        // New grid size: rooms + walls + outer border
+        // Each room takes 1 cell, walls between take 1 cell, plus border
+        int newWidth = roomWidth * 2 + 1;
+        int newHeight = roomHeight * 2 + 1;
+
+        MapCell[,] newGrid = new MapCell[newWidth, newHeight];
+
+        // STEP 1: Fill entire grid with solid stone (walls)
+        for (int x = 0; x < newWidth; x++)
+        {
+            for (int y = 0; y < newHeight; y++)
+            {
+                newGrid[x, y] = new MapCell(x, y);
+                newGrid[x, y].isWall = true; // Everything is stone initially
+                newGrid[x, y].visited = true; // All cells are "visited" so they render
+            }
+        }
+
+        // STEP 2: Carve out rooms from the stone
+        for (int rx = 0; rx < roomWidth; rx++)
+        {
+            for (int ry = 0; ry < roomHeight; ry++)
+            {
+                MapCell roomCell = roomGrid[rx, ry];
+
+                // Skip unvisited rooms (they stay as stone)
+                if (!roomCell.visited && !roomCell.isSecretRoom)
+                    continue;
+
+                // Calculate position in new grid (offset by 1 for border, then skip walls)
+                int nx = 1 + rx * 2;
+                int ny = 1 + ry * 2;
+
+                // Carve out this room (make it NOT a wall)
+                MapCell newCell = newGrid[nx, ny];
+                newCell.isWall = false; // Carve out floor
+                newCell.visited = true;
+                newCell.isStart = roomCell.isStart;
+                newCell.isBoss = roomCell.isBoss;
+                newCell.hasEnemy = roomCell.hasEnemy;
+                newCell.hasTreasure = roomCell.hasTreasure;
+                newCell.isSecretRoom = roomCell.isSecretRoom;
+
+                // STEP 3: Carve out passages (where walls were removed)
+
+                // North passage (if no wall to the north)
+                if (!roomCell.wallNorth && ry < roomHeight - 1)
+                {
+                    MapCell northRoom = roomGrid[rx, ry + 1];
+                    if (northRoom.visited || northRoom.isSecretRoom)
+                    {
+                        newGrid[nx, ny + 1].isWall = false; // Carve passage
+                    }
+                }
+
+                // East passage (if no wall to the east)
+                if (!roomCell.wallEast && rx < roomWidth - 1)
+                {
+                    MapCell eastRoom = roomGrid[rx + 1, ry];
+                    if (eastRoom.visited || eastRoom.isSecretRoom)
+                    {
+                        newGrid[nx + 1, ny].isWall = false; // Carve passage
+                    }
+                }
+
+                // South passage (if no wall to the south)
+                if (!roomCell.wallSouth && ry > 0)
+                {
+                    MapCell southRoom = roomGrid[rx, ry - 1];
+                    if (southRoom.visited || southRoom.isSecretRoom)
+                    {
+                        newGrid[nx, ny - 1].isWall = false; // Carve passage
+                    }
+                }
+
+                // West passage (if no wall to the west)
+                if (!roomCell.wallWest && rx > 0)
+                {
+                    MapCell westRoom = roomGrid[rx - 1, ry];
+                    if (westRoom.visited || westRoom.isSecretRoom)
+                    {
+                        newGrid[nx - 1, ny].isWall = false; // Carve passage
+                    }
+                }
+            }
+        }
+
+        return newGrid;
     }
 }

@@ -247,21 +247,19 @@ public class FirstPersonMazeController : MonoBehaviour
         if (toX < 0 || toX >= gridWidth || toZ < 0 || toZ >= gridHeight)
             return false;
 
-        MapCell fromCell = mazeBuilder.mapGenerator.grid[fromX, fromZ];
         MapCell toCell = mazeBuilder.mapGenerator.grid[toX, toZ];
 
-        // Target must be visited (not a wall/empty space)
-        if (!toCell.visited && !toCell.isSecretRoom)
+        // Target must be visited
+        if (!toCell.visited)
             return false;
 
-        // Check if there's a wall between from and to
-        int dx = toX - fromX;
-        int dz = toZ - fromZ;
+        // Target must NOT be a wall cell
+        if (toCell.isWall)
+            return false;
 
-        if (dz == 1 && fromCell.wallNorth) return false;  // Moving north
-        if (dz == -1 && fromCell.wallSouth) return false; // Moving south
-        if (dx == 1 && fromCell.wallEast) return false;   // Moving east
-        if (dx == -1 && fromCell.wallWest) return false;  // Moving west
+        // Target must not be a secret room (unless we have access)
+        if (toCell.isSecretRoom)
+            return false; // TODO: Check if player has opened this secret room
 
         return true;
     }
