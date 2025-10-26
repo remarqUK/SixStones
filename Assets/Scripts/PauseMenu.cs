@@ -214,4 +214,19 @@ public class PauseMenu : MonoBehaviour
             Debug.LogError("GameManager reference not set in PauseMenu!");
         }
     }
+
+    /// <summary>
+    /// Return to main menu (called by Return to Main Menu button)
+    /// </summary>
+    public void ReturnToMainMenu()
+    {
+        Debug.Log("Return to Main Menu clicked");
+
+        // Unpause first
+        isPaused = false;
+        Time.timeScale = 1f;
+
+        // Load main menu scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+    }
 }
