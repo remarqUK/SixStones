@@ -60,12 +60,16 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         GameObject panelObj = CreateOptionsPanel(canvasObj);
 
         // Create Volume Sliders
-        GameObject gameVolumeSliderObj = CreateSlider("GameVolumeSlider", panelObj, new Vector2(0, 100), "Game Volume:");
-        GameObject musicVolumeSliderObj = CreateSlider("MusicVolumeSlider", panelObj, new Vector2(0, 30), "Music Volume:");
-        GameObject dialogVolumeSliderObj = CreateSlider("DialogVolumeSlider", panelObj, new Vector2(0, -40), "Dialog Volume:");
+        GameObject gameVolumeSliderObj = CreateSlider("GameVolumeSlider", panelObj, new Vector2(0, 200), "Game Volume:");
+        GameObject musicVolumeSliderObj = CreateSlider("MusicVolumeSlider", panelObj, new Vector2(0, 130), "Music Volume:");
+        GameObject dialogVolumeSliderObj = CreateSlider("DialogVolumeSlider", panelObj, new Vector2(0, 60), "Dialog Volume:");
+
+        // Create Dropdowns
+        GameObject speedDropdownObj = CreateDropdown("GameSpeedDropdown", panelObj, new Vector2(0, -30), "Game Speed:");
+        GameObject langDropdownObj = CreateDropdown("LanguageDropdown", panelObj, new Vector2(0, -120), "Language:");
 
         // Create Close Button
-        GameObject closeButtonObj = CreateButton("CloseButton", panelObj, new Vector2(0, -150), "Close");
+        GameObject closeButtonObj = CreateButton("CloseButton", panelObj, new Vector2(0, -200), "Close");
 
         // Wire up controller using SerializedObject
         SerializedObject so = new SerializedObject(controller);
@@ -73,6 +77,8 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         so.FindProperty("gameVolumeSlider").objectReferenceValue = gameVolumeSliderObj.GetComponent<Slider>();
         so.FindProperty("musicVolumeSlider").objectReferenceValue = musicVolumeSliderObj.GetComponent<Slider>();
         so.FindProperty("dialogVolumeSlider").objectReferenceValue = dialogVolumeSliderObj.GetComponent<Slider>();
+        so.FindProperty("gameSpeedDropdown").objectReferenceValue = speedDropdownObj.GetComponent<TMP_Dropdown>();
+        so.FindProperty("languageDropdown").objectReferenceValue = langDropdownObj.GetComponent<TMP_Dropdown>();
         so.FindProperty("closeButton").objectReferenceValue = closeButtonObj.GetComponent<Button>();
         so.FindProperty("pauseTimeWhenOpen").boolValue = true;
         so.ApplyModifiedProperties();
@@ -89,11 +95,9 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         // Clean up temporary GameObject
         DestroyImmediate(managerObj);
 
-        Debug.Log("<color=green>Simple GlobalOptionsManager prefab created successfully!</color>");
+        Debug.Log("<color=green>GlobalOptionsManager prefab created successfully!</color>");
         Debug.Log($"Prefab location: {prefabPath}");
-        Debug.Log("Includes: Game/Music/Dialog volume sliders + Close button");
-        Debug.Log("Note: Game Speed and Language dropdowns removed to avoid template issues.");
-        Debug.Log("You can add them manually in the Unity Editor if needed.");
+        Debug.Log("Includes: Game/Music/Dialog volume sliders + Game Speed/Language dropdowns + Close button");
 
         // Select the prefab
         Selection.activeObject = prefab;
@@ -263,5 +267,239 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         slider.targetGraphic = handleImage;
 
         return sliderObj;
+    }
+
+    private static GameObject CreateDropdown(string name, GameObject parent, Vector2 position, string labelText)
+    {
+        // Create container
+        GameObject container = new GameObject(name + "Container");
+        container.transform.SetParent(parent.transform, false);
+
+        RectTransform containerRect = container.AddComponent<RectTransform>();
+        containerRect.anchorMin = new Vector2(0.5f, 0.5f);
+        containerRect.anchorMax = new Vector2(0.5f, 0.5f);
+        containerRect.pivot = new Vector2(0.5f, 0.5f);
+        containerRect.anchoredPosition = position;
+        containerRect.sizeDelta = new Vector2(400, 80);
+
+        // Create label
+        GameObject labelObj = new GameObject("Label");
+        labelObj.transform.SetParent(container.transform, false);
+
+        RectTransform labelRect = labelObj.AddComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0, 0.5f);
+        labelRect.anchorMax = new Vector2(0, 0.5f);
+        labelRect.pivot = new Vector2(0, 0.5f);
+        labelRect.anchoredPosition = Vector2.zero;
+        labelRect.sizeDelta = new Vector2(150, 40);
+
+        TextMeshProUGUI labelTMP = labelObj.AddComponent<TextMeshProUGUI>();
+        labelTMP.text = labelText;
+        labelTMP.fontSize = 24;
+        labelTMP.color = Color.white;
+        labelTMP.alignment = TextAlignmentOptions.MidlineLeft;
+
+        // Create dropdown background
+        GameObject dropdownObj = new GameObject(name);
+        dropdownObj.transform.SetParent(container.transform, false);
+
+        RectTransform dropdownRect = dropdownObj.AddComponent<RectTransform>();
+        dropdownRect.anchorMin = new Vector2(1, 0.5f);
+        dropdownRect.anchorMax = new Vector2(1, 0.5f);
+        dropdownRect.pivot = new Vector2(1, 0.5f);
+        dropdownRect.anchoredPosition = Vector2.zero;
+        dropdownRect.sizeDelta = new Vector2(220, 40);
+
+        Image dropdownImage = dropdownObj.AddComponent<Image>();
+        dropdownImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+        TMP_Dropdown dropdown = dropdownObj.AddComponent<TMP_Dropdown>();
+
+        // Create dropdown label (caption text)
+        GameObject captionObj = new GameObject("Label");
+        captionObj.transform.SetParent(dropdownObj.transform, false);
+
+        RectTransform captionRect = captionObj.AddComponent<RectTransform>();
+        captionRect.anchorMin = Vector2.zero;
+        captionRect.anchorMax = Vector2.one;
+        captionRect.offsetMin = new Vector2(10, 2);
+        captionRect.offsetMax = new Vector2(-25, -2);
+
+        TextMeshProUGUI captionText = captionObj.AddComponent<TextMeshProUGUI>();
+        captionText.fontSize = 20;
+        captionText.color = Color.white;
+        captionText.alignment = TextAlignmentOptions.MidlineLeft;
+
+        dropdown.captionText = captionText;
+
+        // Create arrow
+        GameObject arrowObj = new GameObject("Arrow");
+        arrowObj.transform.SetParent(dropdownObj.transform, false);
+
+        RectTransform arrowRect = arrowObj.AddComponent<RectTransform>();
+        arrowRect.anchorMin = new Vector2(1, 0.5f);
+        arrowRect.anchorMax = new Vector2(1, 0.5f);
+        arrowRect.pivot = new Vector2(0.5f, 0.5f);
+        arrowRect.anchoredPosition = new Vector2(-12, 0);
+        arrowRect.sizeDelta = new Vector2(16, 16);
+
+        Image arrowImage = arrowObj.AddComponent<Image>();
+        arrowImage.color = Color.white;
+        // Note: Arrow sprite would normally be assigned here
+
+        // Create template
+        GameObject template = new GameObject("Template");
+        template.transform.SetParent(dropdownObj.transform, false);
+
+        RectTransform templateRect = template.AddComponent<RectTransform>();
+        templateRect.anchorMin = new Vector2(0, 0);
+        templateRect.anchorMax = new Vector2(1, 0);
+        templateRect.pivot = new Vector2(0.5f, 1);
+        templateRect.anchoredPosition = new Vector2(0, 2);
+        templateRect.sizeDelta = new Vector2(0, 150);
+
+        Image templateBg = template.AddComponent<Image>();
+        templateBg.color = new Color(0.15f, 0.15f, 0.15f, 1f);
+
+        // Create Viewport
+        GameObject viewport = new GameObject("Viewport");
+        viewport.transform.SetParent(template.transform, false);
+
+        RectTransform viewportRect = viewport.AddComponent<RectTransform>();
+        viewportRect.anchorMin = Vector2.zero;
+        viewportRect.anchorMax = Vector2.one;
+        viewportRect.sizeDelta = new Vector2(-18, 0);
+        viewportRect.pivot = new Vector2(0, 1);
+
+        Image viewportImg = viewport.AddComponent<Image>();
+        viewportImg.color = new Color(0.15f, 0.15f, 0.15f, 1f);
+
+        UnityEngine.UI.Mask viewportMask = viewport.AddComponent<UnityEngine.UI.Mask>();
+        viewportMask.showMaskGraphic = false;
+
+        // Create Content
+        GameObject content = new GameObject("Content");
+        content.transform.SetParent(viewport.transform, false);
+
+        RectTransform contentRect = content.AddComponent<RectTransform>();
+        contentRect.anchorMin = new Vector2(0, 1);
+        contentRect.anchorMax = new Vector2(1, 1);
+        contentRect.pivot = new Vector2(0.5f, 1);
+        contentRect.anchoredPosition = Vector2.zero;
+        contentRect.sizeDelta = new Vector2(0, 28);
+
+        // Create Item (THIS IS THE CRITICAL PART - must have Toggle)
+        GameObject item = new GameObject("Item");
+        item.transform.SetParent(content.transform, false);
+
+        RectTransform itemRect = item.AddComponent<RectTransform>();
+        itemRect.anchorMin = new Vector2(0, 0.5f);
+        itemRect.anchorMax = new Vector2(1, 0.5f);
+        itemRect.pivot = new Vector2(0.5f, 0.5f);
+        itemRect.sizeDelta = new Vector2(0, 20);
+
+        // Item background
+        Image itemBg = item.AddComponent<Image>();
+        itemBg.color = new Color(0.25f, 0.25f, 0.25f, 1f);
+
+        // CRITICAL: Add Toggle component to Item
+        UnityEngine.UI.Toggle toggle = item.AddComponent<UnityEngine.UI.Toggle>();
+        toggle.targetGraphic = itemBg;
+        toggle.isOn = true;
+
+        // Set toggle colors
+        UnityEngine.UI.ColorBlock colors = toggle.colors;
+        colors.normalColor = new Color(0.25f, 0.25f, 0.25f, 1f);
+        colors.highlightedColor = new Color(0.35f, 0.35f, 0.35f, 1f);
+        colors.pressedColor = new Color(0.2f, 0.2f, 0.2f, 1f);
+        colors.selectedColor = new Color(0.35f, 0.35f, 0.35f, 1f);
+        toggle.colors = colors;
+
+        // Item Checkmark
+        GameObject checkmark = new GameObject("Item Checkmark");
+        checkmark.transform.SetParent(item.transform, false);
+
+        RectTransform checkRect = checkmark.AddComponent<RectTransform>();
+        checkRect.anchorMin = new Vector2(0, 0.5f);
+        checkRect.anchorMax = new Vector2(0, 0.5f);
+        checkRect.pivot = new Vector2(0.5f, 0.5f);
+        checkRect.anchoredPosition = new Vector2(10, 0);
+        checkRect.sizeDelta = new Vector2(16, 16);
+
+        Image checkImg = checkmark.AddComponent<Image>();
+        checkImg.color = Color.white;
+
+        toggle.graphic = checkImg;
+
+        // Item Label
+        GameObject itemLabel = new GameObject("Item Label");
+        itemLabel.transform.SetParent(item.transform, false);
+
+        RectTransform itemLabelRect = itemLabel.AddComponent<RectTransform>();
+        itemLabelRect.anchorMin = Vector2.zero;
+        itemLabelRect.anchorMax = Vector2.one;
+        itemLabelRect.offsetMin = new Vector2(20, 1);
+        itemLabelRect.offsetMax = new Vector2(-10, -2);
+
+        TextMeshProUGUI itemText = itemLabel.AddComponent<TextMeshProUGUI>();
+        itemText.fontSize = 18;
+        itemText.color = Color.white;
+        itemText.alignment = TextAlignmentOptions.MidlineLeft;
+
+        // Create Scrollbar
+        GameObject scrollbar = new GameObject("Scrollbar");
+        scrollbar.transform.SetParent(template.transform, false);
+
+        RectTransform scrollRect = scrollbar.AddComponent<RectTransform>();
+        scrollRect.anchorMin = new Vector2(1, 0);
+        scrollRect.anchorMax = Vector2.one;
+        scrollRect.pivot = Vector2.one;
+        scrollRect.sizeDelta = new Vector2(18, 0);
+
+        Image scrollImg = scrollbar.AddComponent<Image>();
+        scrollImg.color = new Color(0.1f, 0.1f, 0.1f, 1f);
+
+        UnityEngine.UI.Scrollbar scrollbarComp = scrollbar.AddComponent<UnityEngine.UI.Scrollbar>();
+        scrollbarComp.direction = UnityEngine.UI.Scrollbar.Direction.BottomToTop;
+
+        // Scrollbar Sliding Area
+        GameObject slidingArea = new GameObject("Sliding Area");
+        slidingArea.transform.SetParent(scrollbar.transform, false);
+
+        RectTransform slidingRect = slidingArea.AddComponent<RectTransform>();
+        slidingRect.anchorMin = Vector2.zero;
+        slidingRect.anchorMax = Vector2.one;
+        slidingRect.offsetMin = new Vector2(10, 10);
+        slidingRect.offsetMax = new Vector2(-10, -10);
+
+        // Scrollbar Handle
+        GameObject handle = new GameObject("Handle");
+        handle.transform.SetParent(slidingArea.transform, false);
+
+        RectTransform handleRect = handle.AddComponent<RectTransform>();
+        handleRect.sizeDelta = new Vector2(18, 18);
+
+        Image handleImg = handle.AddComponent<Image>();
+        handleImg.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+
+        scrollbarComp.handleRect = handleRect;
+        scrollbarComp.targetGraphic = handleImg;
+
+        // Setup ScrollRect on viewport
+        UnityEngine.UI.ScrollRect scrollRectComp = viewport.AddComponent<UnityEngine.UI.ScrollRect>();
+        scrollRectComp.content = contentRect;
+        scrollRectComp.viewport = viewportRect;
+        scrollRectComp.horizontal = false;
+        scrollRectComp.vertical = true;
+        scrollRectComp.verticalScrollbar = scrollbarComp;
+
+        // Assign template and item text to dropdown
+        dropdown.template = templateRect;
+        dropdown.itemText = itemText;
+
+        // Hide template by default
+        template.SetActive(false);
+
+        return dropdownObj;
     }
 }

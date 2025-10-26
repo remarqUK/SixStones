@@ -106,11 +106,7 @@ public class OptionsMenuController : MonoBehaviour
 
     private void SetupGameSpeedDropdown()
     {
-        if (gameSpeedDropdown == null)
-        {
-            Debug.Log("OptionsMenuController: Game Speed dropdown not configured (optional)");
-            return;
-        }
+        if (gameSpeedDropdown == null) return;
 
         // Setup options
         gameSpeedDropdown.ClearOptions();
@@ -130,11 +126,7 @@ public class OptionsMenuController : MonoBehaviour
 
     private void SetupLanguageDropdown()
     {
-        if (languageDropdown == null)
-        {
-            Debug.Log("OptionsMenuController: Language dropdown not configured (optional)");
-            return;
-        }
+        if (languageDropdown == null) return;
 
         // Setup options
         languageDropdown.ClearOptions();
