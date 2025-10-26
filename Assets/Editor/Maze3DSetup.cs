@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.UI;
 
 public class Maze3DSetup
 {
@@ -99,6 +100,9 @@ public class Maze3DSetup
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
         RenderSettings.ambientLight = new Color(0.4f, 0.4f, 0.4f); // Gray ambient light
 
+        // Create Minimap UI
+        CreateMinimapUI(mapGen, fpController);
+
         Debug.Log($"Camera created at: {cam.transform.position}, rotation: {cam.transform.rotation.eulerAngles}");
 
         // Select the builder for inspection
@@ -179,6 +183,52 @@ public class Maze3DSetup
             cameraObject.AddComponent(cameraDataType);
             Debug.Log("Added URP camera data component");
         }
+    }
+
+    static void CreateMinimapUI(MapGenerator mapGen, FirstPersonMazeController player)
+    {
+        // Create Canvas
+        GameObject canvasObj = new GameObject("MinimapCanvas");
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+        // Create minimap container (positioned at top right)
+        GameObject containerObj = new GameObject("MinimapContainer");
+        containerObj.transform.SetParent(canvasObj.transform, false);
+        RectTransform containerRect = containerObj.AddComponent<RectTransform>();
+
+        // Position at top right with some padding
+        containerRect.anchorMin = new Vector2(1, 1);
+        containerRect.anchorMax = new Vector2(1, 1);
+        containerRect.pivot = new Vector2(1, 1);
+        containerRect.anchoredPosition = new Vector2(-20, -20); // 20 pixel padding from top-right
+        containerRect.sizeDelta = new Vector2(200, 200); // 200x200 pixel container
+
+        // Add background panel
+        UnityEngine.UI.Image bgImage = containerObj.AddComponent<UnityEngine.UI.Image>();
+        bgImage.color = new Color(0, 0, 0, 0.8f); // Semi-transparent black background
+
+        // Create RawImage for minimap texture
+        GameObject minimapImageObj = new GameObject("MinimapImage");
+        minimapImageObj.transform.SetParent(containerObj.transform, false);
+        RectTransform imageRect = minimapImageObj.AddComponent<RectTransform>();
+        imageRect.anchorMin = Vector2.zero;
+        imageRect.anchorMax = Vector2.one;
+        imageRect.offsetMin = new Vector2(5, 5); // 5 pixel padding
+        imageRect.offsetMax = new Vector2(-5, -5); // 5 pixel padding
+        UnityEngine.UI.RawImage rawImage = minimapImageObj.AddComponent<UnityEngine.UI.RawImage>();
+
+        // Create MinimapRenderer component
+        GameObject minimapRendererObj = new GameObject("MinimapRenderer");
+        MinimapRenderer minimapRenderer = minimapRendererObj.AddComponent<MinimapRenderer>();
+        minimapRenderer.mapGenerator = mapGen;
+        minimapRenderer.player = player;
+        minimapRenderer.minimapImage = rawImage;
+        minimapRenderer.minimapContainer = containerRect;
+
+        Debug.Log("Minimap UI created at top right corner");
     }
 }
 

@@ -22,6 +22,11 @@ public class FirstPersonMazeController : MonoBehaviour
     // Current facing direction (0 = North, 1 = East, 2 = South, 3 = West)
     private int facing = 0;
 
+    // Public accessors for minimap
+    public int GridX => gridX;
+    public int GridZ => gridZ;
+    public int Facing => facing;
+
     // Smooth movement state
     private bool isMoving = false;
     private Vector3 moveStartPos;
