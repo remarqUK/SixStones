@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\MapVisualizer.cs" />
     <Compile Include="Assets\Scripts\StatusEffectData.cs" />
     <Compile Include="Assets\Scripts\LocalizationManager.cs" />
+    <Compile Include="Assets\Prefabs\WallPrefab.cs" />
     <Compile Include="Assets\Scripts\CreateExampleStatusEffects.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
