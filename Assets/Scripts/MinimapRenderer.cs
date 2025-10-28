@@ -14,6 +14,8 @@ public class MinimapRenderer : MonoBehaviour
     public Color currentCellColor = Color.cyan;
     public Color wallCellColor = new Color(0.533f, 0.533f, 0.533f); // #888 gray for wall cells
     public Color unvisitedColor = Color.black;
+    public Color wallBorderColor = Color.yellow; // Yellow border for walls adjacent to visited path
+    public Color lookAheadColor = new Color(0.5f, 0.5f, 0.7f); // Light blue-gray for cells ahead
 
     [Header("UI References")]
     public RawImage minimapImage;
@@ -21,6 +23,7 @@ public class MinimapRenderer : MonoBehaviour
 
     private Texture2D minimapTexture;
     private HashSet<Vector2Int> visitedCells = new HashSet<Vector2Int>();
+    private HashSet<Vector2Int> revealedCells = new HashSet<Vector2Int>(); // Cells revealed by looking ahead
     private Vector2Int lastPlayerPosition;
     private int lastPlayerFacing;
     private bool initialized = false;
@@ -111,15 +114,18 @@ public class MinimapRenderer : MonoBehaviour
             pixels[i] = unvisitedColor;
         }
 
-        // Draw visited cells
+        // Draw visited cells and revealed cells
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
 
-                // Only draw if visited
-                if (!visitedCells.Contains(pos))
+                // Draw if visited OR revealed by looking
+                bool isVisited = visitedCells.Contains(pos);
+                bool isRevealed = revealedCells.Contains(pos);
+
+                if (!isVisited && !isRevealed)
                     continue;
 
                 MapCell cell = mapGenerator.grid[x, y];
@@ -140,9 +146,13 @@ public class MinimapRenderer : MonoBehaviour
                 {
                     cellColor = wallCellColor; // Wall cells are gray
                 }
+                else if (isVisited)
+                {
+                    cellColor = visitedCellColor; // Visited floor cells are dark gray
+                }
                 else
                 {
-                    cellColor = visitedCellColor; // Floor cells are dark gray
+                    cellColor = lookAheadColor; // Revealed but not visited cells are light blue-gray
                 }
 
                 DrawCell(x, y, cellColor, pixels);
@@ -153,6 +163,15 @@ public class MinimapRenderer : MonoBehaviour
                     DrawPlayerDirection(x, y, pixels);
                 }
             }
+        }
+
+        // Draw look-ahead path (cells ahead until wall)
+        DrawLookAheadPath(pixels);
+
+        // Draw wall borders for visited cells
+        foreach (Vector2Int pos in visitedCells)
+        {
+            DrawWallBorders(pos.x, pos.y, pixels);
         }
 
         minimapTexture.SetPixels(pixels);
@@ -216,6 +235,141 @@ public class MinimapRenderer : MonoBehaviour
             {
                 pixels[index] = Color.yellow;
             }
+        }
+    }
+
+    private void DrawWallBorders(int gridX, int gridY, Color[] pixels)
+    {
+        // Only draw borders for non-wall cells
+        MapCell cell = mapGenerator.grid[gridX, gridY];
+        if (cell.isWall)
+            return;
+
+        int width = mapGenerator.grid.GetLength(0);
+        int height = mapGenerator.grid.GetLength(1);
+
+        int startX = gridX * cellPixelSize;
+        int startY = gridY * cellPixelSize;
+
+        // Check North (y+1)
+        if (HasWallInDirection(gridX, gridY + 1, width, height))
+        {
+            // Draw top edge
+            for (int x = 0; x < cellPixelSize; x++)
+            {
+                int pixelX = startX + x;
+                int pixelY = startY + cellPixelSize - 1;
+                int index = pixelY * minimapTexture.width + pixelX;
+                if (index >= 0 && index < pixels.Length)
+                    pixels[index] = wallBorderColor;
+            }
+        }
+
+        // Check South (y-1)
+        if (HasWallInDirection(gridX, gridY - 1, width, height))
+        {
+            // Draw bottom edge
+            for (int x = 0; x < cellPixelSize; x++)
+            {
+                int pixelX = startX + x;
+                int pixelY = startY;
+                int index = pixelY * minimapTexture.width + pixelX;
+                if (index >= 0 && index < pixels.Length)
+                    pixels[index] = wallBorderColor;
+            }
+        }
+
+        // Check East (x+1)
+        if (HasWallInDirection(gridX + 1, gridY, width, height))
+        {
+            // Draw right edge
+            for (int y = 0; y < cellPixelSize; y++)
+            {
+                int pixelX = startX + cellPixelSize - 1;
+                int pixelY = startY + y;
+                int index = pixelY * minimapTexture.width + pixelX;
+                if (index >= 0 && index < pixels.Length)
+                    pixels[index] = wallBorderColor;
+            }
+        }
+
+        // Check West (x-1)
+        if (HasWallInDirection(gridX - 1, gridY, width, height))
+        {
+            // Draw left edge
+            for (int y = 0; y < cellPixelSize; y++)
+            {
+                int pixelX = startX;
+                int pixelY = startY + y;
+                int index = pixelY * minimapTexture.width + pixelX;
+                if (index >= 0 && index < pixels.Length)
+                    pixels[index] = wallBorderColor;
+            }
+        }
+    }
+
+    private bool HasWallInDirection(int x, int y, int width, int height)
+    {
+        // Out of bounds = wall
+        if (x < 0 || x >= width || y < 0 || y >= height)
+            return true;
+
+        // Check if neighbor is a wall cell
+        MapCell neighbor = mapGenerator.grid[x, y];
+        return neighbor.isWall;
+    }
+
+    private void DrawLookAheadPath(Color[] pixels)
+    {
+        int width = mapGenerator.grid.GetLength(0);
+        int height = mapGenerator.grid.GetLength(1);
+
+        // Start from player's current position
+        int currentX = player.GridX;
+        int currentY = player.GridZ;
+
+        // Get direction vector based on facing
+        int deltaX = 0;
+        int deltaY = 0;
+
+        switch (player.Facing)
+        {
+            case 0: // North
+                deltaY = 1;
+                break;
+            case 1: // East
+                deltaX = 1;
+                break;
+            case 2: // South
+                deltaY = -1;
+                break;
+            case 3: // West
+                deltaX = -1;
+                break;
+        }
+
+        // Trace forward until we hit a wall
+        int stepX = currentX + deltaX;
+        int stepY = currentY + deltaY;
+
+        while (stepX >= 0 && stepX < width && stepY >= 0 && stepY < height)
+        {
+            MapCell cell = mapGenerator.grid[stepX, stepY];
+
+            // Stop if we hit a wall
+            if (cell.isWall)
+                break;
+
+            // Add to revealed cells (permanent)
+            Vector2Int cellPos = new Vector2Int(stepX, stepY);
+            revealedCells.Add(cellPos);
+
+            // Draw this cell in look-ahead color (will be drawn brighter in the main loop)
+            DrawCell(stepX, stepY, lookAheadColor, pixels);
+
+            // Move to next cell
+            stepX += deltaX;
+            stepY += deltaY;
         }
     }
 }
