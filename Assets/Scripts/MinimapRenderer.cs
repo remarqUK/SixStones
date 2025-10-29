@@ -369,8 +369,11 @@ public class MinimapRenderer : MonoBehaviour
             Vector2Int cellPos = new Vector2Int(stepX, stepY);
             revealedCells.Add(cellPos);
 
-            // Draw this cell in look-ahead color (will be drawn brighter in the main loop)
-            DrawCell(stepX, stepY, lookAheadColor, pixels);
+            // Draw this cell in look-ahead color only if not already visited
+            if (!visitedCells.Contains(cellPos))
+            {
+                DrawCell(stepX, stepY, lookAheadColor, pixels);
+            }
 
             // Move to next cell
             stepX += deltaX;
