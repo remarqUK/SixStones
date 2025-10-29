@@ -61,6 +61,7 @@
     <Compile Include="Assets\Editor\InventorySetup.cs" />
     <Compile Include="Assets\Editor\AddReturnToMainMenuButton.cs" />
     <Compile Include="Assets\Editor\LoadingScreenSetup.cs" />
+    <Compile Include="Assets\Editor\FixMinimapReferences.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

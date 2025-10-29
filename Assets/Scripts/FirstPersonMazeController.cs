@@ -1,6 +1,7 @@
 // Grid-based dungeon crawler controller
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class FirstPersonMazeController : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class FirstPersonMazeController : MonoBehaviour
     public int GridX => gridX;
     public int GridZ => gridZ;
     public int Facing => facing;
+
+    // Events for position and facing changes
+    public event Action<Vector2Int> OnPositionChanged;
+    public event Action<int> OnFacingChanged;
 
     // Smooth movement state
     private bool isMoving = false;
@@ -182,12 +187,14 @@ public class FirstPersonMazeController : MonoBehaviour
     {
         facing = (facing + 3) % 4; // Turn counter-clockwise
         StartRotation();
+        OnFacingChanged?.Invoke(facing);
     }
 
     private void TurnRight()
     {
         facing = (facing + 1) % 4; // Turn clockwise
         StartRotation();
+        OnFacingChanged?.Invoke(facing);
     }
 
     private void StartRotation()
@@ -273,6 +280,9 @@ public class FirstPersonMazeController : MonoBehaviour
         moveTargetPos = GetWorldPosition(targetX, targetZ);
         moveProgress = 0f;
         isMoving = true;
+
+        // Notify listeners of position change
+        OnPositionChanged?.Invoke(new Vector2Int(gridX, gridZ));
     }
 
     private void UpdateMovement()
@@ -332,6 +342,10 @@ public class FirstPersonMazeController : MonoBehaviour
 
         Debug.Log($"Player positioned at grid ({start.x}, {start.y}), world position: {transform.position}, facing: {GetDirectionName(facing)}");
         Debug.Log($"Camera position: {playerCamera.transform.position}, Camera rotation: {playerCamera.transform.rotation.eulerAngles}");
+
+        // Notify listeners of initial position and facing
+        OnPositionChanged?.Invoke(new Vector2Int(gridX, gridZ));
+        OnFacingChanged?.Invoke(facing);
     }
 
     private int ChooseBestFacingDirection(int x, int z)
