@@ -456,6 +456,11 @@ public class MapGenerator : MonoBehaviour
                         newGrid[nx, ny + 1].isWall = false; // Carve passage
                     }
                 }
+                // If there's a secret button on the north wall, mark the wall cell
+                else if (roomCell.hasSecretButtonNorth)
+                {
+                    newGrid[nx, ny + 1].isButtonWall = true;
+                }
 
                 // East passage (if no wall to the east)
                 if (!roomCell.wallEast && rx < roomWidth - 1)
@@ -465,6 +470,11 @@ public class MapGenerator : MonoBehaviour
                     {
                         newGrid[nx + 1, ny].isWall = false; // Carve passage
                     }
+                }
+                // If there's a secret button on the east wall, mark the wall cell
+                else if (roomCell.hasSecretButtonEast)
+                {
+                    newGrid[nx + 1, ny].isButtonWall = true;
                 }
 
                 // South passage (if no wall to the south)
@@ -476,6 +486,11 @@ public class MapGenerator : MonoBehaviour
                         newGrid[nx, ny - 1].isWall = false; // Carve passage
                     }
                 }
+                // If there's a secret button on the south wall, mark the wall cell
+                else if (roomCell.hasSecretButtonSouth)
+                {
+                    newGrid[nx, ny - 1].isButtonWall = true;
+                }
 
                 // West passage (if no wall to the west)
                 if (!roomCell.wallWest && rx > 0)
@@ -485,6 +500,11 @@ public class MapGenerator : MonoBehaviour
                     {
                         newGrid[nx - 1, ny].isWall = false; // Carve passage
                     }
+                }
+                // If there's a secret button on the west wall, mark the wall cell
+                else if (roomCell.hasSecretButtonWest)
+                {
+                    newGrid[nx - 1, ny].isButtonWall = true;
                 }
             }
         }

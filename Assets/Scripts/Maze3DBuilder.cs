@@ -14,6 +14,7 @@ public class Maze3DBuilder : MonoBehaviour
     [Header("Materials")]
     public Material floorMaterial;
     public Material wallMaterial;
+    public Material buttonWallMaterial;
     public Material secretRoomFloorMaterial;
     public Material startMarkerMaterial;
     public Material bossMarkerMaterial;
@@ -55,8 +56,13 @@ public class Maze3DBuilder : MonoBehaviour
         List<int> wallTriangles = new List<int>();
         List<Vector2> wallUVs = new List<Vector2>();
 
+        List<Vector3> buttonWallVertices = new List<Vector3>();
+        List<int> buttonWallTriangles = new List<int>();
+        List<Vector2> buttonWallUVs = new List<Vector2>();
+
         int cellsBuilt = 0;
         int wallsBuilt = 0;
+        int buttonWallsBuilt = 0;
         int floorsBuilt = 0;
 
         // Build each cell by adding vertices to lists
@@ -76,9 +82,17 @@ public class Maze3DBuilder : MonoBehaviour
                 // Build based on cell type
                 if (cell.isWall)
                 {
-                    // Add wall vertices to the mesh
-                    AddWallToMesh(cellPos, cell, wallVertices, wallTriangles, wallUVs);
-                    wallsBuilt++;
+                    // Check if this is a button wall
+                    if (cell.isButtonWall)
+                    {
+                        AddWallToMesh(cellPos, cell, buttonWallVertices, buttonWallTriangles, buttonWallUVs);
+                        buttonWallsBuilt++;
+                    }
+                    else
+                    {
+                        AddWallToMesh(cellPos, cell, wallVertices, wallTriangles, wallUVs);
+                        wallsBuilt++;
+                    }
                 }
                 else
                 {
@@ -103,8 +117,10 @@ public class Maze3DBuilder : MonoBehaviour
         if (secretFloorVertices.Count > 0)
             CreateMeshObject("SecretFloors", secretFloorVertices, secretFloorTriangles, secretFloorUVs, secretRoomFloorMaterial);
         CreateMeshObject("Walls", wallVertices, wallTriangles, wallUVs, wallMaterial);
+        if (buttonWallVertices.Count > 0)
+            CreateMeshObject("ButtonWalls", buttonWallVertices, buttonWallTriangles, buttonWallUVs, buttonWallMaterial);
 
-        Debug.Log($"3D Maze built: {gridWidth}x{gridHeight}, Cells: {cellsBuilt}, Floors: {floorsBuilt}, Walls: {wallsBuilt}");
+        Debug.Log($"3D Maze built: {gridWidth}x{gridHeight}, Cells: {cellsBuilt}, Floors: {floorsBuilt}, Walls: {wallsBuilt}, Button Walls: {buttonWallsBuilt}");
         Debug.Log($"Maze center position: {transform.position}");
     }
 

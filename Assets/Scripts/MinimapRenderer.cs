@@ -13,6 +13,7 @@ public class MinimapRenderer : MonoBehaviour
     public Color visitedCellColor = new Color(0.3f, 0.3f, 0.3f); // Dark gray
     public Color currentCellColor = Color.cyan;
     public Color wallCellColor = new Color(0.533f, 0.533f, 0.533f); // #888 gray for wall cells
+    public Color buttonWallColor = new Color(1f, 0.5f, 0f); // Orange for button walls
     public Color unvisitedColor = Color.black;
     public Color wallBorderColor = Color.yellow; // Yellow border for walls adjacent to visited path
     public Color lookAheadColor = new Color(0.5f, 0.5f, 0.7f); // Light blue-gray for cells ahead
@@ -141,6 +142,10 @@ public class MinimapRenderer : MonoBehaviour
                 if (pos == currentPlayerPos)
                 {
                     cellColor = currentCellColor; // Player position is cyan
+                }
+                else if (cell.isButtonWall)
+                {
+                    cellColor = buttonWallColor; // Button walls are orange
                 }
                 else if (cell.isWall)
                 {
@@ -314,9 +319,9 @@ public class MinimapRenderer : MonoBehaviour
         if (x < 0 || x >= width || y < 0 || y >= height)
             return true;
 
-        // Check if neighbor is a wall cell
+        // Check if neighbor is a wall cell (including button walls)
         MapCell neighbor = mapGenerator.grid[x, y];
-        return neighbor.isWall;
+        return neighbor.isWall || neighbor.isButtonWall;
     }
 
     private void DrawLookAheadPath(Color[] pixels)
@@ -356,8 +361,8 @@ public class MinimapRenderer : MonoBehaviour
         {
             MapCell cell = mapGenerator.grid[stepX, stepY];
 
-            // Stop if we hit a wall
-            if (cell.isWall)
+            // Stop if we hit a wall (including button walls)
+            if (cell.isWall || cell.isButtonWall)
                 break;
 
             // Add to revealed cells (permanent)

@@ -53,9 +53,12 @@ public class Maze3DSetup
         // Create placeholder materials
         builder.floorMaterial = CreatePlaceholderMaterial("FloorMaterial", Color.gray);
         builder.wallMaterial = CreatePlaceholderMaterial("WallMaterial", new Color(0.533f, 0.533f, 0.533f)); // #888
+        builder.buttonWallMaterial = CreatePlaceholderMaterial("ButtonWallMaterial", new Color(0.8f, 0.6f, 0.2f)); // Orange/bronze for button walls
         builder.secretRoomFloorMaterial = CreatePlaceholderMaterial("SecretFloorMaterial", new Color(0.5f, 0f, 0.5f));
         builder.startMarkerMaterial = CreatePlaceholderMaterial("StartMarkerMaterial", Color.green);
         builder.bossMarkerMaterial = CreatePlaceholderMaterial("BossMarkerMaterial", Color.red);
+        builder.treasureMarkerMaterial = CreatePlaceholderMaterial("TreasureMarkerMaterial", Color.yellow);
+        builder.enemyMarkerMaterial = CreatePlaceholderMaterial("EnemyMarkerMaterial", new Color(1f, 0.5f, 0f)); // Orange
 
         // Build the 3D maze
         Debug.Log($"Building 3D maze from {mapGen.width}x{mapGen.height} grid...");

@@ -11,6 +11,7 @@ public class MapVisualizer : MonoBehaviour
 
     [Header("Colors")]
     public Color wallCellColor = new Color(0.533f, 0.533f, 0.533f); // #888 gray for wall cells
+    public Color buttonWallColor = new Color(0.8f, 0.6f, 0.2f); // Orange/bronze for button walls
     public Color startColor = Color.green;
     public Color bossColor = Color.red;
     public Color enemyColor = new Color(1f, 0.5f, 0f); // Orange
@@ -61,7 +62,12 @@ public class MapVisualizer : MonoBehaviour
     private void DrawCellBackground(MapCell cell, Vector3 center)
     {
         // Determine cell color based on type
-        if (cell.isWall)
+        if (cell.isButtonWall)
+        {
+            // Button walls are orange/bronze
+            Gizmos.color = buttonWallColor;
+        }
+        else if (cell.isWall)
         {
             // Wall cells are gray
             Gizmos.color = wallCellColor;
@@ -186,7 +192,12 @@ public class MapVisualizer : MonoBehaviour
         Color cellColor;
         string cellName;
 
-        if (cell.isWall)
+        if (cell.isButtonWall)
+        {
+            cellColor = buttonWallColor;
+            cellName = $"ButtonWall_{x}_{y}";
+        }
+        else if (cell.isWall)
         {
             cellColor = wallCellColor;
             cellName = $"Wall_{x}_{y}";

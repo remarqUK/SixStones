@@ -16,6 +16,7 @@ public class MapCell
     // Cell state
     public bool visited = false;
     public bool isWall = false; // NEW: True if this cell IS a wall (not just has walls)
+    public bool isButtonWall = false; // True if this wall cell has a secret button
     public bool isStart = false;
     public bool isBoss = false;
     public bool isCurrentPosition = false;
