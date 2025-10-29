@@ -339,35 +339,22 @@ public class FirstPersonMazeController : MonoBehaviour
         if (mazeBuilder == null || mazeBuilder.mapGenerator == null || mazeBuilder.mapGenerator.grid == null)
             return 0; // Default to north if no grid
 
-        // Check each direction by attempting to move in that direction
-        // facing: 0 = North (+z), 1 = East (+x), 2 = South (-z), 3 = West (-x)
-
-        // Try North (0, +1)
-        if (CanMoveTo(x, z, x, z + 1))
+        // Try each direction (0=North, 1=East, 2=South, 3=West)
+        for (int direction = 0; direction < 4; direction++)
         {
-            Debug.Log($"Start cell ({x},{z}) can move NORTH - facing that way");
-            return 0;
-        }
+            int tempFacing = facing;
+            facing = direction;
+            Vector2Int dir = GetFacingDirection();
+            facing = tempFacing; // Restore original facing
 
-        // Try East (+1, 0)
-        if (CanMoveTo(x, z, x + 1, z))
-        {
-            Debug.Log($"Start cell ({x},{z}) can move EAST - facing that way");
-            return 1;
-        }
+            int targetX = x + dir.x;
+            int targetZ = z + dir.y;
 
-        // Try South (0, -1)
-        if (CanMoveTo(x, z, x, z - 1))
-        {
-            Debug.Log($"Start cell ({x},{z}) can move SOUTH - facing that way");
-            return 2;
-        }
-
-        // Try West (-1, 0)
-        if (CanMoveTo(x, z, x - 1, z))
-        {
-            Debug.Log($"Start cell ({x},{z}) can move WEST - facing that way");
-            return 3;
+            if (CanMoveTo(x, z, targetX, targetZ))
+            {
+                Debug.Log($"Start cell ({x},{z}) can move {GetDirectionName(direction)} - facing that way");
+                return direction;
+            }
         }
 
         // If all directions are blocked (shouldn't happen), default to north
