@@ -17,6 +17,8 @@ public class Maze3DBuilder : MonoBehaviour
     public Material secretRoomFloorMaterial;
     public Material startMarkerMaterial;
     public Material bossMarkerMaterial;
+    public Material treasureMarkerMaterial;
+    public Material enemyMarkerMaterial;
 
     [Header("Generated Objects")]
     public GameObject mazeContainer;
@@ -90,6 +92,8 @@ public class Maze3DBuilder : MonoBehaviour
                     // Create markers (kept as separate objects for clarity)
                     if (cell.isStart) CreateMarker(cellPos, startMarkerMaterial, "Start", Color.green);
                     if (cell.isBoss) CreateMarker(cellPos, bossMarkerMaterial, "Boss", Color.red);
+                    if (cell.hasTreasure) CreateMarker(cellPos, treasureMarkerMaterial, "Treasure", Color.yellow);
+                    if (cell.hasEnemy) CreateMarker(cellPos, enemyMarkerMaterial, "Enemy", new Color(1f, 0.5f, 0f)); // Orange
                 }
             }
         }
