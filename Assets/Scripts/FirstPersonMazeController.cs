@@ -325,12 +325,65 @@ public class FirstPersonMazeController : MonoBehaviour
         // Set world position
         transform.position = GetWorldPosition(gridX, gridZ);
 
-        // Face north initially
-        facing = 0;
-        transform.rotation = Quaternion.Euler(0, 0, 0);
+        // Choose a facing direction based on open walls
+        facing = ChooseBestFacingDirection(start.x, start.y);
+        transform.rotation = Quaternion.Euler(0, facing * 90f, 0);
         isRotating = false; // Make sure we're not rotating
 
-        Debug.Log($"Player positioned at grid ({start.x}, {start.y}), world position: {transform.position}");
+        Debug.Log($"Player positioned at grid ({start.x}, {start.y}), world position: {transform.position}, facing: {GetDirectionName(facing)}");
         Debug.Log($"Camera position: {playerCamera.transform.position}, Camera rotation: {playerCamera.transform.rotation.eulerAngles}");
+    }
+
+    private int ChooseBestFacingDirection(int x, int z)
+    {
+        if (mazeBuilder == null || mazeBuilder.mapGenerator == null || mazeBuilder.mapGenerator.grid == null)
+            return 0; // Default to north if no grid
+
+        // Check each direction by attempting to move in that direction
+        // facing: 0 = North (+z), 1 = East (+x), 2 = South (-z), 3 = West (-x)
+
+        // Try North (0, +1)
+        if (CanMoveTo(x, z, x, z + 1))
+        {
+            Debug.Log($"Start cell ({x},{z}) can move NORTH - facing that way");
+            return 0;
+        }
+
+        // Try East (+1, 0)
+        if (CanMoveTo(x, z, x + 1, z))
+        {
+            Debug.Log($"Start cell ({x},{z}) can move EAST - facing that way");
+            return 1;
+        }
+
+        // Try South (0, -1)
+        if (CanMoveTo(x, z, x, z - 1))
+        {
+            Debug.Log($"Start cell ({x},{z}) can move SOUTH - facing that way");
+            return 2;
+        }
+
+        // Try West (-1, 0)
+        if (CanMoveTo(x, z, x - 1, z))
+        {
+            Debug.Log($"Start cell ({x},{z}) can move WEST - facing that way");
+            return 3;
+        }
+
+        // If all directions are blocked (shouldn't happen), default to north
+        Debug.LogWarning($"Start cell ({x},{z}) has no open directions! Defaulting to North");
+        return 0;
+    }
+
+    private string GetDirectionName(int facing)
+    {
+        switch (facing)
+        {
+            case 0: return "North";
+            case 1: return "East";
+            case 2: return "South";
+            case 3: return "West";
+            default: return "Unknown";
+        }
     }
 }
