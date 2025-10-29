@@ -113,12 +113,21 @@ public class Maze3DBuilder : MonoBehaviour
         }
 
         // Create mesh objects
-        CreateMeshObject("Floors", floorVertices, floorTriangles, floorUVs, floorMaterial);
+        CreateMeshObject("Floors", floorVertices, floorTriangles, floorUVs, floorMaterial, true);
         if (secretFloorVertices.Count > 0)
-            CreateMeshObject("SecretFloors", secretFloorVertices, secretFloorTriangles, secretFloorUVs, secretRoomFloorMaterial);
-        CreateMeshObject("Walls", wallVertices, wallTriangles, wallUVs, wallMaterial);
+            CreateMeshObject("SecretFloors", secretFloorVertices, secretFloorTriangles, secretFloorUVs, secretRoomFloorMaterial, true);
+        CreateMeshObject("Walls", wallVertices, wallTriangles, wallUVs, wallMaterial, true);
         if (buttonWallVertices.Count > 0)
-            CreateMeshObject("ButtonWalls", buttonWallVertices, buttonWallTriangles, buttonWallUVs, buttonWallMaterial);
+        {
+            GameObject buttonWallsObj = CreateMeshObject("ButtonWalls", buttonWallVertices, buttonWallTriangles, buttonWallUVs, buttonWallMaterial, true);
+            // Add interaction script to button walls
+            if (buttonWallsObj != null)
+            {
+                SecretDoorInteraction interaction = buttonWallsObj.AddComponent<SecretDoorInteraction>();
+                interaction.mapGenerator = mapGenerator;
+                interaction.maze3DBuilder = this;
+            }
+        }
 
         Debug.Log($"3D Maze built: {gridWidth}x{gridHeight}, Cells: {cellsBuilt}, Floors: {floorsBuilt}, Walls: {wallsBuilt}, Button Walls: {buttonWallsBuilt}");
         Debug.Log($"Maze center position: {transform.position}");
@@ -140,12 +149,33 @@ public class Maze3DBuilder : MonoBehaviour
         );
     }
 
+    // Public method to convert world position to grid coordinates
+    public Vector2Int WorldToGrid(Vector3 worldPosition)
+    {
+        if (mapGenerator == null || mapGenerator.grid == null)
+            return new Vector2Int(-1, -1);
+
+        int gridWidth = mapGenerator.grid.GetLength(0);
+        int gridHeight = mapGenerator.grid.GetLength(1);
+
+        float offsetX = -(gridWidth / 2f) * cellSize;
+        float offsetZ = -(gridHeight / 2f) * cellSize;
+
+        // Convert world position back to grid coordinates
+        int x = Mathf.RoundToInt((worldPosition.x - offsetX - cellSize / 2f) / cellSize);
+        int z = Mathf.RoundToInt((worldPosition.z - offsetZ - cellSize / 2f) / cellSize);
+
+        // Clamp to grid bounds
+        x = Mathf.Clamp(x, 0, gridWidth - 1);
+        z = Mathf.Clamp(z, 0, gridHeight - 1);
+
+        return new Vector2Int(x, z);
+    }
+
     private void AddFloorToMesh(Vector3 position, MapCell cell, List<Vector3> vertices, List<int> triangles, List<Vector2> uvs)
     {
-        // Shrink floor slightly to create border between cells
-        float borderSize = 0.1f;
-        float floorSize = cellSize - borderSize;
-        float halfSize = floorSize / 2f;
+        // Use full cell size for floors
+        float halfSize = cellSize / 2f;
         float floorY = -0.5f; // Floor height
 
         // Calculate world-space vertex positions
@@ -176,10 +206,8 @@ public class Maze3DBuilder : MonoBehaviour
 
     private void AddWallToMesh(Vector3 position, MapCell cell, List<Vector3> vertices, List<int> triangles, List<Vector2> uvs)
     {
-        // Shrink slightly to create border between cells
-        float borderSize = 0.1f;
-        float wallSize = cellSize - borderSize;
-        float halfSize = wallSize / 2f;
+        // Use full cell size for walls
+        float halfSize = cellSize / 2f;
         float halfHeight = wallHeight / 2f;
         float wallY = halfHeight - 0.5f; // Center the wall vertically
 
@@ -234,10 +262,10 @@ public class Maze3DBuilder : MonoBehaviour
         triangles.Add(v2);
     }
 
-    private void CreateMeshObject(string name, List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Material material)
+    private GameObject CreateMeshObject(string name, List<Vector3> vertices, List<int> triangles, List<Vector2> uvs, Material material, bool addCollider = true)
     {
         if (vertices.Count == 0)
-            return;
+            return null;
 
         GameObject meshObject = new GameObject(name);
         meshObject.transform.SetParent(mazeContainer.transform);
@@ -260,9 +288,14 @@ public class Maze3DBuilder : MonoBehaviour
         else
             meshRenderer.material = new Material(Shader.Find("Standard"));
 
-        // Add mesh collider for physics
-        MeshCollider meshCollider = meshObject.AddComponent<MeshCollider>();
-        meshCollider.sharedMesh = mesh;
+        // Add mesh collider for physics (optional)
+        if (addCollider)
+        {
+            MeshCollider meshCollider = meshObject.AddComponent<MeshCollider>();
+            meshCollider.sharedMesh = mesh;
+        }
+
+        return meshObject;
     }
 
     private void CreateMarker(Vector3 position, Material material, string label, Color defaultColor)

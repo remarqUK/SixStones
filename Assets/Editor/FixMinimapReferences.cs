@@ -10,7 +10,7 @@ public class FixMinimapReferences : EditorWindow
         Debug.Log("Starting minimap reference fix...");
 
         // Find MinimapRenderer in the scene
-        MinimapRenderer minimapRenderer = Object.FindObjectOfType<MinimapRenderer>();
+        MinimapRenderer minimapRenderer = Object.FindFirstObjectByType<MinimapRenderer>();
         if (minimapRenderer == null)
         {
             Debug.LogError("No MinimapRenderer found in scene!");
@@ -20,7 +20,7 @@ public class FixMinimapReferences : EditorWindow
         Debug.Log($"Found MinimapRenderer on GameObject: {minimapRenderer.gameObject.name}");
 
         // Find MapGenerator
-        MapGenerator mapGen = Object.FindObjectOfType<MapGenerator>();
+        MapGenerator mapGen = Object.FindFirstObjectByType<MapGenerator>();
         if (mapGen == null)
         {
             Debug.LogError("No MapGenerator found in scene!");
@@ -30,7 +30,7 @@ public class FixMinimapReferences : EditorWindow
         Debug.Log($"Found MapGenerator on GameObject: {mapGen.gameObject.name}");
 
         // Find FirstPersonMazeController (player)
-        FirstPersonMazeController player = Object.FindObjectOfType<FirstPersonMazeController>();
+        FirstPersonMazeController player = Object.FindFirstObjectByType<FirstPersonMazeController>();
         if (player == null)
         {
             Debug.LogError("No FirstPersonMazeController found in scene!");
@@ -40,7 +40,7 @@ public class FixMinimapReferences : EditorWindow
         Debug.Log($"Found Player on GameObject: {player.gameObject.name}");
 
         // Find the minimap RawImage (usually in Canvas hierarchy)
-        RawImage[] rawImages = Object.FindObjectsOfType<RawImage>();
+        RawImage[] rawImages = Object.FindObjectsByType<RawImage>(FindObjectsSortMode.None);
         RawImage minimapImage = null;
 
         foreach (RawImage img in rawImages)
