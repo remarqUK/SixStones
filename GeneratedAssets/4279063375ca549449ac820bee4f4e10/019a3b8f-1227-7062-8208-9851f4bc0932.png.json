@@ -1,0 +1,20 @@
+{
+    "asset": "4279063375ca549449ac820bee4f4e10",
+    "fileName": "019a3b8f-1227-7062-8208-9851f4bc0932.png",
+    "prompt": "Glossy green translucent emerald, carved into a round cut style by a jeweller - viewed from above - it will be on a black background\n",
+    "negativePrompt": "blurry, background",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "2af8537d433ac5fda13da4f863800910",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

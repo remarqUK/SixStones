@@ -15,6 +15,42 @@ public class PauseMenu : MonoBehaviour
     {
         // Initialize global options manager (ensures it exists)
         _ = GlobalOptionsManager.Instance;
+
+        // Fix pause menu panel RectTransform (workaround for Unity scene caching issue)
+        if (pauseMenuPanel != null)
+        {
+            RectTransform rectTransform = pauseMenuPanel.GetComponent<RectTransform>();
+            if (rectTransform != null)
+            {
+                // Set anchors to stretch across entire screen
+                rectTransform.anchorMin = new Vector2(0, 0);
+                rectTransform.anchorMax = new Vector2(1, 1);
+                rectTransform.anchoredPosition = Vector2.zero;
+                rectTransform.sizeDelta = Vector2.zero;
+                Debug.Log("PauseMenu: Fixed panel RectTransform to fill screen");
+
+                // Also fix the text
+                Transform pausedText = pauseMenuPanel.transform.Find("PausedText");
+                if (pausedText != null)
+                {
+                    RectTransform textRect = pausedText.GetComponent<RectTransform>();
+                    if (textRect != null)
+                    {
+                        textRect.anchorMin = new Vector2(0, 0);
+                        textRect.anchorMax = new Vector2(1, 1);
+                        textRect.anchoredPosition = Vector2.zero;
+                        textRect.sizeDelta = new Vector2(-40, -40);
+                    }
+                }
+
+                // Fix the Image color to black
+                UnityEngine.UI.Image image = pauseMenuPanel.GetComponent<UnityEngine.UI.Image>();
+                if (image != null)
+                {
+                    image.color = new Color(0, 0, 0, 0.95f);
+                }
+            }
+        }
     }
 
     private void Update()

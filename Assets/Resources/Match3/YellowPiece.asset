@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PieceTypeData
   pieceName: Yellow
   typeID: 3
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 5192e1cffc5d90c459e5c732baacc708, type: 3}
   color: {r: 0.95, g: 0.85, b: 0.2, a: 1}
   basePoints: 10
   spawnWeight: 1

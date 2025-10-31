@@ -1,0 +1,20 @@
+{
+    "asset": "d3d261f68ae4fe6449c724dd7bd269bb",
+    "fileName": "019a3a20-69b5-79ea-bd5e-434c4e50ff0e.png",
+    "prompt": "a red gem, in the shape of a flattened orb, with smooth edges. the gem should be reflective\n",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "50b90e873ac5c84d3775780d55ed4dfe",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

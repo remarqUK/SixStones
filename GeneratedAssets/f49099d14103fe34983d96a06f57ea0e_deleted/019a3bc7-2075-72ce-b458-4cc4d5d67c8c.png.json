@@ -1,0 +1,20 @@
+{
+    "asset": "f49099d14103fe34983d96a06f57ea0e",
+    "fileName": "019a3bc7-2075-72ce-b458-4cc4d5d67c8c.png",
+    "prompt": "gem translucent  #FF8C5A gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  Into the top surface should be a sun symbol color #FFAA8C - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "f6aa425aa9bd6af7a805480db621c988",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -1,0 +1,13 @@
+{
+    "asset": "cd6afb6150a2f1148bb930cdd8a2dbf5",
+    "fileName": "019a3a81-a1fe-721e-b2e0-8c8e4472bc01.wav",
+    "prompt": "impact of metal on wood",
+    "negativePrompt": "no reverb, no repeat",
+    "model": "ee31b223-3fe1-4ae6-bf54-d8a80bb4b0e1",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "59d532a77fe3c1f184f599655a025b7d",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}

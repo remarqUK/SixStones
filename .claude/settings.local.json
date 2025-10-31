@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell -Command \"Get-Content ''C:\\Users\\mouse\\Test2D\\Assets\\Scenes\\Maze3D.unity'' | Select-String -Pattern ''--- !u!108'' -Context 0,10\")"
+      "Bash(powershell -Command \"Get-ChildItem ''Assets/GemTypes/*.asset'' | ForEach-Object { $_FullName.Replace((Get-Location).Path + ''\\'', '''') }\")",
+      "mcp__UnityMCP__execute_menu_item",
+      "mcp__UnityMCP__read_console",
+      "mcp__UnityMCP__manage_editor",
+      "mcp__UnityMCP__manage_scene",
+      "mcp__UnityMCP__manage_gameobject",
+      "Bash(powershell -Command:*)",
+      "Bash(timeout /t 2 /nobreak)",
+      "Bash(nul)",
+      "Bash(ping:*)",
+      "Bash(timeout /t 3 /nobreak)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,20 @@
+{
+    "asset": "4279063375ca549449ac820bee4f4e10",
+    "fileName": "019a3b84-f1d5-7c93-a043-82b3982b2594.png",
+    "prompt": "Create dark green/emerald translucent gem, which is  a flattened sphere, viewed from above, with a typical leaf symbol (not maple leaf) embossed into it - it will be on a black background, with a single spot of soft light illumunating it from the left\n",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": -1,
+    "w3CTraceId": "e8adc72fb9ce98f05699b2be6767d3c3",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

@@ -374,6 +374,16 @@ public class Board : MonoBehaviour
     {
         Debug.Log($"ProcessMatches: Processing {matchedPieces.Count} matched pieces");
 
+        // Play sound for 3-gem matches
+        if (matchedPieces.Count == 3)
+        {
+            AudioManager audioManager = AudioManager.Instance;
+            if (audioManager != null)
+            {
+                audioManager.PlaySingleMatchSound();
+            }
+        }
+
         // Track the largest match in this turn (for bonus turn calculation)
         if (matchedPieces.Count > largestMatchThisTurn)
         {

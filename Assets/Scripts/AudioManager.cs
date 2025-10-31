@@ -25,8 +25,13 @@ public class AudioManager : MonoBehaviour
     [SerializeField] [Range(0f, 1f)] private float musicVolume = 0.7f;
     [SerializeField] [Range(0f, 1f)] private float dialogVolume = 0.8f;
 
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip singleMatchSound;
+
     // Event fired when volume changes
     public event System.Action OnVolumeChanged;
+
+    private AudioSource sfxAudioSource;
 
     private void Awake()
     {
@@ -34,7 +39,15 @@ public class AudioManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // Create AudioSource for SFX
+            sfxAudioSource = gameObject.AddComponent<AudioSource>();
+            sfxAudioSource.playOnAwake = false;
+
             LoadSavedVolumes();
+
+            // Set initial SFX volume
+            UpdateSFXVolume();
         }
         else if (instance != this)
         {
@@ -49,6 +62,7 @@ public class AudioManager : MonoBehaviour
     {
         gameVolume = Mathf.Clamp01(volume);
         AudioListener.volume = gameVolume;
+        UpdateSFXVolume();
         SaveVolumes();
         OnVolumeChanged?.Invoke();
         Debug.Log($"Game volume set to: {gameVolume:F2}");
@@ -126,5 +140,38 @@ public class AudioManager : MonoBehaviour
         AudioListener.volume = gameVolume;
 
         Debug.Log($"Loaded volumes - Game: {gameVolume:F2}, Music: {musicVolume:F2}, Dialog: {dialogVolume:F2}");
+    }
+
+    /// <summary>
+    /// Update the SFX AudioSource volume based on game volume
+    /// </summary>
+    private void UpdateSFXVolume()
+    {
+        if (sfxAudioSource != null)
+        {
+            sfxAudioSource.volume = gameVolume;
+        }
+    }
+
+    /// <summary>
+    /// Play the single match sound effect (for 3-gem matches)
+    /// </summary>
+    public void PlaySingleMatchSound()
+    {
+        if (singleMatchSound != null && sfxAudioSource != null)
+        {
+            sfxAudioSource.PlayOneShot(singleMatchSound);
+        }
+    }
+
+    /// <summary>
+    /// Play a sound effect with the current game volume
+    /// </summary>
+    public void PlaySoundEffect(AudioClip clip)
+    {
+        if (clip != null && sfxAudioSource != null)
+        {
+            sfxAudioSource.PlayOneShot(clip);
+        }
     }
 }

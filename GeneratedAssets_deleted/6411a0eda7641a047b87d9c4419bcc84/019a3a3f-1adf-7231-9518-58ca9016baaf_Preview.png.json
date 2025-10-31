@@ -1,0 +1,11 @@
+{
+    "asset": "6411a0eda7641a047b87d9c4419bcc84",
+    "fileName": "019a3a3f-1adf-7231-9518-58ca9016baaf_Preview.png",
+    "prompt": "glassy gem, translucent",
+    "negativePrompt": "",
+    "model": "44ec3749-963a-44b1-aa54-dc19f6ed8ab2",
+    "modelName": "Unity Texture2D",
+    "customSeed": 87448629,
+    "w3CTraceId": "6618f01bdf2c69c01fff90c03557816b",
+    "refinementMode": "Generation"
+}

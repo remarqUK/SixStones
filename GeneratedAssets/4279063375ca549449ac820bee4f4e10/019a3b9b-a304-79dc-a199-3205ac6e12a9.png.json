@@ -1,0 +1,20 @@
+{
+    "asset": "4279063375ca549449ac820bee4f4e10",
+    "fileName": "019a3b9b-a304-79dc-a199-3205ac6e12a9.png",
+    "prompt": "Glossy green translucent circular emerald viewed from above, the gem will have multiple occlusions to add depth to the texture. There will be an inner halo effect inside the gem very close to the edge - it will be on a black background\n",
+    "negativePrompt": "blurry, background",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 223,
+    "w3CTraceId": "e9aac3b3aadd4c5d366c7447a77de78c",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

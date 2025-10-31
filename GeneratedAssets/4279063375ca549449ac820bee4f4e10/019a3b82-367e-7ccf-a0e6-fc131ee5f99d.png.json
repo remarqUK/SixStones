@@ -1,0 +1,29 @@
+{
+    "asset": "4279063375ca549449ac820bee4f4e10",
+    "fileName": "019a3b82-367e-7ccf-a0e6-fc131ee5f99d.png",
+    "prompt": "Create dark green/emerald brilliant cut gem viewed from above, with a leaf symbol embossed into it - it will be on a black background, with a single spot of soft light illumunating it from the left\n",
+    "negativePrompt": "",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 222,
+    "w3CTraceId": "32977ce598e8791351560afd6fc4d014",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.25,
+                "invertStrength": false,
+                "assetReferenceGuid": "d5db18bd726729d4da99bb52b3859958"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

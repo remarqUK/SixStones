@@ -1,0 +1,13 @@
+{
+    "asset": "6be27f5679d607d4ebe7026f94ffb612",
+    "fileName": "019a3a7e-f438-72a8-a4da-1bd64729c9ce.wav",
+    "prompt": " bright, crystalline chime with a gentle musical sparkle, lasting 0.1 seconds. Starts with a soft, pleasant 'tink' that blossoms into a warm, harmonious bell tone with subtle magical shimmer. Mid-to-high frequency range with a quick, natural decay. Clean and clear like glass touching crystal, but rounded and organic to avoid harshness. Should feel rewarding yet understated - satisfying without being intrusive.",
+    "negativePrompt": "",
+    "model": "ee31b223-3fe1-4ae6-bf54-d8a80bb4b0e1",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "5750568da70d24bcebb92ef0354c7f66",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}

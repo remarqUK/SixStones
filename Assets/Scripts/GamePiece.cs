@@ -118,6 +118,31 @@ public class GamePiece : MonoBehaviour
     {
         if (spriteRenderer == null) return;
 
+        // Try to get sprite from GemTypeManager first
+        GemTypeManager gemTypeManager = GemTypeManager.Instance;
+        if (gemTypeManager != null)
+        {
+            GemTypeData gemData = gemTypeManager.GetGemTypeData(pieceType);
+            if (gemData != null)
+            {
+                // Use sprite from GemTypeData if available
+                if (gemData.gemSprite != null)
+                {
+                    spriteRenderer.sprite = gemData.gemSprite;
+                    // Use white tint to show the sprite's natural colors
+                    spriteRenderer.color = Color.white;
+                    return;
+                }
+                // If sprite is not set, use the color from GemTypeData
+                else if (gemData.gemColor != Color.clear)
+                {
+                    spriteRenderer.color = gemData.gemColor;
+                    return;
+                }
+            }
+        }
+
+        // Fallback: use GameSettings or default colors
         Color color;
         if (settings != null)
         {

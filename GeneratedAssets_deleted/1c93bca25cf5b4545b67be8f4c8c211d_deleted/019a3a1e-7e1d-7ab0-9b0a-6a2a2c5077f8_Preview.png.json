@@ -1,0 +1,11 @@
+{
+    "asset": "1c93bca25cf5b4545b67be8f4c8c211d",
+    "fileName": "019a3a1e-7e1d-7ab0-9b0a-6a2a2c5077f8_Preview.png",
+    "prompt": "a glassy gem, that can be coloured",
+    "negativePrompt": "",
+    "model": "44ec3749-963a-44b1-aa54-dc19f6ed8ab2",
+    "modelName": "Unity Texture2D",
+    "customSeed": 129108118,
+    "w3CTraceId": "500f3c30d99a8a2dca980a907c1f0913",
+    "refinementMode": "Generation"
+}

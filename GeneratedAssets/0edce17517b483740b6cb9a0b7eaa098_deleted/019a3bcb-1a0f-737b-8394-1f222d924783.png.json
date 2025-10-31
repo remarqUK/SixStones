@@ -1,0 +1,20 @@
+{
+    "asset": "f49099d14103fe34983d96a06f57ea0e",
+    "fileName": "019a3bcb-1a0f-737b-8394-1f222d924783.png",
+    "prompt": "gem translucent  white gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  Into the top surface should be a snowflake symbol color #FFAA8C - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside",
+    "negativePrompt": "blurry, background",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "90182fcf8b33ac0e51e2dbbf5cc12a7a",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

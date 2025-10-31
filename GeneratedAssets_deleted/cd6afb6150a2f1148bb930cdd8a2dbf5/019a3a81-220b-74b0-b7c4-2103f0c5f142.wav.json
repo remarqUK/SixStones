@@ -1,0 +1,13 @@
+{
+    "asset": "cd6afb6150a2f1148bb930cdd8a2dbf5",
+    "fileName": "019a3a81-220b-74b0-b7c4-2103f0c5f142.wav",
+    "prompt": "impact metal",
+    "negativePrompt": "no reverb, no repeat",
+    "model": "ee31b223-3fe1-4ae6-bf54-d8a80bb4b0e1",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "bf93eae893d89da59730254282507071",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}

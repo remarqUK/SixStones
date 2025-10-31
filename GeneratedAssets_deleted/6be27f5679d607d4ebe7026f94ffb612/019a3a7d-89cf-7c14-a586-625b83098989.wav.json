@@ -1,0 +1,13 @@
+{
+    "asset": "6be27f5679d607d4ebe7026f94ffb612",
+    "fileName": "019a3a7d-89cf-7c14-a586-625b83098989.wav",
+    "prompt": "Here's a sound description optimized for AI audio generation:\r\n\r\n\"A bright, crystalline chime with a gentle musical sparkle, lasting 0.3-0.5 seconds. Starts with a soft, pleasant 'tink' that blossoms into a warm, harmonious bell tone with subtle magical shimmer. Mid-to-high frequency range with a quick, natural decay. Clean and clear like glass touching crystal, but rounded and organic to avoid harshness. Should feel rewarding yet understated - satisfying without being intrusive.\"\r\n\r\n**Key qualities to emphasize:**\r\n- **Duration**: Very brief (under half a second)\r\n- **Pitch**: Pleasant mid-high range, not too piercing\r\n- **Tone**: Warm and musical rather than electronic or harsh\r\n- **Texture**: Smooth with slight sparkle, avoiding sharp edges\r\n- **Volume curve**: Quick gentle attack, natural fade-out\r\n\r\n**Alternative shorter prompt:**\r\n\"Short crystalline chime, 0.4 seconds, warm and musical with gentle sparkle, like magical glass bells with soft decay\"\r\n\r\nThe \"crystalline\" quality gives it that gem-matching ",
+    "negativePrompt": "",
+    "model": "ee31b223-3fe1-4ae6-bf54-d8a80bb4b0e1",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "a014c4c381fd07479117ae28b99c1577",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}

@@ -1,0 +1,13 @@
+{
+    "asset": "6be27f5679d607d4ebe7026f94ffb612",
+    "fileName": "019a3a7a-c200-763a-ac8c-4f74b7947a86.wav",
+    "prompt": "the sound of two snooker balls clacking against each other, but slight softer, and with a crescendo. It's denote a successful match3 puzzle match",
+    "negativePrompt": "",
+    "model": "ee31b223-3fe1-4ae6-bf54-d8a80bb4b0e1",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "f8993faad50d7db22c7c2efaacb66120",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}
