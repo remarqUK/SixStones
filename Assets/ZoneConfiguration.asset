@@ -1,0 +1,747 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43ccd820bf3fa1941902623a309b783a, type: 3}
+  m_Name: ZoneConfiguration
+  m_EditorClassIdentifier: Assembly-CSharp::ZoneConfiguration
+  zones:
+  - zoneName: Verdant Plains
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+  - zoneName: Mystic Forest
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+  - zoneName: Frozen Peaks
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+  - zoneName: Desert Wastes
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+  - zoneName: Shadow Realm
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+  - zoneName: Celestial Heights
+    subZones:
+    - subZoneName: District 1
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 2
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 3
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 4
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 5
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10
+    - subZoneName: District 6
+      maps:
+      - mapName: Area 1
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 2
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 3
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 4
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 5
+        mapWidth: 10
+        mapHeight: 10
+      - mapName: Area 6
+        mapWidth: 10
+        mapHeight: 10

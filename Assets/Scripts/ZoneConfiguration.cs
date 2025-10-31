@@ -11,6 +11,8 @@ public class ZoneConfiguration : ScriptableObject
     public class Zone
     {
         public string zoneName;
+        [Tooltip("Cutscene ID to play when entering this zone")]
+        public string cutsceneId;
         public List<SubZone> subZones = new List<SubZone>();
     }
 
@@ -18,6 +20,8 @@ public class ZoneConfiguration : ScriptableObject
     public class SubZone
     {
         public string subZoneName;
+        [Tooltip("Cutscene ID to play when entering this subzone")]
+        public string cutsceneId;
         public List<ZoneMap> maps = new List<ZoneMap>();
     }
 
@@ -25,7 +29,9 @@ public class ZoneConfiguration : ScriptableObject
     public class ZoneMap
     {
         public string mapName;
-        public int mapWidth = 10;  // Default map dimensions
+        [Tooltip("Cutscene ID to play when entering this map")]
+        public string cutsceneId;
+        public int mapWidth = 10;
         public int mapHeight = 10;
     }
 

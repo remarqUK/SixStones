@@ -48,11 +48,15 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.2.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Editor\CreateZoneConfiguration.cs" />
+    <Compile Include="Assets\Editor\WorldMapSetup.cs" />
+    <Compile Include="Assets\Editor\RenameProject.cs" />
     <Compile Include="Assets\Editor\CreateSimpleOptionsMenuPrefab.cs" />
+    <Compile Include="Assets\Editor\AddScenesToBuild.cs" />
     <Compile Include="Assets\Editor\BuildScript.cs" />
     <Compile Include="Assets\Editor\MapGeneratorEditor.cs" />
+    <Compile Include="Assets\Editor\AddCameraToWorldMap.cs" />
     <Compile Include="Assets\Editor\CreateMatch3Assets.cs" />
+    <Compile Include="Assets\Editor\FixWorldMapInputSystem.cs" />
     <Compile Include="Assets\Editor\Maze3DSetup.cs" />
     <Compile Include="Assets\Editor\MainMenuSetup.cs" />
     <Compile Include="Assets\Editor\ItemCreator.cs" />
@@ -60,8 +64,11 @@
     <Compile Include="Assets\Editor\CreateGameModes.cs" />
     <Compile Include="Assets\Editor\InventorySetup.cs" />
     <Compile Include="Assets\Editor\AddReturnToMainMenuButton.cs" />
+    <Compile Include="Assets\Editor\CutsceneManagerEditor.cs" />
     <Compile Include="Assets\Editor\LoadingScreenSetup.cs" />
     <Compile Include="Assets\Editor\FixMinimapReferences.cs" />
+    <Compile Include="Assets\Editor\SubZoneMapSetup.cs" />
+    <Compile Include="Assets\Editor\CreateZoneConfigurationAsset.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
@@ -610,6 +617,10 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.Antlr3.Runtime">
       <HintPath>Library\PackageCache\com.unity.visualscripting@b4d700247d4b\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@74deb55db2a0\Runtime\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.VisualScripting.TextureAssets">
@@ -1252,6 +1263,10 @@
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MCPForUnity.Runtime">
+      <HintPath>Library\ScriptAssemblies\MCPForUnity.Runtime.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.RenderPipelines.Core.Runtime">
       <HintPath>Library\ScriptAssemblies\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
       <Private>False</Private>
@@ -1302,6 +1317,10 @@
     </Reference>
     <Reference Include="Unity.InputSystem.ForUI">
       <HintPath>Library\ScriptAssemblies\Unity.InputSystem.ForUI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MCPForUnity.Editor">
+      <HintPath>Library\ScriptAssemblies\MCPForUnity.Editor.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.RenderPipelines.GPUDriven.Runtime">

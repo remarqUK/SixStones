@@ -17,6 +17,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Match3.unity
     guid: 4fd6bb3966d32734f955f78ab85b96b3
+  - enabled: 1
+    path: Assets/Scenes/WorldMap.unity
+    guid: c565946908d3699468416b6b8cf47c9f
+  - enabled: 1
+    path: Assets/Scenes/SubZoneMap.unity
+    guid: a4f2e52405ba054428237ef972021a02
+  - enabled: 1
+    path: Assets/Scenes/WorldMap.unity/WorldMap.unity
+    guid: 7a32173c5342a034a9b87eb850bbd382
+  - enabled: 1
+    path: Assets/Scenes/SubZoneMap.unity/SubZoneMap.unity
+    guid: 01156bbecf121da4b82e07a0dfc5c6d9
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
