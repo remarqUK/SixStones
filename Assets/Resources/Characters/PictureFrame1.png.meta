@@ -1,12 +1,12 @@
 fileFormatVersion: 2
-guid: af8b8a72a03041e4dae0913bfd6afa33
+guid: d29f77bf9b65c8b42afb3b0dff4be577
 labels:
 - UnityAI
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8009419168471351963
-    second: MazeWall_0
+      213: -7063445223504147646
+    second: New Sprite 2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -115,7 +115,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: MazeWall_0
+      name: New Sprite 2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -130,8 +130,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b9280f94c4c272f60800000000000000
-      internalID: 8009419168471351963
+      spriteID: 24b0b923ef999fd90800000000000000
+      internalID: -7063445223504147646
       vertices: []
       indices: 
       edges: []
@@ -150,7 +150,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      MazeWall_0: 8009419168471351963
+      New Sprite 2_0: -7063445223504147646
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

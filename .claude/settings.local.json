@@ -12,7 +12,8 @@
       "Bash(nul)",
       "Bash(ping:*)",
       "Bash(timeout /t 3 /nobreak)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__UnityMCP__manage_asset"
     ],
     "deny": [],
     "ask": []

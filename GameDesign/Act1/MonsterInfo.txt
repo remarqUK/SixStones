@@ -1,0 +1,116 @@
+## **⚔️ Act 1: Dwarven Mines - Enemy Roster**
+
+### **Common Enemies (Early Floors)**
+
+**1. Gem Goblin**
+- Small, weak, steals your gems
+- Mechanic: Converts your matched gems to skulls
+- HP: 20
+
+**2. Cave Bat Swarm**
+- Fast, multiple attacks
+- Mechanic: Obscures random gems for 1 turn
+- HP: 15
+
+**3. Mining Automaton**
+- Abandoned dwarven mining robot
+- Mechanic: Adds metal (gray) gems to board
+- HP: 30
+
+**4. Fire Beetle**
+- Glowing lava insect
+- Mechanic: Creates burning gems when hit
+- HP: 25
+
+### **Mid-Tier Enemies (Middle Floors)**
+
+**5. Magma Elemental**
+- Living lava creature
+- Mechanic: Heals from red gem matches
+- HP: 40
+
+**6. Corrupted Mole**
+- Giant blind digger
+- Mechanic: Shuffles bottom row every 2 turns
+- HP: 35
+
+**7. Forge Golem**
+- Animated armor/weapons
+- Mechanic: Gains armor from STR gems you match
+- HP: 45
+
+**8. Crystal Spider**
+- Gemstone-covered arachnid
+- Mechanic: Webs lock your gems in place
+- HP: 30
+
+### **Dangerous Enemies (Deep Floors)**
+
+**9. Stone Troll**
+- Regenerating brute
+- Mechanic: Heals 5 HP per turn unless you match 4+
+- HP: 60
+
+**10. Molten Ooze**
+- Liquid metal slime
+- Mechanic: Splits into two when killed (once)
+- HP: 40
+
+**11. Dwarven Wraith**
+- Ghost of dead miner
+- Mechanic: Makes gems "exhausted" (half effect)
+- HP: 35
+
+**12. Ore Worm**
+- Massive tunneling creature
+- Mechanic: Eats entire columns of gems
+- HP: 50
+
+---
+
+### **🔨 FINAL BOSS: The Molten Forgemaster**
+
+**Not Grimm himself, but what he's become:**
+
+A massive hybrid of dwarf and forge - Grimm has fused with the STR stone and his own forge, becoming a 15-foot tall molten metal giant with hammer hands.
+
+**Boss Phases:**
+
+**Phase 1: "The Smith" (100 HP)**
+- Pounds board with hammer (stuns gems)
+- Creates metal gems
+- Armor buff every 3 turns
+
+**Phase 2: "The Forge" (75 HP)**
+- Board edges become lava (damages if matched)
+- Summons 2 Mining Automatons
+- Overheats: red gems do double damage to you
+
+**Phase 3: "The Stone" (50 HP)**
+- STR stone exposed in chest (weak point)
+- Desperate rage: breaks 3x3 gem sections
+- But takes double damage from all matches
+- Final move: tries to collapse the mine
+
+**Visual Design:**
+- Glowing molten metal "skin"
+- Forge bellows for breathing
+- Hammers for hands
+- STR stone embedded in chest
+- Lava dripping from body
+- Still wearing torn smith's apron
+
+**Death Quote:**
+*"The stone... was too heavy... for mortal hands..."*
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Goblins, Bats, Beetles
+**Floor 3:** Automatons, Moles
+**Floor 4:** Elementals, Golems, Spiders  
+**Floor 5:** Trolls, Oozes, Wraiths, Worms
+**Floor 6:** Forgemaster Boss
+
+This gives players a steady difficulty curve while introducing new mechanics gradually!

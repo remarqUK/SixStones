@@ -1,0 +1,29 @@
+{
+    "asset": "3fd47b1f9cbd8f145855025e352c5217",
+    "fileName": "019a414c-42cb-7938-97a4-3db1181fb096.png",
+    "prompt": "Barbarian class character. Male.  Serious looking.  Strong linework. Arcane. Airbrush style.  Dramatic lighting that emphasizes the facial features. High-quality fantasy game or concept art style. Feet visible\r\n",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "905af942d4330c71aa682508ddc5a948",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.5199999809265137,
+                "invertStrength": false,
+                "assetReferenceGuid": "4901e3a600c10fc4d8bc13d219fc86c1"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

@@ -1,0 +1,69 @@
+Image reference: rogue.png (in this folder)
+
+Fantasy RPG: db3e7617-6868-4d55-9955-0f0c2d4bfdff
+
+Rogue:
+
+Rogue class character. Female. Red Hair. Serious looking.  Strong linework. Arcane. Airbrush style. 
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background
+
+strength: 98
+
+Ranger:
+
+Ranger class. male.  Serious looking.  Strong linework. Arcane. Airbrush style. 
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background, red hair, tattoos, pauldrons, sholder armour
+
+strength: 17
+
+Cleric:
+
+Cleric class. male.  Serious looking.  Strong linework. Arcane. Airbrush style. bald, dark skin. brown monks hassock.
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background, red hair, tattoos, pauldrons, sholder armour
+
+strength: 17
+
+Wizard:
+
+Wizard class character. Female.  Serious looking.  Strong linework. Arcane. Airbrush style. blonde hair, red eyes, cape
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background, red hair, tattoos
+
+strength: 17
+
+Barbarian:
+
+Barbarian class character. Male.  Serious looking.  Strong linework. Arcane. Airbrush style. 
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background, red hair
+
+strength: 17
+
+Knight:
+
+Knight class character. Male.  Serious looking.  Strong linework. Arcane. Airbrush style. 
+Dramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits 
+
+blurry, background, red hair
+
+seed: 224
+
+
+Picture frame:
+
+slender, gothic picture frame. High-quality fantasy game or concept art style, the type that would frame an RPG character portrait
+
+or
+
+slender, gothic iron gray picture frame. High-quality fantasy game or concept art style, the type that would frame an RPG character portrait
+
+
+Strength: 2

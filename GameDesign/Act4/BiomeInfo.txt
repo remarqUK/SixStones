@@ -1,0 +1,163 @@
+## **🧠 Act 4: Wizard Tower - Enemy Roster**
+
+### **Common Enemies (Lower Tower)**
+
+**1. Apprentice Mage**
+- Failed student, still practicing
+- Mechanic: Random gems change color (wild magic)
+- HP: 20
+
+**2. Animated Spellbook**
+- Flying tome casting from its pages
+- Mechanic: Casts random debuff each turn
+- HP: 18
+
+**3. Mana Wisp**
+- Pure magical energy orb
+- Mechanic: Steals your blue (INT) gems for damage
+- HP: 15
+
+**4. Crystal Construct**
+- Magical automation guardian
+- Mechanic: Reflects 25% of magic damage back
+- HP: 30
+
+### **Mid-Tier Enemies (Tower Heights)**
+
+**5. Illusionist Shade**
+- Master of deception
+- Mechanic: Creates fake gems (do nothing when matched)
+- HP: 35
+
+**6. Void Sphere**
+- Floating orb of nothingness
+- Mechanic: Erases 2x2 sections of board
+- HP: 28
+
+**7. Rogue Experiment**
+- Chimera-like magical hybrid
+- Mechanic: Changes form/weakness each turn
+- HP: 45
+
+**8. Mirror Mage**
+- Reflective spellcaster
+- Mechanic: Copies your last move exactly
+- HP: 40
+
+### **Dangerous Enemies (Upper Sanctum)**
+
+**9. Arcane Elemental**
+- Pure magical force
+- Mechanic: Immune to one random gem color
+- HP: 50
+
+**10. Mind Flayer Thrall**
+- Controlled by intellect devourers
+- Mechanic: Confuses controls (gems match wrong)
+- HP: 42
+
+**11. Spell Turret**
+- Automated defense system
+- Mechanic: Fires at your highest combo
+- HP: 48
+
+**12. Paradox Sphinx**
+- Riddling guardian
+- Mechanic: Locks board until you match specific pattern
+- HP: 55
+
+---
+
+### **🎓 FINAL BOSS: The Transcendent Magus**
+
+**Cornelius has merged with pure magical energy through the INT stone:**
+
+He floats in a constellation of orbiting books, crystals, and equations. His body phases between solid, energy, and geometric patterns. The INT stone replaces his head like a giant glowing brain.
+
+**Boss Phases:**
+
+**Phase 1: "The Scholar" (100 HP)**
+- Transmutation spell (changes all gems of one color)
+- Summons 2 Animated Spellbooks
+- Shield that only magic (INT) gems can break
+
+**Phase 2: "The Equation" (80 HP)**
+- Board becomes puzzle (must match in specific order)
+- Time magic (reverses your last move)
+- Counterspell (cancels your 4+ matches)
+
+**Phase 3: "Pure Intellect" (60 HP)**
+- INT stone goes critical
+- Polymorph (turns random gems into animals/objects)
+- Mind break (all gems look the same for 2 turns)
+- HOWEVER: Vulnerable to non-magic damage (STR/DEX do 3x)
+
+**Visual Design:**
+- No longer fully human
+- Body made of floating geometric shapes
+- INT stone as crystalline brain
+- Books orbiting constantly
+- Speaks in equations and formulas
+- Reality warps around him
+- Runes and numbers floating in air
+
+**Death Quote:**
+*"Impossible... I calculated... every... variable..."*
+
+---
+
+### **🔮 Tower Environmental Hazards**
+
+**Magical Anomalies:**
+- **Gravity reversal:** Board flips upside down
+- **Time loops:** Previous board state returns
+- **Portal storms:** Gems teleport randomly
+- **Mana surge:** All gems become wild briefly
+- **Reality tears:** Parts of board not visible
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Apprentices, Spellbooks, Wisps
+**Floor 3:** Constructs, Illusionists, Void Spheres
+**Floor 4:** Experiments, Mirror Mages, Elementals
+**Floor 5:** Mind Flayers, Turrets, Sphinxes
+**Floor 6:** Transcendent Magus Boss
+
+---
+
+### **🎯 INT Theme Mechanics**
+
+Each enemy emphasizes intelligence/magic challenges:
+- **Transmutation** (gems changing type)
+- **Illusion** (fake gems, hidden information)
+- **Puzzle requirements** (specific match patterns)
+- **Counterspells** (negating your moves)
+- **Mind games** (confusion, reversal)
+- **Magical immunity** (need right gem types)
+
+---
+
+### **📚 Unique Tower Features**
+
+**Special Room Types:**
+- **Library:** Match INT gems to reveal enemy weaknesses
+- **Laboratory:** Potions give random effects
+- **Observatory:** See future gem drops
+- **Summoning Circle:** Elite enemy encounters
+- **Puzzle Door:** Solve to progress
+
+---
+
+### **🧪 Magic Types by Enemy**
+
+**Schools of Magic Represented:**
+- **Evocation:** Direct damage (Spell Turret)
+- **Illusion:** Deception (Illusionist Shade)
+- **Transmutation:** Change (Rogue Experiment)
+- **Enchantment:** Mind control (Mind Flayer)
+- **Abjuration:** Shields (Crystal Construct)
+- **Divination:** Knowledge (Paradox Sphinx)
+
+This act really tests players' ability to think ahead and adapt to constantly changing board states!

@@ -1,0 +1,29 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a412c-67e2-728b-9e01-23e2390a4569.png",
+    "prompt": "Rogue class character. Female. Red Hair. Serious looking.  Strong linework. Arcane. Airbrush style. \nDramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits ",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "bbc77445e446dbfea5e67823eb41dd41",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.9800000190734863,
+                "invertStrength": false,
+                "assetReferenceGuid": "ff07fd683ebfa9d44ab599a574719349"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

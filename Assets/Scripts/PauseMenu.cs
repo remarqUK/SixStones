@@ -457,8 +457,8 @@ public class PauseMenu : MonoBehaviour
         HidePauseMenu();
 
         // Reload the current scene
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        SceneIdentifier currentScene = SceneHelper.GetCurrentScene();
+        SceneHelper.LoadScene(currentScene);
     }
 
     /// <summary>
@@ -476,7 +476,7 @@ public class PauseMenu : MonoBehaviour
         HidePauseMenu();
 
         // Load main menu scene
-        SceneManager.LoadScene("MainMenu");
+        SceneHelper.LoadScene(SceneIdentifier.MainMenu);
     }
 
     /// <summary>

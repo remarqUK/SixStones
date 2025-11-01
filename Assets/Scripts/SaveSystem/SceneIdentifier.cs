@@ -12,6 +12,7 @@ public enum SceneIdentifier
     SubZoneMap = 3,
     Match3 = 4,
     Maze3D = 5,
+    CharacterSelection = 6,
     Unknown = 99
 }
 
@@ -33,6 +34,7 @@ public static class SceneHelper
             SceneIdentifier.SubZoneMap => "SubZoneMap",
             SceneIdentifier.Match3 => "Match3",
             SceneIdentifier.Maze3D => "Maze3D",
+            SceneIdentifier.CharacterSelection => "CharacterSelection",
             _ => "MainMenu" // Default to main menu if unknown
         };
     }
@@ -50,6 +52,7 @@ public static class SceneHelper
             "SubZoneMap" => SceneIdentifier.SubZoneMap,
             "Match3" => SceneIdentifier.Match3,
             "Maze3D" => SceneIdentifier.Maze3D,
+            "CharacterSelection" => SceneIdentifier.CharacterSelection,
             _ => SceneIdentifier.Unknown
         };
     }

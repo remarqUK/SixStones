@@ -1,0 +1,20 @@
+{
+    "asset": "4b679bb2e0834ce42880fd287c76c5e1",
+    "fileName": "019a4150-504b-7261-b6b0-0d654abd921c.png",
+    "prompt": "ornate picture frame. High-quality fantasy game or concept art style, the type that would frame an RPG character portrait\r\n",
+    "negativePrompt": "",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "1d67063a003fd39c280c0f97b2901f9d",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

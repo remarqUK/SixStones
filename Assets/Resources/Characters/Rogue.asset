@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 798eec24ee948404e8a3a7be8f38d65f, type: 3}
+  m_Name: Rogue
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: Rogue
+  description: A nimble and cunning expert in stealth and precision
+  characterSprite: {fileID: 21300000, guid: 136daf16e4c057f419639ed9dae1b78a, type: 3}
+  strength: 10
+  dexterity: 18
+  constitution: 10
+  intelligence: 12
+  wisdom: 12
+  charisma: 14
+  baseHealth: 90
+  baseMana: 60
+  moveSpeed: 6
+  classFeatures:
+  - Sneak Attack
+  - Evasion
+  - Cunning Action

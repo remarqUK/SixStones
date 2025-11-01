@@ -1,0 +1,20 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a4121-56a0-7ebc-bfcf-536b81830e23.png",
+    "prompt": "Digital painting with realistic rendering\nDramatic lighting that emphasizes the facial features",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 221,
+    "w3CTraceId": "83ecb6a0ce22c83b7ad090b85c6ed456",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

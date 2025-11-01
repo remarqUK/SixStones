@@ -76,19 +76,16 @@ public class SaveSystemMenu
     [MenuItem(MENU_ROOT + "Show All Save Slots", false, 4)]
     public static void ShowSaveInfo()
     {
-        if (!EnhancedGameSaveManager.HasAnySaveGame())
-        {
-            EditorUtility.DisplayDialog("Save System", "No save files found!", "OK");
-            return;
-        }
-
         var allSlots = EnhancedGameSaveManager.GetAllSaveSlots();
         string message = "=== ALL SAVE SLOTS ===\n\n";
+
+        int nonEmptyCount = 0;
 
         foreach (var slotInfo in allSlots)
         {
             if (!slotInfo.isEmpty)
             {
+                nonEmptyCount++;
                 message += $"--- Slot {slotInfo.slotNumber} ---\n";
                 message += $"Date: {slotInfo.saveDate}\n";
                 message += $"Level: {slotInfo.playerLevel}\n";
@@ -96,9 +93,18 @@ public class SaveSystemMenu
                 message += $"Playtime: {slotInfo.GetPlaytimeFormatted()}\n";
                 message += $"Size: {slotInfo.fileSizeKB} KB\n\n";
             }
+            else
+            {
+                message += $"--- Slot {slotInfo.slotNumber} --- EMPTY\n\n";
+            }
         }
 
+        message += $"\nTotal non-empty slots: {nonEmptyCount}/10\n";
+        message += $"HasAnySaveGame(): {EnhancedGameSaveManager.HasAnySaveGame()}\n";
+        message += $"HasSaveGame(slot 1): {EnhancedGameSaveManager.HasSaveGame(1)}";
+
         EditorUtility.DisplayDialog("All Save Slots", message, "OK");
+        Debug.Log(message);
     }
 
     [MenuItem(MENU_ROOT + "Export Save to Console", false, 5)]

@@ -1,0 +1,20 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a4121-7729-7ffe-b743-e5f9415f2a16.png",
+    "prompt": "Rogue class character. Digital painting with realistic rendering\nDramatic lighting that emphasizes the facial features",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 221,
+    "w3CTraceId": "84f5897bcd1d2f2bfdba9af849dafeee",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

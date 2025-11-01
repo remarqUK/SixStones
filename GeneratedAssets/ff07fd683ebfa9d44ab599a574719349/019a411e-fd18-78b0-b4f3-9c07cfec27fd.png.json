@@ -1,0 +1,20 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a411e-fd18-78b0-b4f3-9c07cfec27fd.png",
+    "prompt": "rogue",
+    "negativePrompt": "blurry",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 220,
+    "w3CTraceId": "a121a597fdd72701f70bf2a1848e6ed9",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

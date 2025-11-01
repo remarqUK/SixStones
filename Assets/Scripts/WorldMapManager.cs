@@ -220,7 +220,7 @@ private void SelectCurrentZone()
         }
         
         Debug.Log($"Traveling to {selectedIcon.ZoneName}");
-        
+
         // Check for zone cutscene
         var zone = zoneConfig?.GetZone(selectedZoneIndex);
         if (zone != null && !string.IsNullOrEmpty(zone.cutsceneId))
@@ -228,18 +228,18 @@ private void SelectCurrentZone()
             if (CutsceneTracker.Instance.ShouldPlayCutscene(zone.cutsceneId))
             {
                 CutsceneTracker.Instance.PlayCutscene(zone.cutsceneId, () => {
-                    UnityEngine.SceneManagement.SceneManager.LoadScene("SubZoneMap");
+                    SceneHelper.LoadScene(SceneIdentifier.SubZoneMap);
                 });
                 return;
             }
         }
-        
-        UnityEngine.SceneManagement.SceneManager.LoadScene("SubZoneMap");
+
+        SceneHelper.LoadScene(SceneIdentifier.SubZoneMap);
     }
-    
+
     private void ReturnToMainMenu()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        SceneHelper.LoadScene(SceneIdentifier.MainMenu);
     }
 }
 

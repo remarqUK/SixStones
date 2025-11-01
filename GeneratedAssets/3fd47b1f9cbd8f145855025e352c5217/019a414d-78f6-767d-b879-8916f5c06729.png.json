@@ -1,0 +1,29 @@
+{
+    "asset": "3fd47b1f9cbd8f145855025e352c5217",
+    "fileName": "019a414d-78f6-767d-b879-8916f5c06729.png",
+    "prompt": "Full height image of a Barbarian class character. Male.  Serious looking.  Strong linework. Arcane. Airbrush style.  Dramatic lighting that emphasizes the facial features. High-quality fantasy game or concept art style.\r\n",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 223,
+    "w3CTraceId": "1957ae5dd4b7ae2ec477bdb197a46b18",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.8500000238418579,
+                "invertStrength": false,
+                "assetReferenceGuid": "4901e3a600c10fc4d8bc13d219fc86c1"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

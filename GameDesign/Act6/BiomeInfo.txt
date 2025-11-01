@@ -1,0 +1,187 @@
+## **✨ Act 6: Castle Ruins - Enemy Roster**
+
+### **Common Enemies (Outer Ruins)**
+
+**1. Skeleton Warrior**
+- Basic undead soldier
+- Mechanic: Reassembles after 3 turns unless you match holy gems
+- HP: 26
+
+**2. Spectral Knight**
+- Ghostly cavalry
+- Mechanic: Phases through damage every 3rd attack
+- HP: 30
+
+**3. Bone Swarm**
+- Cloud of animated bones
+- Mechanic: Splits when killed into 2 smaller swarms (once)
+- HP: 20
+
+**4. Wight Guard**
+- Elite undead sentinel
+- Mechanic: Life drain (heals when damaging you)
+- HP: 35
+
+### **Mid-Tier Enemies (Inner Keep)**
+
+**5. Death Knight**
+- Lich King's lieutenant
+- Mechanic: Unholy presence (your healing reduced by 50%)
+- HP: 55
+
+**6. Banshee**
+- Wailing spirit
+- Mechanic: Scream shuffles entire board
+- HP: 40
+
+**7. Vampire Lord**
+- Ancient bloodsucker
+- Mechanic: Gains your gem match effects
+- HP: 48
+
+**8. Bone Dragon (Young)**
+- Skeletal drake
+- Mechanic: Breath turns 3x3 area to skull gems
+- HP: 60
+
+### **Dangerous Enemies (Throne Approach)**
+
+**9. Lich Apprentice**
+- Lesser lich serving the king
+- Mechanic: Resurrects fallen enemies (once per battle)
+- HP: 50
+
+**10. Dracolich**
+- Undead dragon guardian
+- Mechanic: Necrotic breath exhausts all gems
+- HP: 70
+
+**11. Shadow of the Crown**
+- Manifestation of crown's corruption
+- Mechanic: Uses abilities from all 5 previous bosses randomly
+- HP: 65
+
+**12. The King's Champion**
+- Greatest warrior, now undead
+- Mechanic: Copies your best combo x2
+- HP: 75
+
+---
+
+### **👑 FINAL BOSS: The Lich King Eternal**
+
+**The Lich King sits on his throne, the CHA stone burning in his crown, commanding absolute loyalty from the dead:**
+
+A 9-foot tall figure in ancient plate armor, his flesh long gone, purple flames for eyes. The CHA stone in his crown compels obedience from all undead. He wields a runeblade that freezes souls.
+
+**Boss Phases:**
+
+**Phase 1: "The Throne" (150 HP)**
+- Summons 2 Skeleton Warriors every 3 turns
+- Necrotic aura (all your gems have 25% chance to become skulls)
+- Death coil (damages you, heals his minions)
+- CHA gem matches raise more undead
+
+**Phase 2: "The Crown Breaks" (100 HP)**
+- Your 5 collected stones rebel! (gem types become unstable)
+- Each stone's power used against you:
+  - STR: Breaks 3x3 sections
+  - DEX: Steals turns
+  - CON: Massive regeneration
+  - INT: Polymorphs gems
+  - WIS: False visions
+- Army of darkness (6 weak skeletons appear)
+
+**Phase 3: "The True King" (75 HP)**
+- Absorbs all 6 stones temporarily
+- ALL gem types do different effects:
+  - STR: Damages both of you
+  - DEX: Random board shuffle
+  - CON: Heals both of you  
+  - INT: Creates wild gems
+  - WIS: Reveals true board state
+  - CHA: Instant kills summons
+- Frostmourne: His blade freezes entire rows
+- Desperation: "DARKNESS FALLS!" (all gems become skulls for 1 turn)
+
+**Phase 4: "The Shattered Crown" (50 HP)**
+- Crown breaks! Stones return to you!
+- You become empowered (all matches do 2x damage)
+- He becomes vulnerable (no more immunities)
+- Final struggle: Tries to collapse the entire castle
+- Your collected stones glow with true power
+
+**Visual Design:**
+- Ancient crowned skull with purple flames
+- Elaborate black plate armor
+- CHA stone burning gold in crown
+- Frostmourne runeblade
+- Throne made of bones
+- Cape of shadows
+- The other 5 stones orbit him in Phase 3
+
+**Death Quote:**
+*"The crown... was meant... to unite... not... to rule... I... remember... now... Thank... you..."*
+
+---
+
+### **⚰️ Castle Environmental Hazards**
+
+**Undeath Corruptions:**
+- **Necrotic ground:** Healing reversed in some rooms
+- **Bone walls:** Block paths until destroyed
+- **Shadow pools:** Gems disappear into darkness
+- **Undead uprising:** Defeated enemies return
+- **Throne's influence:** CHA gems raise skeletons
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Skeletons, Knights, Swarms, Wights
+**Floor 3:** Death Knights, Banshees, Vampires
+**Floor 4:** Bone Dragons, Lich Apprentices
+**Floor 5:** Dracolich, Shadow of Crown, King's Champion
+**Floor 6-7:** THE LICH KING (extended multi-phase fight)
+
+---
+
+### **👑 Final Act Unique Mechanics**
+
+**Crown Power Integration:**
+As you've collected all 5 stones before this act, you now have:
+- **Stone Synergies:** Matching 2 different stone types together
+- **Crown Abilities:** Special moves using collected stones
+- **Stone Rebellion:** Lich King can turn your stones against you
+- **Final Unity:** All 6 stones working together in final phase
+
+---
+
+### **🏰 Castle Layout Specials**
+
+**Unique Rooms:**
+- **Throne Room:** Final boss arena
+- **Hall of Heroes:** Fight corrupted versions of yourself
+- **Crown Vault:** Where crown was shattered
+- **Bone Garden:** Endless skeleton spawns
+- **The King's Chamber:** Learn his tragic backstory
+
+---
+
+### **⚔️ The Complete Experience**
+
+This act brings everything together:
+- All gem types crucial
+- All mechanics from previous acts return
+- Previous bosses' abilities appear in enemies
+- Your journey's power fully realized
+- Epic 4-phase final boss
+- Satisfying conclusion to the crown story
+
+**Post-Victory:**
+With the Lich King defeated and the Crown restored, you can choose:
+1. Destroy the crown (true ending)
+2. Wear the crown (become new king)
+3. Scatter the stones again (New Game+ setup)
+
+This creates the ultimate climactic experience where everything the player has learned matters!

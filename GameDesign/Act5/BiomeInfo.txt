@@ -1,0 +1,163 @@
+## **👁️ Act 5: Temple - Enemy Roster**
+
+### **Common Enemies (Temple Entrance)**
+
+**1. Fallen Acolyte**
+- Corrupted temple priest
+- Mechanic: Converts your WIS gems to cursed gems
+- HP: 24
+
+**2. Temple Gargoyle**
+- Stone guardian animated
+- Mechanic: Becomes immune when you don't match for a turn
+- HP: 28
+
+**3. Holy Wisp**
+- Lost soul seeking peace
+- Mechanic: Heals other enemies when destroyed
+- HP: 16
+
+**4. Drowned Pilgrim**
+- Waterlogged undead worshipper
+- Mechanic: Floods bottom row with water gems
+- HP: 22
+
+### **Mid-Tier Enemies (Inner Sanctum)**
+
+**5. Corrupted Seraph**
+- Four-winged angel, tainted
+- Mechanic: "Judgment" - punishes bad matches with 2x damage
+- HP: 45
+
+**6. False Prophet**
+- Deceiver in holy robes
+- Mechanic: Makes you see wrong gem colors (lies)
+- HP: 38
+
+**7. Sacred Golem**
+- Living statue of prayers
+- Mechanic: Gains power from your WIS gem matches
+- HP: 50
+
+**8. Depth Lurker**
+- Tentacled thing in flooded sections
+- Mechanic: Pulls gems underwater (locks them)
+- HP: 42
+
+### **Dangerous Enemies (Sacred Depths)**
+
+**9. Heretic Inquisitor**
+- Twisted enforcer of false doctrine
+- Mechanic: "Confession" - forces you to match cursed gems
+- HP: 48
+
+**10. Angelic Warden**
+- Heavenly jailer, still loyal to corrupted Oracle
+- Mechanic: Chains of light lock 3x3 sections
+- HP: 55
+
+**11. Leviathan Spawn**
+- Lesser sea monster in flooded halls
+- Mechanic: Tidal wave reshuffles entire board
+- HP: 52
+
+**12. Avatar of Doubt**
+- Manifestation of lost faith
+- Mechanic: Inverts gem effects (healing hurts, damage heals it)
+- HP: 45
+
+---
+
+### **🔮 FINAL BOSS: The Drowned Oracle**
+
+**The Oracle has become a terrifying fusion of prophet and sea creature through the WIS stone:**
+
+She floats in a sphere of holy water, her lower body transformed into tentacles. Her eyes weep constantly, seeing all futures simultaneously. The WIS stone has replaced her third eye, glowing with terrible knowledge.
+
+**Boss Phases:**
+
+**Phase 1: "The Seer" (110 HP)**
+- Prophecy: Shows you fake future boards (deception)
+- Divine light: Blinds you (gems hidden for 1 turn)
+- Summons 2 Fallen Acolytes
+
+**Phase 2: "The Depths" (85 HP)**
+- Floods the board edges with holy water
+- Tentacles grab and drown gems (destroyed)
+- Healing rain (heals herself 8 HP per turn)
+- Your WIS gems heal her instead of you
+
+**Phase 3: "The Truth" (60 HP)**
+- WIS stone cracks, showing terrible visions
+- Time fractures (your moves happen in random order)
+- Divine wrath (all non-WIS gems become cursed)
+- BUT: WIS gems now do 5x damage to her
+
+**Visual Design:**
+- Upper body of elderly woman in robes
+- Lower body is mass of tentacles
+- WIS stone as third eye in forehead
+- Constantly weeping prophet tears
+- Floating in sphere of water
+- Barnacles growing on tentacles
+- Holy symbols twisted into eldrich shapes
+
+**Death Quote:**
+*"Finally... I see clearly... forgive me... faithful ones..."*
+
+---
+
+### **⛪ Temple Environmental Hazards**
+
+**Sacred Corruptions:**
+- **Holy water flooding:** Bottom rows become water
+- **Confession chambers:** Forced to match specific gems
+- **Divine judgment:** Bad matches punished harder
+- **Prayer interruption:** Can't use abilities while "praying"
+- **False visions:** See incorrect gem previews
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Acolytes, Gargoyles, Wisps, Pilgrims
+**Floor 3:** Seraphs, False Prophets, Golems
+**Floor 4:** Depth Lurkers, Inquisitors, Wardens
+**Floor 5:** Leviathans, Avatars, Mixed encounters
+**Floor 6:** Drowned Oracle Boss
+
+---
+
+### **🙏 WIS Theme Mechanics**
+
+Each enemy tests wisdom/faith differently:
+- **Deception** (false information)
+- **Judgment** (punishment for mistakes)
+- **Corruption** (holy things turned evil)
+- **Doubt** (inverted expectations)
+- **Prophecy** (future sight manipulation)
+- **Divine tests** (specific requirements)
+
+---
+
+### **💧 Flooded Temple Features**
+
+**Water Mechanics:**
+- **Shallow water:** Slows gem falling
+- **Deep water:** Gems sink and lock
+- **Holy water:** Heals enemies, damages undead
+- **Corrupted water:** Poisons matched gems
+- **Tidal rooms:** Water level rises/falls
+
+---
+
+### **📿 Religious Horror Elements**
+
+**Corruption Types:**
+- **Inverted prayers:** Healing becomes harm
+- **False scripture:** Wrong instructions given
+- **Broken halos:** Angels turned wrong
+- **Weeping statues:** Constant water hazards
+- **Twisted hymns:** Audio cues mislead
+
+This act emphasizes the horror of corruption in a sacred place, where things that should help you are turned against you, testing your wisdom to see through deception!

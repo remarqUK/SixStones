@@ -1,0 +1,29 @@
+{
+    "asset": "4b679bb2e0834ce42880fd287c76c5e1",
+    "fileName": "019a4152-72ac-755d-9f8e-8da116a6cebd.png",
+    "prompt": "slender, gothic picture frame. High-quality fantasy game or concept art style, the type that would frame an RPG character portrait\r\n",
+    "negativePrompt": "",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "e07ed503b97b78ffeb5b4655c5f4f123",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.019999999552965165,
+                "invertStrength": false,
+                "assetReferenceGuid": "136daf16e4c057f419639ed9dae1b78a"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

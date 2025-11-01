@@ -1,0 +1,151 @@
+## **❤️ Act 3: Dusty Caves - Enemy Roster**
+
+### **Common Enemies (Upper Caves)**
+
+**1. Cave Crawler**
+- Multi-legged blind insectoid
+- Mechanic: Creates "dust cloud" gems (obscured)
+- HP: 22
+
+**2. Dust Mephit**
+- Small elemental imp of dust and sand
+- Mechanic: Exhausts your gems (half effect) 
+- HP: 18
+
+**3. Giant Centipede**
+- Armored segments, venomous
+- Mechanic: Poison gems on bite (damage you when matched)
+- HP: 28
+
+**4. Stalactite Piercer**
+- Living rock formation that drops
+- Mechanic: Destroys one gem column when attacking
+- HP: 25
+
+### **Mid-Tier Enemies (Deeper Caves)**
+
+**5. Rust Monster**
+- Corrodes metal and eats it
+- Mechanic: Turns your red (STR) gems to dust
+- HP: 35
+
+**6. Cave Fisher**
+- Spider-like with long filament
+- Mechanic: "Reels in" and locks entire rows
+- HP: 40
+
+**7. Sandstone Golem**
+- Crumbling rock construct
+- Mechanic: Sheds dust (adds brown gems to board)
+- HP: 50
+
+**8. Desiccated Mummy**
+- Ancient preserved corpse
+- Mechanic: Drains your CON gems for self-healing
+- HP: 38
+
+### **Dangerous Enemies (Ancient Depths)**
+
+**9. Purple Worm Juvenile**
+- Smaller version of legendary beast
+- Mechanic: Burrows through board (destroys paths)
+- HP: 60
+
+**10. Dust Wraith**
+- Suffocating cloud entity
+- Mechanic: Reduces your healing by 75%
+- HP: 35
+
+**11. Rock Scorpion**
+- Massive armored arachnid
+- Mechanic: Stinger adds paralysis (can't move gems for 1 turn)
+- HP: 45
+
+**12. Fossil Dragon (Mini)**
+- Skeletal drake preserved in stone
+- Mechanic: Petrifying breath (turns gems to stone)
+- HP: 55
+
+---
+
+### **🗿 FINAL BOSS: The Eternal Basilisk**
+
+**An ancient basilisk that has absorbed the CON stone into its third eye:**
+
+This 30-foot serpentine monster has lived for millennia. Its scales are covered in stone dust, its eight legs end in crystal claws, and the CON stone burns orange in its forehead, granting it impossible endurance.
+
+**Boss Phases:**
+
+**Phase 1: "The Hunter" (120 HP)**
+- Petrifying gaze (random gems turn to stone)
+- Dust breath (exhausts 3x3 sections)
+- Regenerates 5 HP per turn
+
+**Phase 2: "The Ancient" (90 HP)**
+- Sheds skin (removes all debuffs, full heal once)
+- Summons 2 Cave Crawlers
+- Venom pools appear (damages adjacent gems)
+
+**Phase 3: "The Stone's Power" (60 HP)**
+- CON stone blazes with power
+- Hyper regeneration (10 HP per turn)
+- BUT: Matching CON gems does 5x damage
+- Desperation: Tries to collapse the cave ceiling
+
+**Visual Design:**
+- Eight legs like a true basilisk
+- Scales crusted with limestone
+- CON stone as third eye
+- Dust constantly falling from body
+- Ancient beyond measure
+- Blind white eyes (except stone eye)
+- Fangs dripping with venom
+
+**Death Quote:**
+*"I... who have lived... ten thousand years... finally... rest..."*
+
+---
+
+### **🌪️ Cave Environmental Hazards**
+
+**Endurance Challenges:**
+- **Dust storms:** All gems exhausted for 2 turns
+- **Stale air:** Healing reduced by 50%
+- **Cave darkness:** Can't see gem colors for 1 turn
+- **Dehydration:** Gradual HP loss over time
+- **Echo confusion:** False gem matches shown
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Crawlers, Mephits, Centipedes
+**Floor 3:** Piercers, Rust Monsters, Cave Fishers
+**Floor 4:** Golems, Mummies, Scorpions
+**Floor 5:** Purple Worms, Wraiths, Fossil Dragons
+**Floor 6:** Eternal Basilisk Boss
+
+---
+
+### **🛡️ CON Theme Mechanics**
+
+Each enemy tests endurance differently:
+- **Exhaustion** (reduced gem effectiveness)
+- **Degeneration** (ongoing damage)
+- **Resource denial** (can't heal properly)
+- **Attrition** (long battles)
+- **Regeneration races** (they heal, you must outdamage)
+- **Poison/Petrification** (status effects to endure)
+
+---
+
+### **📊 Difficulty Scaling**
+
+This act is notably harder because:
+- Enemies have more HP (testing endurance)
+- More regeneration/healing enemies
+- Status effects last longer
+- Less healing available from environment
+- Battles are wars of attrition
+
+Players must manage resources carefully and value CON gems highly to survive the dusty caves!

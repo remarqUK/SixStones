@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 798eec24ee948404e8a3a7be8f38d65f, type: 3}
+  m_Name: Barbarian
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterData
+  characterName: Barbarian
+  description: A fierce warrior who channels rage in battle
+  characterSprite: {fileID: 21300000, guid: 4901e3a600c10fc4d8bc13d219fc86c1, type: 3}
+  strength: 18
+  dexterity: 12
+  constitution: 16
+  intelligence: 6
+  wisdom: 8
+  charisma: 8
+  baseHealth: 140
+  baseMana: 30
+  moveSpeed: 5.5
+  classFeatures:
+  - Rage
+  - Reckless Attack
+  - Danger Sense

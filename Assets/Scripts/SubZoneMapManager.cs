@@ -256,29 +256,29 @@ private void SelectCurrentSubZone()
         }
         
         Debug.Log($"Entering {selectedIcon.SubZoneName}");
-        
+
         // Check for subzone cutscene
         var zone = zoneConfig?.GetZone(currentZoneIndex);
         var subZone = zone?.subZones[selectedSubZoneIndex];
-        
+
         if (subZone != null && !string.IsNullOrEmpty(subZone.cutsceneId))
         {
             if (CutsceneTracker.Instance.ShouldPlayCutscene(subZone.cutsceneId))
             {
                 CutsceneTracker.Instance.PlayCutscene(subZone.cutsceneId, () => {
-                    SceneManager.LoadScene("Match3");
+                    SceneHelper.LoadScene(SceneIdentifier.Match3);
                 });
                 return;
             }
         }
-        
+
         // Load the match-3 scene (or could load a map selection scene)
-        SceneManager.LoadScene("Match3");
+        SceneHelper.LoadScene(SceneIdentifier.Match3);
     }
-    
+
     private void ReturnToWorldMap()
     {
-        SceneManager.LoadScene("WorldMap");
+        SceneHelper.LoadScene(SceneIdentifier.WorldMap);
     }
 }
 

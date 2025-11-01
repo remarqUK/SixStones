@@ -54,6 +54,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventHandler.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\EnvMapAnimator.cs" />
     <Compile Include="Assets\Scripts\OptionsMenuController.cs" />
+    <Compile Include="Assets\Scripts\SaveSlotButton.cs" />
     <Compile Include="Assets\Scripts\ActiveStatusEffect.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextSelector_A.cs" />
     <Compile Include="Assets\Scripts\CutsceneHelper.cs" />
@@ -115,7 +116,9 @@
     <Compile Include="Assets\Scripts\LoadingManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextInfoDebugTool.cs" />
     <Compile Include="Assets\Scripts\PlayerProgress.cs" />
+    <Compile Include="Assets\Scripts\CharacterData.cs" />
     <Compile Include="Assets\Scripts\CutsceneTracker.cs" />
+    <Compile Include="Assets\Scripts\CharacterSelectionManager.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeA.cs" />
     <Compile Include="Assets\Scripts\GamePieceModern.cs" />
     <Compile Include="Assets\Scripts\StatusEffectManager.cs" />

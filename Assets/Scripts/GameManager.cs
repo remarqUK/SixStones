@@ -678,9 +678,8 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         UpdateUI();
         // Reload the scene or reset the board
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
+        SceneIdentifier currentScene = SceneHelper.GetCurrentScene();
+        SceneHelper.LoadScene(currentScene);
     }
 
     /// <summary>

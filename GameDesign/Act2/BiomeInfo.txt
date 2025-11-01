@@ -1,0 +1,139 @@
+## **🏹 Act 2: Enchanted Forest - Enemy Roster**
+
+### **Common Enemies (Outer Woods)**
+
+**1. Thorn Sprite**
+- Tiny flying fey with needle attacks
+- Mechanic: Makes you skip turns randomly (dodge)
+- HP: 18
+
+**2. Dire Wolf**
+- Pack hunter, aggressive
+- Mechanic: Calls another wolf when below 50% HP
+- HP: 25
+
+**3. Animated Vine**
+- Living thorny plant tendrils
+- Mechanic: Locks adjacent gems with vines
+- HP: 20
+
+**4. Wisp Swarm**
+- Glowing mischievous lights
+- Mechanic: Rearranges your gems randomly
+- HP: 15
+
+### **Mid-Tier Enemies (Deep Forest)**
+
+**5. Treant Sapling**
+- Young walking tree
+- Mechanic: Roots hold your green gems in place
+- HP: 45
+
+**6. Pixie Trickster**
+- Invisible prankster
+- Mechanic: Steals your turn every 3rd round
+- HP: 22
+
+**7. Dire Bear**
+- Massive forest predator
+- Mechanic: "Mauls" a 2x2 section of board
+- HP: 55
+
+**8. Spore Shroom**
+- Giant mushroom creature
+- Mechanic: Confusion spores (wrong gems match)
+- HP: 35
+
+### **Dangerous Enemies (Fey Depths)**
+
+**9. Shadow Stag**
+- Ethereal deer spirit
+- Mechanic: Phases out (immune) every other turn
+- HP: 40
+
+**10. Dryad Warrior**
+- Tree nymph guardian
+- Mechanic: Heals from green gem matches
+- HP: 45
+
+**11. Razorwing Owl**
+- Giant predatory bird
+- Mechanic: "Swoops" removing top row of gems
+- HP: 38
+
+**12. Bramble Wurm**
+- Massive thorn-covered caterpillar
+- Mechanic: Leaves trail of cursed gems
+- HP: 50
+
+---
+
+### **🦌 FINAL BOSS: The Verdant Huntress**
+
+**Silviana has merged with the forest itself through the DEX stone:**
+
+She's become a 12-foot tall hybrid of elf, deer, and tree - with antlers of twisted wood, bark skin, and eyes glowing green. She moves like the wind itself.
+
+**Boss Phases:**
+
+**Phase 1: "The Ranger" (100 HP)**
+- Rapid arrow volleys (damages random gems)
+- Sets trap gems that hurt when matched
+- Vanishes into trees (1 turn immunity)
+
+**Phase 2: "The Forest's Wrath" (75 HP)**
+- Summons 2 Dire Wolves as allies
+- Board edges become thorns
+- "Hunter's Mark" - your next bad match does double damage
+
+**Phase 3: "One with Nature" (50 HP)**
+- DEX stone glows in her chest
+- Hyper speed: Takes 2 turns for your 1
+- But exposed stone takes triple damage
+- Desperate move: Rain of arrows across entire board
+
+**Visual Design:**
+- Antlers growing from head
+- Bark-textured skin
+- Dress made of living leaves
+- Bow grown from arm itself
+- DEX stone visible as green heart
+- Moves in blur effects
+- Animals circle around her
+
+**Death Quote:**
+*"The forest... will grow wild... without me..."*
+
+---
+
+### **🌲 Environmental Combat Modifiers**
+
+**Forest-Specific Hazards:**
+- **Fog banks:** Can't see 2x2 sections
+- **Root snares:** Bottom row locked periodically  
+- **Fairy rings:** Random teleportation of gems
+- **Moonlight:** Certain gems glow and do double damage at night
+- **Wind gusts:** Shifts entire columns
+
+---
+
+### **💡 Enemy Introduction Pacing**
+
+**Floor 1-2:** Sprites, Wolves, Vines, Wisps
+**Floor 3:** Treants, Pixies, Bears
+**Floor 4:** Shrooms, Stags, Dryads
+**Floor 5:** Owls, Wurms, Mixed groups
+**Floor 6:** Verdant Huntress Boss
+
+---
+
+### **🎯 DEX Theme Mechanics**
+
+Each enemy emphasizes speed/agility challenges:
+- Turn stealing (you're too slow)
+- Dodge phases (can't hit them)
+- Board manipulation (trickery)
+- Trap setting (test your awareness)
+- Speed battles (they act more often)
+
+This makes players value their DEX gems more and consider builds that increase their speed/initiative!

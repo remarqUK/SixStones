@@ -1,0 +1,29 @@
+{
+    "asset": "3fd47b1f9cbd8f145855025e352c5217",
+    "fileName": "019a4149-76d7-7ba1-a238-4430903454d0.png",
+    "prompt": "Orc. Serious looking.  Strong linework. Arcane. Airbrush style. \r\nDramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits\r\n",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "8539c75b4f88b7e020bd6e2d8c929c7b",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.09000000357627869,
+                "invertStrength": false,
+                "assetReferenceGuid": "4901e3a600c10fc4d8bc13d219fc86c1"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

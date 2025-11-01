@@ -1,0 +1,20 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a4123-672c-7386-a1fc-22b3f6eff55a.png",
+    "prompt": "Rogue class character. Female. Red Hair. Digital painting with realistic rendering\nDramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits ",
+    "negativePrompt": "blurry, background",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 225,
+    "w3CTraceId": "0bf3b5114387fc8b6d34bf64bf5a5e45",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

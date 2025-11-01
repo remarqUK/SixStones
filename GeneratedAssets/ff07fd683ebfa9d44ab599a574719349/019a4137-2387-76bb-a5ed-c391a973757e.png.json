@@ -1,0 +1,29 @@
+{
+    "asset": "ff07fd683ebfa9d44ab599a574719349",
+    "fileName": "019a4137-2387-76bb-a5ed-c391a973757e.png",
+    "prompt": "Wizard class character. Female.  Serious looking.  Strong linework. Arcane. Airbrush style. blonde hair, red eyes\nDramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits ",
+    "negativePrompt": "blurry, background, red hair, tattoos",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "fd9c8594310e8e060f88fe6b07a1092f",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.17000000178813935,
+                "invertStrength": false,
+                "assetReferenceGuid": "136daf16e4c057f419639ed9dae1b78a"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

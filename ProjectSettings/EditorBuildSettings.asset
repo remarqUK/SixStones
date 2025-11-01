@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SubZoneMap.unity/SubZoneMap.unity
     guid: 01156bbecf121da4b82e07a0dfc5c6d9
+  - enabled: 1
+    path: Assets/Scenes/CharacterSelection.unity
+    guid: acaa78d9d05eb1e4dbf2aabc4769e6c1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
