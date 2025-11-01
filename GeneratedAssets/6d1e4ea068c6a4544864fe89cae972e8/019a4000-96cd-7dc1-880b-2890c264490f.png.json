@@ -1,0 +1,20 @@
+{
+    "asset": "6d1e4ea068c6a4544864fe89cae972e8",
+    "fileName": "019a4000-96cd-7dc1-880b-2890c264490f.png",
+    "prompt": "a side-view of an anvil symbol for a D&D style match3 game",
+    "negativePrompt": "blurry, background, depth of field, hands",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "4fd6e870e62e979657c474670627e718",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

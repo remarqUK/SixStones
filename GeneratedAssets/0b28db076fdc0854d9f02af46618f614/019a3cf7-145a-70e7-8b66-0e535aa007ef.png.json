@@ -1,0 +1,20 @@
+{
+    "asset": "0b28db076fdc0854d9f02af46618f614",
+    "fileName": "019a3cf7-145a-70e7-8b66-0e535aa007ef.png",
+    "prompt": "orange translucent  gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  a dark orange sun symbol should be embossed on top - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside",
+    "negativePrompt": "blurry, background, padding\r\n",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "69723bd60fdc23910b221ef4b98f001f",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

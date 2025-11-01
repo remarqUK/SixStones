@@ -1,0 +1,20 @@
+{
+    "asset": "6d1e4ea068c6a4544864fe89cae972e8",
+    "fileName": "019a4001-65e6-7827-9871-dcf64028dd34.png",
+    "prompt": "a lateral view of an anvil and hammer symbol for a D&D style match3 game",
+    "negativePrompt": "blurry, background, depth of field, hands",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "0f73d0166657b95bf8fbab8fc5abe908",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

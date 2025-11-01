@@ -1,0 +1,20 @@
+{
+    "asset": "6d1e4ea068c6a4544864fe89cae972e8",
+    "fileName": "019a3ffe-0c37-7757-8ba0-eebcd888d4ae.png",
+    "prompt": "a top-down view of two short swords symbols crossed for a D&D style match3 game",
+    "negativePrompt": "blurry, background, depth of field, hands",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "4f696d3791923357eef232e8fb1a26ad",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

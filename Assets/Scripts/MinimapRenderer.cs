@@ -157,11 +157,18 @@ public class MinimapRenderer : MonoBehaviour
         currentPlayerPosition = new Vector2Int(_player.GridX, _player.GridZ);
         currentPlayerFacing = _player.Facing;
 
-        // Mark starting position as visited
-        visitedCells.Add(_mapGenerator.startPosition);
-        visitedCells.Add(currentPlayerPosition); // Also add current position in case they differ
-
-        Debug.Log($"Minimap initialized: {width}x{height} grid (expected 21x21), texture: {width * cellPixelSize}x{height * cellPixelSize} pixels, start position: {_mapGenerator.startPosition}, player position: {currentPlayerPosition}");
+        // Mark starting position as visited ONLY if visitedCells is empty
+        // (if it's not empty, it means we're reinitializing after a load and the data is already restored)
+        if (visitedCells.Count == 0)
+        {
+            visitedCells.Add(_mapGenerator.startPosition);
+            visitedCells.Add(currentPlayerPosition); // Also add current position in case they differ
+            Debug.Log($"Minimap initialized: {width}x{height} grid (expected 21x21), texture: {width * cellPixelSize}x{height * cellPixelSize} pixels, start position: {_mapGenerator.startPosition}, player position: {currentPlayerPosition}");
+        }
+        else
+        {
+            Debug.Log($"Minimap reinitialized after load: {width}x{height} grid, texture: {width * cellPixelSize}x{height * cellPixelSize} pixels, {visitedCells.Count} visited cells already restored");
+        }
     }
 
     private void UpdateMinimap()
@@ -420,4 +427,94 @@ public class MinimapRenderer : MonoBehaviour
             stepY += deltaY;
         }
     }
+
+    #region Save/Load Support
+
+    /// <summary>
+    /// Get all visited cells for save system
+    /// </summary>
+    public List<Vector2Int> GetVisitedCells()
+    {
+        return new List<Vector2Int>(visitedCells);
+    }
+
+    /// <summary>
+    /// Get all revealed cells for save system
+    /// </summary>
+    public List<Vector2Int> GetRevealedCells()
+    {
+        return new List<Vector2Int>(revealedCells);
+    }
+
+    /// <summary>
+    /// Reset minimap state for loading (clears initialization flag and all data)
+    /// Call this before restoring maze and minimap data
+    /// </summary>
+    public void ResetForLoad()
+    {
+        // Reset initialization flag so minimap will reinitialize with the restored maze
+        initialized = false;
+
+        // Clear all exploration data
+        visitedCells.Clear();
+        revealedCells.Clear();
+
+        // Destroy old texture if it exists
+        if (minimapTexture != null)
+        {
+            Destroy(minimapTexture);
+            minimapTexture = null;
+            pixelBuffer = null;
+        }
+
+        Debug.Log("MinimapRenderer: Reset for loading - will reinitialize on next LateUpdate");
+    }
+
+    /// <summary>
+    /// Restore visited and revealed cells (used when loading saved game)
+    /// </summary>
+    public void RestoreExploredState(List<Vector2Int> visited, List<Vector2Int> revealed)
+    {
+        // Temporarily unsubscribe from player events to prevent interference during restore
+        bool wasSubscribed = false;
+        if (_player != null)
+        {
+            _player.OnPositionChanged -= HandlePositionChanged;
+            _player.OnFacingChanged -= HandleFacingChanged;
+            wasSubscribed = true;
+        }
+
+        visitedCells.Clear();
+        revealedCells.Clear();
+
+        if (visited != null)
+        {
+            foreach (var cell in visited)
+            {
+                visitedCells.Add(cell);
+            }
+        }
+
+        if (revealed != null)
+        {
+            foreach (var cell in revealed)
+            {
+                revealedCells.Add(cell);
+            }
+        }
+
+        // Mark for redraw
+        isDirty = true;
+
+        // Resubscribe to player events
+        if (wasSubscribed && _player != null)
+        {
+            _player.OnPositionChanged += HandlePositionChanged;
+            _player.OnFacingChanged += HandleFacingChanged;
+        }
+
+        Debug.Log($"MinimapRenderer: Restored {visitedCells.Count} visited cells and {revealedCells.Count} revealed cells");
+    }
+
+    #endregion
 }

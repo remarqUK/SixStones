@@ -1,0 +1,20 @@
+{
+    "asset": "6d1e4ea068c6a4544864fe89cae972e8",
+    "fileName": "019a4012-d34a-71c3-ba75-9c237155c4bd.png",
+    "prompt": "an oblique view of a closed wooden treasure chest,  for a D&D style match3 game.  The metal of the chest should be a dark brass coloured with dark brass stud rivets.  The lock on the front should be in the shape of a circular shield, there should be a carry handle on either side. the chest should be facing to the right. The chest should be open to show gold coins inside\n\n",
+    "negativePrompt": "blurry, background, depth of field, hands",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "368f296298fcfd5fd445b142cb3376fb",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

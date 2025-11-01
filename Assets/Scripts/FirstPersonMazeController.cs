@@ -348,6 +348,46 @@ public class FirstPersonMazeController : MonoBehaviour
         OnFacingChanged?.Invoke(facing);
     }
 
+    /// <summary>
+    /// Set player position directly (used for loading saved games)
+    /// </summary>
+    public void SetPosition(int x, int z)
+    {
+        // Set grid position
+        gridX = x;
+        gridZ = z;
+
+        // Stop any ongoing movement
+        isMoving = false;
+        isRotating = false;
+
+        // Set world position immediately
+        transform.position = GetWorldPosition(gridX, gridZ);
+
+        Debug.Log($"Player position set to grid ({x}, {z}), world position: {transform.position}");
+
+        // Notify listeners of position change
+        OnPositionChanged?.Invoke(new Vector2Int(gridX, gridZ));
+    }
+
+    /// <summary>
+    /// Set player position and facing direction (used for loading saved games)
+    /// </summary>
+    public void SetPositionAndFacing(int x, int z, int facingDirection)
+    {
+        // Set position first
+        SetPosition(x, z);
+
+        // Set facing direction
+        facing = facingDirection;
+        transform.rotation = Quaternion.Euler(0, facing * 90f, 0);
+
+        Debug.Log($"Player facing set to {GetDirectionName(facing)} ({facing})");
+
+        // Notify listeners of facing change
+        OnFacingChanged?.Invoke(facing);
+    }
+
     private int ChooseBestFacingDirection(int x, int z)
     {
         if (mazeBuilder == null || mazeBuilder.mapGenerator == null || mazeBuilder.mapGenerator.grid == null)

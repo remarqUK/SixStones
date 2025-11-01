@@ -357,13 +357,15 @@ public class OptionsMenuController : MonoBehaviour
 
         // Load saved resolution preference or use current
         int savedResIndex = PlayerPrefs.GetInt("ResolutionIndex", currentResolutionIndex);
-        resolutionDropdown.value = savedResIndex;
+
+        // Set value without triggering events
+        resolutionDropdown.SetValueWithoutNotify(savedResIndex);
         resolutionDropdown.RefreshShownValue();
 
-        // Wire up change event
+        // Wire up change event AFTER setting initial value
         resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
 
-        Debug.Log($"Resolution dropdown setup with {options.Count} options, current index: {currentResolutionIndex}");
+        Debug.Log($"Resolution dropdown setup with {options.Count} options, current index: {savedResIndex}");
     }
 
     private void OnResolutionChanged(int index)
@@ -387,13 +389,19 @@ public class OptionsMenuController : MonoBehaviour
         if (index >= 0 && index < uniqueResolutions.Count)
         {
             Resolution selectedResolution = uniqueResolutions[index];
-            Screen.SetResolution(selectedResolution.width, selectedResolution.height, Screen.fullScreen);
+
+            Debug.Log($"Attempting to change resolution to: {selectedResolution.width} x {selectedResolution.height}, Fullscreen: {Screen.fullScreen}");
+            Debug.Log($"Current resolution: {Screen.width} x {Screen.height}");
+
+            // Use FullScreenMode for better compatibility
+            FullScreenMode fullScreenMode = Screen.fullScreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
+            Screen.SetResolution(selectedResolution.width, selectedResolution.height, fullScreenMode);
 
             // Save preference
             PlayerPrefs.SetInt("ResolutionIndex", index);
             PlayerPrefs.Save();
 
-            Debug.Log($"Resolution changed to: {selectedResolution.width} x {selectedResolution.height}");
+            Debug.Log($"Resolution change requested. New screen size should be: {selectedResolution.width} x {selectedResolution.height}");
 
             // Notify all systems to update
             StartCoroutine(NotifyResolutionChange());

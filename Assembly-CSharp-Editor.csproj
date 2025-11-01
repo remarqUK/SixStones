@@ -60,12 +60,14 @@
     <Compile Include="Assets\Editor\MapGeneratorEditor.cs" />
     <Compile Include="Assets\Editor\AddCameraToWorldMap.cs" />
     <Compile Include="Assets\Editor\AddResolutionDropdown.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\Editor\SaveSystemMenu.cs" />
     <Compile Include="Assets\Editor\CreateMatch3Assets.cs" />
     <Compile Include="Assets\Editor\RemoveOldPauseMenus.cs" />
     <Compile Include="Assets\Editor\FixWorldMapInputSystem.cs" />
     <Compile Include="Assets\Editor\Maze3DSetup.cs" />
     <Compile Include="Assets\Editor\MainMenuSetup.cs" />
     <Compile Include="Assets\Editor\ItemCreator.cs" />
+    <Compile Include="Assets\Editor\CreateExampleStatusEffects.cs" />
     <Compile Include="Assets\Editor\Match3Setup.cs" />
     <Compile Include="Assets\Editor\CreateGameModes.cs" />
     <Compile Include="Assets\Editor\InventorySetup.cs" />
@@ -74,6 +76,7 @@
     <Compile Include="Assets\Editor\CreateGlobalPauseMenuPrefab.cs" />
     <Compile Include="Assets\Editor\LoadingScreenSetup.cs" />
     <Compile Include="Assets\Editor\FixMinimapReferences.cs" />
+    <Compile Include="Assets\Editor\CreateExampleSpells.cs" />
     <Compile Include="Assets\Editor\SubZoneMapSetup.cs" />
     <Compile Include="Assets\Editor\CreateZoneConfigurationAsset.cs" />
   </ItemGroup>

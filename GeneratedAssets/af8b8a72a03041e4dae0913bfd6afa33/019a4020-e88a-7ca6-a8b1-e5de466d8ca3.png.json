@@ -1,0 +1,20 @@
+{
+    "asset": "af8b8a72a03041e4dae0913bfd6afa33",
+    "fileName": "019a4020-e88a-7ca6-a8b1-e5de466d8ca3.png",
+    "prompt": "texture for a dungeon wall that can be tiled",
+    "negativePrompt": "blurry",
+    "model": "78b0f085-b447-47bd-95b6-b29ed1c111da",
+    "modelName": "Dark Fantasy",
+    "customSeed": 220,
+    "w3CTraceId": "2a0e23784b89dc12aaa8d83b3d0662cf",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

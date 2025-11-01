@@ -1,0 +1,20 @@
+{
+    "asset": "7859c2308c1b09a44a5f2cb4505a26ff",
+    "fileName": "019a3cef-3d33-7659-b3c8-0bdca2da39a6.png",
+    "prompt": "emerald-green translucent  gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  a tree symbol should be embossed on top - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside",
+    "negativePrompt": "blurry, background, padding",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "6d2bc02ad3532bd7947c6b8734fae565",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

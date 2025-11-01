@@ -44,7 +44,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void UpdateContinueButton()
     {
-        bool hasSave = GameSaveManager.HasSaveGame();
+        bool hasSave = EnhancedGameSaveManager.HasSaveGame();
 
         if (continueButton != null)
         {
@@ -67,7 +67,7 @@ public class MainMenuManager : MonoBehaviour
         Debug.Log("Starting new game...");
 
         // Clear any existing save game
-        GameSaveManager.DeleteSaveGame();
+        EnhancedGameSaveManager.DeleteSaveGame();
 
         // Load game scene
         LoadGameScene();
@@ -77,8 +77,8 @@ public class MainMenuManager : MonoBehaviour
     {
         Debug.Log("Continuing saved game...");
 
-        // Load game scene (save data will be loaded in the game scene)
-        LoadGameScene();
+        // Load the saved game and switch to the saved scene
+        EnhancedGameSaveManager.ContinueGame();
     }
 
     private void OnSettings()

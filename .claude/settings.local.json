@@ -11,7 +11,8 @@
       "Bash(timeout /t 2 /nobreak)",
       "Bash(nul)",
       "Bash(ping:*)",
-      "Bash(timeout /t 3 /nobreak)"
+      "Bash(timeout /t 3 /nobreak)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

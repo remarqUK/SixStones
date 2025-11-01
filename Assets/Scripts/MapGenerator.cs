@@ -23,12 +23,26 @@ public class MapGenerator : MonoBehaviour
     public Vector2Int bossPosition;
     public List<Vector2Int> secretRoomPositions = new List<Vector2Int>();
 
+    // The actual seed used for generation (important for save/load)
+    [HideInInspector]
+    public int actualSeedUsed;
+
     // Generate a new maze
     public void GenerateMaze()
     {
-        // Initialize random seed
+        // Initialize random seed and capture the actual seed used
         if (randomSeed != 0)
+        {
             Random.InitState(randomSeed);
+            actualSeedUsed = randomSeed;
+        }
+        else
+        {
+            // Generate a random seed when randomSeed is 0
+            actualSeedUsed = UnityEngine.Random.Range(1, int.MaxValue);
+            Random.InitState(actualSeedUsed);
+            Debug.Log($"Generated random seed: {actualSeedUsed}");
+        }
 
         // Create grid
         grid = new MapCell[width, height];

@@ -29,6 +29,9 @@ public class CurrencyManager : MonoBehaviour
     public UnityEvent<int> onGoldSpent = new UnityEvent<int>(); // Passes amount spent
     public UnityEvent onInsufficientFunds = new UnityEvent(); // Fired when trying to buy something too expensive
 
+    // Public property for save system
+    public int CurrentGold => currentGold;
+
     private void Awake()
     {
         if (instance == null)
@@ -173,7 +176,7 @@ public class CurrencyManager : MonoBehaviour
     /// </summary>
     public void AwardLevelScaledGold(int baseAmount, float levelMultiplier = 0.1f)
     {
-        int playerLevel = LevelSystem.Instance != null ? LevelSystem.Instance.GetCurrentLevel() : 1;
+        int playerLevel = LevelSystem.Instance != null ? LevelSystem.Instance.CurrentLevel : 1;
         int bonus = Mathf.RoundToInt(baseAmount * levelMultiplier * playerLevel);
         int total = baseAmount + bonus;
 

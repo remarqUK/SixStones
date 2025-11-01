@@ -17,10 +17,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Match3.unity
     guid: 4fd6bb3966d32734f955f78ab85b96b3
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/WorldMap.unity
     guid: c565946908d3699468416b6b8cf47c9f
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SubZoneMap.unity
     guid: a4f2e52405ba054428237ef972021a02
   - enabled: 1

@@ -1,0 +1,20 @@
+{
+    "asset": "0ef33e1bdfdc9dc4cab066dfab693141",
+    "fileName": "019a4018-104c-7508-ad54-4cb56dbf0a79.png",
+    "prompt": "two pairs of cross sword symbols for my D&D style match3 game. The swords should be at right angles to each other.  The blades should be at the top and the handle at the bottom. The pair of swords on the left should have gold blades with blood dripping from them. The pair on the right should be clean with no blood.",
+    "negativePrompt": "blurry, background, depth of field",
+    "model": "5b5b2af1-6ea4-4266-b087-cc9f3bf4f450",
+    "modelName": "Flux.1 Dev",
+    "customSeed": 228,
+    "w3CTraceId": "6e71c3fd371b80fc7466aa7f33bd40af",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

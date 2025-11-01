@@ -26,6 +26,10 @@ public class LevelSystem : MonoBehaviour
     public UnityEvent<int> onLevelUp = new UnityEvent<int>(); // Passes new level
     public UnityEvent<int, int, int> onXPChanged = new UnityEvent<int, int, int>(); // Passes currentXP, requiredXP, level
 
+    // Public properties for save system
+    public int CurrentLevel => currentLevel;
+    public int CurrentXP => currentXP;
+
     private void Awake()
     {
         if (instance == null)
@@ -123,4 +127,31 @@ public class LevelSystem : MonoBehaviour
         NotifyXPChanged();
         Debug.Log("Level progress reset");
     }
+
+    #region Save System Support
+
+    /// <summary>
+    /// Set level directly (used for loading saved games)
+    /// Does not trigger level-up events or consume XP
+    /// </summary>
+    public void SetLevel(int newLevel)
+    {
+        currentLevel = Mathf.Max(1, newLevel);
+        NotifyXPChanged();
+        Debug.Log($"Level set to {currentLevel}");
+    }
+
+    /// <summary>
+    /// Set XP directly (used for loading saved games)
+    /// Does not trigger level-up checks
+    /// </summary>
+    public void SetXP(int newXP)
+    {
+        currentXP = Mathf.Max(0, newXP);
+        int requiredXP = GetXPRequiredForNextLevel();
+        onXPChanged.Invoke(currentXP, requiredXP, currentLevel);
+        Debug.Log($"XP set to {currentXP}/{requiredXP}");
+    }
+
+    #endregion
 }

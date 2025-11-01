@@ -5,6 +5,8 @@ Flux.1.Dev
 emerald-green translucent  gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  Into the top surface should be a tree symbol color #10B981 - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside
 
 
+emerald-green translucent  gem, perfectly circular, oblate spheroid,  viewed from above, the gem will have several occlusions to add depth to the texture- it will be on a black background.  a tree symbol should be embossed on top - the symbol should be centered vertically and horizontally and should be no more than 30% of the height of the gem. it should be illuminated from the inside
+
 --
 
 blurry, background, padding

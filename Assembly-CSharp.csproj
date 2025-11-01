@@ -60,12 +60,15 @@
     <Compile Include="Assets\Scripts\ZoneIconVisuals.cs" />
     <Compile Include="Assets\Scripts\FixPauseMenuUI.cs" />
     <Compile Include="Assets\Scripts\MapGenerator.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\EnhancedGameSaveManager.cs" />
     <Compile Include="Assets\Scripts\SpellEffectHandler.cs" />
     <Compile Include="Assets\Scripts\GamePiece.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark02.cs" />
     <Compile Include="Assets\Scripts\Board.cs" />
     <Compile Include="Assets\Scripts\GameSettings.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SaveData.cs" />
     <Compile Include="Assets\Scripts\LoadingTextPulse.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\GlobalSaveInput.cs" />
     <Compile Include="Assets\Scripts\AudioManager.cs" />
     <Compile Include="Assets\Scripts\CameraScaler.cs" />
     <Compile Include="Assets\Scripts\ZoneConfiguration.cs" />
@@ -73,9 +76,9 @@
     <Compile Include="Assets\Scripts\CPUControlUI.cs" />
     <Compile Include="Assets\Scripts\MapVisualizer.cs" />
     <Compile Include="Assets\Scripts\StatusEffectData.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SaveSystemDebugger.cs" />
     <Compile Include="Assets\Scripts\LocalizationManager.cs" />
     <Compile Include="Assets\Prefabs\WallPrefab.cs" />
-    <Compile Include="Assets\Scripts\CreateExampleStatusEffects.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_ExampleScript_01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMPro_InstructionOverlay.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexShakeB.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="Assets\Scripts\ItemNameGenerator.cs" />
     <Compile Include="Assets\Scripts\SubZoneIconVisuals.cs" />
     <Compile Include="Assets\Scripts\PlayerManager.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SaveSystemHelpers.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexJitter.cs" />
     <Compile Include="Assets\Scripts\ItemDatabase.cs" />
     <Compile Include="Assets\Scripts\InputManager.cs" />
@@ -94,7 +98,6 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_UiFrameRateCounter.cs" />
     <Compile Include="Assets\Scripts\SpellManager.cs" />
     <Compile Include="Assets\Scripts\PieceTypeDatabase.cs" />
-    <Compile Include="Assets\Scripts\CreateExampleSpells.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexZoom.cs" />
     <Compile Include="Assets\Scripts\Maze3DBuilder.cs" />
     <Compile Include="Assets\Scripts\EquipmentSlot.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\Benchmark01.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextMeshSpawner.cs" />
     <Compile Include="Assets\Scripts\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SaveRestoreHelper.cs" />
     <Compile Include="Assets\Scripts\FlattenedSphereMesh.cs" />
     <Compile Include="Assets\Scripts\CutsceneDatabase.cs" />
     <Compile Include="Assets\Scripts\GlobalOptionsManager.cs" />
@@ -153,11 +157,13 @@
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_PhoneNumberValidator.cs" />
     <Compile Include="Assets\Scripts\MinimapRenderer.cs" />
     <Compile Include="Assets\Scripts\SidePanelManager.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SaveTrigger.cs" />
     <Compile Include="Assets\Scripts\GameModeData.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TextConsoleSimulator.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TeleType.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\TMP_TextEventCheck.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\SaveSystem\SceneIdentifier.cs" />
     <Compile Include="Assets\Scripts\SpellData.cs" />
     <Compile Include="Assets\Scripts\MatchDetector.cs" />
     <Compile Include="Assets\Scripts\FirstPersonMazeController.cs" />
