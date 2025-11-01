@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Editor\WorldMapSetup.cs" />
+    <Compile Include="Assets\Editor\AddEventSystemToMaze3D.cs" />
     <Compile Include="Assets\Editor\RenameProject.cs" />
     <Compile Include="Assets\Editor\CreateSimpleOptionsMenuPrefab.cs" />
     <Compile Include="Assets\Editor\AddScenesToBuild.cs" />
@@ -60,6 +61,7 @@
     <Compile Include="Assets\Editor\AddCameraToWorldMap.cs" />
     <Compile Include="Assets\Editor\AddResolutionDropdown.cs" />
     <Compile Include="Assets\Editor\CreateMatch3Assets.cs" />
+    <Compile Include="Assets\Editor\RemoveOldPauseMenus.cs" />
     <Compile Include="Assets\Editor\FixWorldMapInputSystem.cs" />
     <Compile Include="Assets\Editor\Maze3DSetup.cs" />
     <Compile Include="Assets\Editor\MainMenuSetup.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="Assets\Editor\InventorySetup.cs" />
     <Compile Include="Assets\Editor\AddReturnToMainMenuButton.cs" />
     <Compile Include="Assets\Editor\CutsceneManagerEditor.cs" />
+    <Compile Include="Assets\Editor\CreateGlobalPauseMenuPrefab.cs" />
     <Compile Include="Assets\Editor\LoadingScreenSetup.cs" />
     <Compile Include="Assets\Editor\FixMinimapReferences.cs" />
     <Compile Include="Assets\Editor\SubZoneMapSetup.cs" />

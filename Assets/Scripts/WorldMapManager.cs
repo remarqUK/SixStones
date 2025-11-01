@@ -159,9 +159,8 @@ private void HandleInput()
             SelectCurrentZone();
             return;
         }
-        // Escape or gamepad button B - return to main menu
-        else if ((Keyboard.current?.escapeKey.wasPressedThisFrame ?? false) ||
-                 (Gamepad.current?.bButton.wasPressedThisFrame ?? false))
+        // Gamepad button B - return to main menu (Escape now opens pause menu via PauseMenu.cs)
+        else if (Gamepad.current?.bButton.wasPressedThisFrame ?? false)
         {
             ReturnToMainMenu();
             return;

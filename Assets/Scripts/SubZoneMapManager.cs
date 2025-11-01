@@ -195,9 +195,8 @@ public class SubZoneMapManager : MonoBehaviour
             SelectCurrentSubZone();
             return;
         }
-        // Escape or B button - return to world map
-        else if ((Keyboard.current?.escapeKey.wasPressedThisFrame ?? false) ||
-                 (Gamepad.current?.bButton.wasPressedThisFrame ?? false))
+        // B button - return to world map (Escape now opens pause menu via PauseMenu.cs)
+        else if (Gamepad.current?.bButton.wasPressedThisFrame ?? false)
         {
             ReturnToWorldMap();
             return;
