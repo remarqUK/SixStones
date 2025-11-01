@@ -60,16 +60,20 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         GameObject panelObj = CreateOptionsPanel(canvasObj);
 
         // Create Volume Sliders
-        GameObject gameVolumeSliderObj = CreateSlider("GameVolumeSlider", panelObj, new Vector2(0, 200), "Game Volume:");
-        GameObject musicVolumeSliderObj = CreateSlider("MusicVolumeSlider", panelObj, new Vector2(0, 130), "Music Volume:");
-        GameObject dialogVolumeSliderObj = CreateSlider("DialogVolumeSlider", panelObj, new Vector2(0, 60), "Dialog Volume:");
+        GameObject gameVolumeSliderObj = CreateSlider("GameVolumeSlider", panelObj, new Vector2(0, 320), "Game Volume:");
+        GameObject musicVolumeSliderObj = CreateSlider("MusicVolumeSlider", panelObj, new Vector2(0, 250), "Music Volume:");
+        GameObject dialogVolumeSliderObj = CreateSlider("DialogVolumeSlider", panelObj, new Vector2(0, 180), "Dialog Volume:");
 
         // Create Dropdowns
-        GameObject speedDropdownObj = CreateDropdown("GameSpeedDropdown", panelObj, new Vector2(0, -30), "Game Speed:");
-        GameObject langDropdownObj = CreateDropdown("LanguageDropdown", panelObj, new Vector2(0, -120), "Language:");
+        GameObject speedDropdownObj = CreateDropdown("GameSpeedDropdown", panelObj, new Vector2(0, 90), "Game Speed:");
+        GameObject langDropdownObj = CreateDropdown("LanguageDropdown", panelObj, new Vector2(0, 0), "Language:");
+        GameObject resolutionDropdownObj = CreateDropdown("ResolutionDropdown", panelObj, new Vector2(0, -90), "Resolution:");
+
+        // Create Fullscreen Toggle
+        GameObject fullscreenToggleObj = CreateToggle("FullscreenToggle", panelObj, new Vector2(0, -160), "Fullscreen:");
 
         // Create Close Button
-        GameObject closeButtonObj = CreateButton("CloseButton", panelObj, new Vector2(0, -200), "Close");
+        GameObject closeButtonObj = CreateButton("CloseButton", panelObj, new Vector2(0, -240), "Close");
 
         // Wire up controller using SerializedObject
         SerializedObject so = new SerializedObject(controller);
@@ -79,6 +83,8 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         so.FindProperty("dialogVolumeSlider").objectReferenceValue = dialogVolumeSliderObj.GetComponent<Slider>();
         so.FindProperty("gameSpeedDropdown").objectReferenceValue = speedDropdownObj.GetComponent<TMP_Dropdown>();
         so.FindProperty("languageDropdown").objectReferenceValue = langDropdownObj.GetComponent<TMP_Dropdown>();
+        so.FindProperty("resolutionDropdown").objectReferenceValue = resolutionDropdownObj.GetComponent<TMP_Dropdown>();
+        so.FindProperty("fullscreenToggle").objectReferenceValue = fullscreenToggleObj.GetComponent<Toggle>();
         so.FindProperty("closeButton").objectReferenceValue = closeButtonObj.GetComponent<Button>();
         so.FindProperty("pauseTimeWhenOpen").boolValue = true;
         so.ApplyModifiedProperties();
@@ -501,5 +507,81 @@ public class CreateSimpleOptionsMenuPrefab : EditorWindow
         template.SetActive(false);
 
         return dropdownObj;
+    }
+
+    private static GameObject CreateToggle(string name, GameObject parent, Vector2 position, string labelText)
+    {
+        // Create container
+        GameObject container = new GameObject(name + "Container");
+        container.transform.SetParent(parent.transform, false);
+
+        RectTransform containerRect = container.AddComponent<RectTransform>();
+        containerRect.anchorMin = new Vector2(0.5f, 0.5f);
+        containerRect.anchorMax = new Vector2(0.5f, 0.5f);
+        containerRect.pivot = new Vector2(0.5f, 0.5f);
+        containerRect.anchoredPosition = position;
+        containerRect.sizeDelta = new Vector2(400, 40);
+
+        // Create label
+        GameObject labelObj = new GameObject("Label");
+        labelObj.transform.SetParent(container.transform, false);
+
+        RectTransform labelRect = labelObj.AddComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0, 0.5f);
+        labelRect.anchorMax = new Vector2(0, 0.5f);
+        labelRect.pivot = new Vector2(0, 0.5f);
+        labelRect.anchoredPosition = Vector2.zero;
+        labelRect.sizeDelta = new Vector2(200, 40);
+
+        TextMeshProUGUI labelTMP = labelObj.AddComponent<TextMeshProUGUI>();
+        labelTMP.text = labelText;
+        labelTMP.fontSize = 24;
+        labelTMP.color = Color.white;
+        labelTMP.alignment = TextAlignmentOptions.MidlineLeft;
+
+        // Create toggle
+        GameObject toggleObj = new GameObject(name);
+        toggleObj.transform.SetParent(container.transform, false);
+
+        RectTransform toggleRect = toggleObj.AddComponent<RectTransform>();
+        toggleRect.anchorMin = new Vector2(1, 0.5f);
+        toggleRect.anchorMax = new Vector2(1, 0.5f);
+        toggleRect.pivot = new Vector2(1, 0.5f);
+        toggleRect.anchoredPosition = Vector2.zero;
+        toggleRect.sizeDelta = new Vector2(60, 40);
+
+        Toggle toggle = toggleObj.AddComponent<Toggle>();
+        toggle.isOn = Screen.fullScreen;
+
+        // Create background
+        GameObject bgObj = new GameObject("Background");
+        bgObj.transform.SetParent(toggleObj.transform, false);
+
+        RectTransform bgRect = bgObj.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.sizeDelta = Vector2.zero;
+
+        Image bgImage = bgObj.AddComponent<Image>();
+        bgImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+
+        toggle.targetGraphic = bgImage;
+
+        // Create checkmark
+        GameObject checkObj = new GameObject("Checkmark");
+        checkObj.transform.SetParent(bgObj.transform, false);
+
+        RectTransform checkRect = checkObj.AddComponent<RectTransform>();
+        checkRect.anchorMin = new Vector2(0.5f, 0.5f);
+        checkRect.anchorMax = new Vector2(0.5f, 0.5f);
+        checkRect.pivot = new Vector2(0.5f, 0.5f);
+        checkRect.sizeDelta = new Vector2(40, 40);
+
+        Image checkImage = checkObj.AddComponent<Image>();
+        checkImage.color = new Color(0.3f, 0.8f, 0.3f, 1f);
+
+        toggle.graphic = checkImage;
+
+        return toggleObj;
     }
 }
