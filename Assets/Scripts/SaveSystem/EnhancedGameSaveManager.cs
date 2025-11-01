@@ -6,36 +6,126 @@ using System.Collections.Generic;
 /// <summary>
 /// Enhanced save/load system using JSON serialization
 /// Handles all game state including inventory, equipment, and maze state
+/// Supports multiple save slots
+///
+/// SAFETY FEATURES:
+/// - Prevents saving while board is processing (gems moving, matching, falling)
+/// - Ensures saved state is always stable and not corrupted
+/// - Returns false if save is blocked due to unstable game state
 /// </summary>
 public static class EnhancedGameSaveManager
 {
     private const string SAVE_FOLDER = "Saves";
-    private const string SAVE_FILE = "gamesave.json";
-    private const string BACKUP_FILE = "gamesave_backup.json";
+    private const int MAX_SAVE_SLOTS = 10; // Maximum number of save slots
+    private const int DEFAULT_SLOT = 1; // Default slot for backward compatibility
 
     // PlayerPrefs key for tracking save existence (backwards compatibility)
     private const string SAVE_KEY = "GameSave_Exists";
 
-    private static string SavePath => Path.Combine(Application.persistentDataPath, SAVE_FOLDER, SAVE_FILE);
-    private static string BackupPath => Path.Combine(Application.persistentDataPath, SAVE_FOLDER, BACKUP_FILE);
-
     /// <summary>
-    /// Check if a save game exists
+    /// Get the save file path for a specific slot
     /// </summary>
-    public static bool HasSaveGame()
+    private static string GetSavePath(int slot)
     {
-        return File.Exists(SavePath);
+        ValidateSlot(slot);
+        string fileName = $"gamesave_slot{slot}.json";
+        return Path.Combine(Application.persistentDataPath, SAVE_FOLDER, fileName);
     }
 
     /// <summary>
-    /// Save complete game state to JSON file
+    /// Get the backup file path for a specific slot
     /// </summary>
-    public static bool SaveGame()
+    private static string GetBackupPath(int slot)
+    {
+        ValidateSlot(slot);
+        string fileName = $"gamesave_slot{slot}_backup.json";
+        return Path.Combine(Application.persistentDataPath, SAVE_FOLDER, fileName);
+    }
+
+    /// <summary>
+    /// Validate that slot number is within valid range
+    /// </summary>
+    private static void ValidateSlot(int slot)
+    {
+        if (slot < 1 || slot > MAX_SAVE_SLOTS)
+        {
+            throw new ArgumentException($"Save slot must be between 1 and {MAX_SAVE_SLOTS}, got {slot}");
+        }
+    }
+
+    /// <summary>
+    /// Check if a save game exists in the specified slot
+    /// </summary>
+    public static bool HasSaveGame(int slot = DEFAULT_SLOT)
+    {
+        ValidateSlot(slot);
+        return File.Exists(GetSavePath(slot));
+    }
+
+    /// <summary>
+    /// Check if any save game exists in any slot
+    /// </summary>
+    public static bool HasAnySaveGame()
+    {
+        for (int slot = 1; slot <= MAX_SAVE_SLOTS; slot++)
+        {
+            if (HasSaveGame(slot))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Get all save slots that have save data
+    /// </summary>
+    public static List<int> GetUsedSlots()
+    {
+        List<int> usedSlots = new List<int>();
+        for (int slot = 1; slot <= MAX_SAVE_SLOTS; slot++)
+        {
+            if (HasSaveGame(slot))
+                usedSlots.Add(slot);
+        }
+        return usedSlots;
+    }
+
+    /// <summary>
+    /// Check if it's safe to save the game (no animations or processing in progress)
+    /// </summary>
+    private static bool IsSafeToSave()
+    {
+        // Check if board is processing (gems moving, matching, falling, etc.)
+        Board board = UnityEngine.Object.FindFirstObjectByType<Board>();
+        if (board != null && board.IsProcessing)
+        {
+            Debug.LogWarning("[Save System] Cannot save while board is processing (gems are moving/matching)");
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Save complete game state to JSON file in the specified slot
+    /// </summary>
+    public static bool SaveGame(int slot = DEFAULT_SLOT)
     {
         try
         {
+            ValidateSlot(slot);
+
+            // Safety check: Don't save if board is processing
+            if (!IsSafeToSave())
+            {
+                Debug.LogWarning($"[Save System] Skipping save to slot {slot} - game state is not stable (animations in progress)");
+                return false;
+            }
+
             // Create save data
             SaveData saveData = CaptureSaveData();
+
+            // Add slot number to save data metadata
+            saveData.saveSlot = slot;
 
             // Serialize to JSON
             string json = JsonUtility.ToJson(saveData, true);
@@ -47,135 +137,162 @@ public static class EnhancedGameSaveManager
                 Directory.CreateDirectory(saveDir);
             }
 
+            string savePath = GetSavePath(slot);
+            string backupPath = GetBackupPath(slot);
+
             // Backup existing save if it exists
-            if (File.Exists(SavePath))
+            if (File.Exists(savePath))
             {
-                File.Copy(SavePath, BackupPath, true);
-                Debug.Log($"Backed up existing save to: {BackupPath}");
+                File.Copy(savePath, backupPath, true);
+                Debug.Log($"Backed up existing save to: {backupPath}");
             }
 
             // Write new save
-            File.WriteAllText(SavePath, json);
+            File.WriteAllText(savePath, json);
 
             // Mark save as existing in PlayerPrefs (backwards compatibility)
-            PlayerPrefs.SetInt(SAVE_KEY, 1);
+            PlayerPrefs.SetInt($"{SAVE_KEY}_Slot{slot}", 1);
             PlayerPrefs.Save();
 
-            Debug.Log($"Game saved successfully to: {SavePath}");
+            Debug.Log($"Game saved successfully to slot {slot}: {savePath}");
             Debug.Log($"Save data size: {json.Length} characters");
 
             return true;
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to save game: {e.Message}");
+            Debug.LogError($"Failed to save game to slot {slot}: {e.Message}");
             Debug.LogException(e);
             return false;
         }
     }
 
     /// <summary>
-    /// Load complete game state from JSON file
+    /// Load complete game state from JSON file in the specified slot
     /// </summary>
-    public static SaveData LoadGame()
+    public static SaveData LoadGame(int slot = DEFAULT_SLOT)
     {
         try
         {
-            if (!File.Exists(SavePath))
+            ValidateSlot(slot);
+            string savePath = GetSavePath(slot);
+
+            if (!File.Exists(savePath))
             {
-                Debug.LogWarning("No save file found");
+                Debug.LogWarning($"No save file found in slot {slot}");
                 return null;
             }
 
             // Read JSON
-            string json = File.ReadAllText(SavePath);
+            string json = File.ReadAllText(savePath);
 
             // Deserialize
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
 
             if (saveData == null)
             {
-                Debug.LogError("Failed to deserialize save data");
+                Debug.LogError($"Failed to deserialize save data from slot {slot}");
                 return null;
             }
 
-            Debug.Log($"Game loaded successfully from: {SavePath}");
-            Debug.Log($"Save date: {saveData.saveDate}, Version: {saveData.saveVersion}");
+            Debug.Log($"Game loaded successfully from slot {slot}: {savePath}");
+            Debug.Log($"Save date: {saveData.saveDate}, Version: {saveData.saveVersion}, Slot: {saveData.saveSlot}");
 
             return saveData;
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to load game: {e.Message}");
+            Debug.LogError($"Failed to load game from slot {slot}: {e.Message}");
             Debug.LogException(e);
 
             // Attempt to load backup
-            return LoadBackup();
+            return LoadBackup(slot);
         }
     }
 
     /// <summary>
     /// Load backup save file if main save fails
     /// </summary>
-    private static SaveData LoadBackup()
+    private static SaveData LoadBackup(int slot)
     {
         try
         {
-            if (!File.Exists(BackupPath))
+            string backupPath = GetBackupPath(slot);
+
+            if (!File.Exists(backupPath))
             {
-                Debug.LogError("No backup save file found");
+                Debug.LogError($"No backup save file found for slot {slot}");
                 return null;
             }
 
-            Debug.LogWarning("Attempting to load backup save...");
+            Debug.LogWarning($"Attempting to load backup save for slot {slot}...");
 
-            string json = File.ReadAllText(BackupPath);
+            string json = File.ReadAllText(backupPath);
             SaveData saveData = JsonUtility.FromJson<SaveData>(json);
 
             if (saveData != null)
             {
-                Debug.Log("Backup save loaded successfully");
+                Debug.Log($"Backup save loaded successfully for slot {slot}");
                 // Restore backup as main save
-                File.Copy(BackupPath, SavePath, true);
+                File.Copy(backupPath, GetSavePath(slot), true);
             }
 
             return saveData;
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to load backup: {e.Message}");
+            Debug.LogError($"Failed to load backup for slot {slot}: {e.Message}");
             return null;
         }
     }
 
     /// <summary>
-    /// Delete save game
+    /// Delete save game from the specified slot
     /// </summary>
-    public static void DeleteSaveGame()
+    public static void DeleteSaveGame(int slot = DEFAULT_SLOT)
     {
         try
         {
-            if (File.Exists(SavePath))
+            ValidateSlot(slot);
+            string savePath = GetSavePath(slot);
+            string backupPath = GetBackupPath(slot);
+
+            if (File.Exists(savePath))
             {
-                File.Delete(SavePath);
-                Debug.Log("Save file deleted");
+                File.Delete(savePath);
+                Debug.Log($"Save file deleted from slot {slot}");
             }
 
-            if (File.Exists(BackupPath))
+            if (File.Exists(backupPath))
             {
-                File.Delete(BackupPath);
-                Debug.Log("Backup save file deleted");
+                File.Delete(backupPath);
+                Debug.Log($"Backup save file deleted from slot {slot}");
             }
 
-            PlayerPrefs.DeleteKey(SAVE_KEY);
+            PlayerPrefs.DeleteKey($"{SAVE_KEY}_Slot{slot}");
             PlayerPrefs.Save();
 
-            Debug.Log("Save game deleted successfully");
+            Debug.Log($"Save game deleted successfully from slot {slot}");
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to delete save: {e.Message}");
+            Debug.LogError($"Failed to delete save from slot {slot}: {e.Message}");
         }
+    }
+
+    /// <summary>
+    /// Delete all save games from all slots
+    /// </summary>
+    public static void DeleteAllSaveGames()
+    {
+        for (int slot = 1; slot <= MAX_SAVE_SLOTS; slot++)
+        {
+            if (HasSaveGame(slot))
+            {
+                DeleteSaveGame(slot);
+            }
+        }
+        Debug.Log("All save games deleted");
     }
 
     /// <summary>
@@ -208,6 +325,9 @@ public static class EnhancedGameSaveManager
 
         // Capture maze state
         saveData.mazeState = CaptureMazeState();
+
+        // Capture match3 state
+        saveData.match3State = CaptureMatch3State();
 
         // Capture game options
         saveData.gameOptions = CaptureGameOptions();
@@ -483,6 +603,57 @@ public static class EnhancedGameSaveManager
         return data;
     }
 
+    private static Match3StateData CaptureMatch3State()
+    {
+        Match3StateData data = new Match3StateData();
+
+        Board board = UnityEngine.Object.FindFirstObjectByType<Board>();
+        GameManager gameManager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+
+        if (board != null)
+        {
+            // Save board dimensions
+            data.boardWidth = board.Width;
+            data.boardHeight = board.Height;
+
+            // Save board pieces (convert 2D array to 1D for serialization)
+            data.boardPieces = board.GetBoardStateAsArray();
+
+            Debug.Log($"Captured Match3 board state: {data.boardWidth}x{data.boardHeight}, {data.boardPieces?.Length ?? 0} pieces");
+        }
+
+        if (gameManager != null)
+        {
+            // Save remaining moves
+            data.player1RemainingMoves = gameManager.GetRemainingMoves(PlayerManager.Player.Player1);
+            data.player2RemainingMoves = gameManager.GetRemainingMoves(PlayerManager.Player.Player2);
+
+            // Save color scores
+            var p1ColorScores = gameManager.GetColorScores(PlayerManager.Player.Player1);
+            var p2ColorScores = gameManager.GetColorScores(PlayerManager.Player.Player2);
+
+            if (p1ColorScores != null)
+            {
+                foreach (var kvp in p1ColorScores)
+                {
+                    data.player1ColorScores.Add(new ColorScoreEntry((int)kvp.Key, kvp.Value));
+                }
+            }
+
+            if (p2ColorScores != null)
+            {
+                foreach (var kvp in p2ColorScores)
+                {
+                    data.player2ColorScores.Add(new ColorScoreEntry((int)kvp.Key, kvp.Value));
+                }
+            }
+
+            Debug.Log($"Captured Match3 game state: P1 moves={data.player1RemainingMoves}, P2 moves={data.player2RemainingMoves}");
+        }
+
+        return data;
+    }
+
     private static GameOptionsData CaptureGameOptions()
     {
         GameOptionsData data = new GameOptionsData();
@@ -532,6 +703,7 @@ public static class EnhancedGameSaveManager
         RestoreSpellSystem(saveData.spellData);
         RestoreStatusEffects(saveData.statusEffectData);
         RestoreMazeState(saveData.mazeState);
+        RestoreMatch3State(saveData.match3State);
         RestoreGameOptions(saveData.gameOptions);
 
         Debug.Log("Save data restored successfully");
@@ -824,6 +996,54 @@ public static class EnhancedGameSaveManager
         }
     }
 
+    private static void RestoreMatch3State(Match3StateData data)
+    {
+        if (data == null) return;
+
+        Board board = UnityEngine.Object.FindFirstObjectByType<Board>();
+        GameManager gameManager = UnityEngine.Object.FindFirstObjectByType<GameManager>();
+
+        if (board != null && data.boardPieces != null)
+        {
+            // Restore board state from 1D array
+            board.RestoreBoardState(data.boardPieces, data.boardWidth, data.boardHeight);
+            Debug.Log($"Restored Match3 board: {data.boardWidth}x{data.boardHeight}");
+        }
+
+        if (gameManager != null)
+        {
+            // Restore remaining moves
+            gameManager.SetRemainingMoves(PlayerManager.Player.Player1, data.player1RemainingMoves);
+            gameManager.SetRemainingMoves(PlayerManager.Player.Player2, data.player2RemainingMoves);
+
+            // Restore color scores
+            if (data.player1ColorScores != null)
+            {
+                Dictionary<GamePiece.PieceType, int> p1Scores = new Dictionary<GamePiece.PieceType, int>();
+                foreach (var entry in data.player1ColorScores)
+                {
+                    p1Scores[(GamePiece.PieceType)entry.pieceType] = entry.score;
+                }
+                gameManager.SetColorScores(PlayerManager.Player.Player1, p1Scores);
+            }
+
+            if (data.player2ColorScores != null)
+            {
+                Dictionary<GamePiece.PieceType, int> p2Scores = new Dictionary<GamePiece.PieceType, int>();
+                foreach (var entry in data.player2ColorScores)
+                {
+                    p2Scores[(GamePiece.PieceType)entry.pieceType] = entry.score;
+                }
+                gameManager.SetColorScores(PlayerManager.Player.Player2, p2Scores);
+            }
+
+            Debug.Log($"Restored Match3 game state: P1 moves={data.player1RemainingMoves}, P2 moves={data.player2RemainingMoves}");
+
+            // Update UI to reflect restored state
+            gameManager.UpdateUI();
+        }
+    }
+
     private static void RestoreGameOptions(GameOptionsData data)
     {
         if (data == null) return;
@@ -858,33 +1078,79 @@ public static class EnhancedGameSaveManager
     #region Utility Methods
 
     /// <summary>
-    /// Get save file info (for UI display)
+    /// Get save file info for a specific slot (for UI display)
     /// </summary>
-    public static SaveFileInfo GetSaveFileInfo()
+    public static SaveSlotInfo GetSaveSlotInfo(int slot)
     {
-        if (!HasSaveGame())
-            return null;
+        if (!HasSaveGame(slot))
+            return new SaveSlotInfo { slotNumber = slot, isEmpty = true };
 
         try
         {
-            string json = File.ReadAllText(SavePath);
+            ValidateSlot(slot);
+            string savePath = GetSavePath(slot);
+            string json = File.ReadAllText(savePath);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            return new SaveFileInfo
+            return new SaveSlotInfo
             {
+                slotNumber = slot,
+                isEmpty = false,
                 saveDate = data.saveDate,
                 playerLevel = data.playerStats.level,
                 currentZone = data.playerProgress.currentZone,
                 currentSubZone = data.playerProgress.currentSubZone,
                 playtimeSeconds = data.playtimeSeconds,
-                fileSizeKB = new FileInfo(SavePath).Length / 1024
+                fileSizeKB = new FileInfo(savePath).Length / 1024,
+                savedScene = data.savedScene
             };
         }
         catch (Exception e)
         {
-            Debug.LogError($"Failed to get save file info: {e.Message}");
-            return null;
+            Debug.LogError($"Failed to get save file info for slot {slot}: {e.Message}");
+            return new SaveSlotInfo { slotNumber = slot, isEmpty = true };
         }
+    }
+
+    /// <summary>
+    /// Get all save slot info (for UI display)
+    /// </summary>
+    public static List<SaveSlotInfo> GetAllSaveSlots()
+    {
+        List<SaveSlotInfo> slots = new List<SaveSlotInfo>();
+        for (int slot = 1; slot <= MAX_SAVE_SLOTS; slot++)
+        {
+            slots.Add(GetSaveSlotInfo(slot));
+        }
+        return slots;
+    }
+
+    /// <summary>
+    /// Find the most recently saved slot
+    /// </summary>
+    public static int GetMostRecentSlot()
+    {
+        int mostRecentSlot = -1;
+        DateTime mostRecentDate = DateTime.MinValue;
+
+        for (int slot = 1; slot <= MAX_SAVE_SLOTS; slot++)
+        {
+            SaveSlotInfo info = GetSaveSlotInfo(slot);
+            if (!info.isEmpty)
+            {
+                DateTime slotDate;
+                if (DateTime.TryParse(info.saveDate, out slotDate))
+                {
+                    if (slotDate > mostRecentDate)
+                    {
+                        mostRecentDate = slotDate;
+                        mostRecentSlot = slot;
+                    }
+                }
+            }
+        }
+
+        return mostRecentSlot;
     }
 
     /// <summary>
@@ -901,21 +1167,36 @@ public static class EnhancedGameSaveManager
     #region Menu Integration
 
     /// <summary>
-    /// Continue from main menu - loads the saved game and switches to the saved scene
+    /// Continue from main menu - loads the most recent saved game and switches to the saved scene
     /// Call this from the Continue button in the main menu
     /// </summary>
     public static void ContinueGame()
     {
-        if (!HasSaveGame())
+        int mostRecentSlot = GetMostRecentSlot();
+        if (mostRecentSlot == -1)
         {
-            Debug.LogWarning("[ContinueGame] No save file found!");
+            Debug.LogWarning("[ContinueGame] No save files found!");
             return;
         }
 
-        SaveData saveData = LoadGame();
+        ContinueGame(mostRecentSlot);
+    }
+
+    /// <summary>
+    /// Continue from a specific save slot
+    /// </summary>
+    public static void ContinueGame(int slot)
+    {
+        if (!HasSaveGame(slot))
+        {
+            Debug.LogWarning($"[ContinueGame] No save file found in slot {slot}!");
+            return;
+        }
+
+        SaveData saveData = LoadGame(slot);
         if (saveData == null)
         {
-            Debug.LogError("[ContinueGame] Failed to load save data!");
+            Debug.LogError($"[ContinueGame] Failed to load save data from slot {slot}!");
             return;
         }
 
@@ -956,21 +1237,32 @@ public static class EnhancedGameSaveManager
 }
 
 /// <summary>
-/// Save file information for UI display
+/// Save slot information for UI display
 /// </summary>
-public class SaveFileInfo
+public class SaveSlotInfo
 {
+    public int slotNumber;
+    public bool isEmpty;
     public string saveDate;
     public int playerLevel;
     public int currentZone;
     public int currentSubZone;
     public float playtimeSeconds;
     public long fileSizeKB;
+    public SceneIdentifier savedScene;
 
     public string GetPlaytimeFormatted()
     {
         int hours = (int)(playtimeSeconds / 3600);
         int minutes = (int)((playtimeSeconds % 3600) / 60);
         return $"{hours}h {minutes}m";
+    }
+
+    public string GetSlotDisplayName()
+    {
+        if (isEmpty)
+            return $"Slot {slotNumber} - Empty";
+
+        return $"Slot {slotNumber} - Level {playerLevel} - {saveDate}";
     }
 }

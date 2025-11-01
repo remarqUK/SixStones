@@ -73,31 +73,32 @@ public class SaveSystemMenu
         }
     }
 
-    [MenuItem(MENU_ROOT + "Show Save Info", false, 4)]
+    [MenuItem(MENU_ROOT + "Show All Save Slots", false, 4)]
     public static void ShowSaveInfo()
     {
-        if (!EnhancedGameSaveManager.HasSaveGame())
+        if (!EnhancedGameSaveManager.HasAnySaveGame())
         {
-            EditorUtility.DisplayDialog("Save System", "No save file found!", "OK");
+            EditorUtility.DisplayDialog("Save System", "No save files found!", "OK");
             return;
         }
 
-        SaveFileInfo info = EnhancedGameSaveManager.GetSaveFileInfo();
-        if (info != null)
-        {
-            string message = $"Save Date: {info.saveDate}\n";
-            message += $"Player Level: {info.playerLevel}\n";
-            message += $"Current Zone: {info.currentZone}\n";
-            message += $"Current SubZone: {info.currentSubZone}\n";
-            message += $"Playtime: {info.GetPlaytimeFormatted()}\n";
-            message += $"File Size: {info.fileSizeKB} KB";
+        var allSlots = EnhancedGameSaveManager.GetAllSaveSlots();
+        string message = "=== ALL SAVE SLOTS ===\n\n";
 
-            EditorUtility.DisplayDialog("Save File Info", message, "OK");
-        }
-        else
+        foreach (var slotInfo in allSlots)
         {
-            EditorUtility.DisplayDialog("Save System", "Failed to read save file info.", "OK");
+            if (!slotInfo.isEmpty)
+            {
+                message += $"--- Slot {slotInfo.slotNumber} ---\n";
+                message += $"Date: {slotInfo.saveDate}\n";
+                message += $"Level: {slotInfo.playerLevel}\n";
+                message += $"Zone: {slotInfo.currentZone}/{slotInfo.currentSubZone}\n";
+                message += $"Playtime: {slotInfo.GetPlaytimeFormatted()}\n";
+                message += $"Size: {slotInfo.fileSizeKB} KB\n\n";
+            }
         }
+
+        EditorUtility.DisplayDialog("All Save Slots", message, "OK");
     }
 
     [MenuItem(MENU_ROOT + "Export Save to Console", false, 5)]

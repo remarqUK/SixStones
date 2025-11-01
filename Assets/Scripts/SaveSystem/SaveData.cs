@@ -10,6 +10,7 @@ public class SaveData
 {
     // Save metadata
     public string saveVersion = "1.0";
+    public int saveSlot = 1; // Which save slot this data belongs to
     public string saveDate;
     public float playtimeSeconds;
     public SceneIdentifier savedScene = SceneIdentifier.Maze3D; // Scene where the game was saved
@@ -31,6 +32,9 @@ public class SaveData
     // Maze/dungeon state
     public MazeStateData mazeState;
 
+    // Match3 game state
+    public Match3StateData match3State;
+
     // Options & settings (optional - usually separate)
     public GameOptionsData gameOptions;
 
@@ -46,6 +50,7 @@ public class SaveData
         spellData = new SpellSystemData();
         statusEffectData = new StatusEffectsSaveData();
         mazeState = new MazeStateData();
+        match3State = new Match3StateData();
         gameOptions = new GameOptionsData();
     }
 }
@@ -288,6 +293,50 @@ public class Vector2IntSerializable
     public Vector2Int ToVector2Int()
     {
         return new Vector2Int(x, y);
+    }
+}
+
+/// <summary>
+/// Match3 game state - board layout and game progress
+/// </summary>
+[Serializable]
+public class Match3StateData
+{
+    // Board dimensions
+    public int boardWidth;
+    public int boardHeight;
+
+    // Board pieces - 1D array serialized from 2D (Unity can't serialize 2D arrays directly)
+    public int[] boardPieces; // PieceType values (0=Red, 1=Blue, etc.)
+
+    // Player moves
+    public int player1RemainingMoves;
+    public int player2RemainingMoves;
+
+    // Player color scores (serialized dictionaries)
+    public List<ColorScoreEntry> player1ColorScores;
+    public List<ColorScoreEntry> player2ColorScores;
+
+    public Match3StateData()
+    {
+        player1ColorScores = new List<ColorScoreEntry>();
+        player2ColorScores = new List<ColorScoreEntry>();
+    }
+}
+
+/// <summary>
+/// Serializable key-value pair for color scores
+/// </summary>
+[Serializable]
+public class ColorScoreEntry
+{
+    public int pieceType; // PieceType enum value
+    public int score;
+
+    public ColorScoreEntry(int pieceType, int score)
+    {
+        this.pieceType = pieceType;
+        this.score = score;
     }
 }
 

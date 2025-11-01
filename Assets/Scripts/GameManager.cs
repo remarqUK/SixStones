@@ -702,4 +702,54 @@ public class GameManager : MonoBehaviour
 
         UpdateUI();
     }
+
+    #region Save/Load Support
+
+    /// <summary>
+    /// Get remaining moves for a player
+    /// </summary>
+    public int GetRemainingMoves(PlayerManager.Player player)
+    {
+        return player == PlayerManager.Player.Player1 ? player1RemainingMoves : player2RemainingMoves;
+    }
+
+    /// <summary>
+    /// Set remaining moves for a player
+    /// </summary>
+    public void SetRemainingMoves(PlayerManager.Player player, int moves)
+    {
+        if (player == PlayerManager.Player.Player1)
+            player1RemainingMoves = moves;
+        else
+            player2RemainingMoves = moves;
+
+        Debug.Log($"Set remaining moves for {player}: {moves}");
+    }
+
+    /// <summary>
+    /// Get color scores for a player
+    /// </summary>
+    public Dictionary<GamePiece.PieceType, int> GetColorScores(PlayerManager.Player player)
+    {
+        return player == PlayerManager.Player.Player1 ? player1ColorScores : player2ColorScores;
+    }
+
+    /// <summary>
+    /// Set color scores for a player
+    /// </summary>
+    public void SetColorScores(PlayerManager.Player player, Dictionary<GamePiece.PieceType, int> scores)
+    {
+        if (player == PlayerManager.Player.Player1)
+        {
+            player1ColorScores = scores;
+        }
+        else
+        {
+            player2ColorScores = scores;
+        }
+
+        Debug.Log($"Set color scores for {player}: {scores.Count} entries");
+    }
+
+    #endregion
 }

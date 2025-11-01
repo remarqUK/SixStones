@@ -15,6 +15,7 @@ using UnityEngine.SceneManagement;
 /// USAGE:
 /// - Press Escape (keyboard) or Start button (gamepad) to toggle pause menu in any scene
 /// - Automatically pauses game (Time.timeScale = 0) when opened
+/// - Auto-saves game when pause menu is opened
 /// - Works in 2D (Match3), 3D (Maze3D), and UI-only scenes (zone/subzone maps)
 ///
 /// FEATURES:
@@ -23,6 +24,7 @@ using UnityEngine.SceneManagement;
 /// - Singleton pattern ensures only one instance exists
 /// - Persistent canvas overlay (renders on top of everything)
 /// - Integrates with GlobalOptionsManager for Settings button
+/// - Auto-saves progress when opened (never lose progress!)
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
@@ -238,6 +240,51 @@ public class PauseMenu : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         Debug.Log("Game Paused");
+
+        // Auto-save when pause menu opens (after pausing)
+        StartCoroutine(AutoSaveWhenReady());
+    }
+
+    /// <summary>
+    /// Waits for board to finish processing, then saves the game
+    /// </summary>
+    private System.Collections.IEnumerator AutoSaveWhenReady()
+    {
+        // Find the board (if in Match3 scene)
+        Board board = FindFirstObjectByType<Board>();
+
+        if (board != null && board.IsProcessing)
+        {
+            Debug.Log("[Auto-Save] Waiting for board animations to complete before saving...");
+
+            // Wait for board to finish processing
+            // Use real time since game is paused (Time.timeScale = 0)
+            float timeout = 5f; // 5 second timeout
+            float elapsed = 0f;
+
+            while (board.IsProcessing && elapsed < timeout)
+            {
+                yield return null; // Wait one frame
+                elapsed += Time.unscaledDeltaTime; // Use unscaled time since game is paused
+            }
+
+            if (elapsed >= timeout)
+            {
+                Debug.LogWarning("[Auto-Save] Timeout waiting for board to finish processing. Skipping save.");
+                yield break;
+            }
+        }
+
+        // Now it's safe to save
+        bool saveSuccess = EnhancedGameSaveManager.SaveGame();
+        if (saveSuccess)
+        {
+            Debug.Log("<color=green>[Auto-Save] Game saved when pause menu opened</color>");
+        }
+        else
+        {
+            Debug.LogWarning("[Auto-Save] Failed to save game when pause menu opened");
+        }
     }
 
     private void HidePauseMenu()

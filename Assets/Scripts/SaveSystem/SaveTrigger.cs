@@ -15,6 +15,7 @@ public class SaveTrigger : MonoBehaviour
     [SerializeField] private TextMeshProUGUI feedbackText;
 
     [Header("Settings")]
+    [SerializeField] private int saveSlot = 1; // Which save slot to use (1-10)
     [SerializeField] private bool enableKeyboardShortcuts = false; // Disabled by default - use GlobalSaveInput instead
     [SerializeField] private bool autoSaveEnabled = true;
     [SerializeField] private float autoSaveIntervalSeconds = 300f; // 5 minutes
@@ -88,15 +89,15 @@ public class SaveTrigger : MonoBehaviour
     #region Public Methods
 
     /// <summary>
-    /// Save the game
+    /// Save the game to the configured slot
     /// </summary>
     public void SaveGame()
     {
-        bool success = EnhancedGameSaveManager.SaveGame();
+        bool success = EnhancedGameSaveManager.SaveGame(saveSlot);
 
         if (success)
         {
-            ShowFeedback("Game Saved!", Color.green);
+            ShowFeedback($"Game Saved to Slot {saveSlot}!", Color.green);
             UpdateButtonStates();
         }
         else
@@ -106,22 +107,22 @@ public class SaveTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// Load the game
+    /// Load the game from the configured slot
     /// </summary>
     public void LoadGame()
     {
-        if (!EnhancedGameSaveManager.HasSaveGame())
+        if (!EnhancedGameSaveManager.HasSaveGame(saveSlot))
         {
-            ShowFeedback("No Save Found!", Color.yellow);
+            ShowFeedback($"No Save in Slot {saveSlot}!", Color.yellow);
             return;
         }
 
-        SaveData saveData = EnhancedGameSaveManager.LoadGame();
+        SaveData saveData = EnhancedGameSaveManager.LoadGame(saveSlot);
 
         if (saveData != null)
         {
             EnhancedGameSaveManager.RestoreSaveData(saveData);
-            ShowFeedback("Game Loaded!", Color.green);
+            ShowFeedback($"Game Loaded from Slot {saveSlot}!", Color.green);
         }
         else
         {
@@ -130,29 +131,38 @@ public class SaveTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// Delete the save file
+    /// Delete the save file from the configured slot
     /// </summary>
     public void DeleteSave()
     {
-        EnhancedGameSaveManager.DeleteSaveGame();
-        ShowFeedback("Save Deleted!", Color.yellow);
+        EnhancedGameSaveManager.DeleteSaveGame(saveSlot);
+        ShowFeedback($"Save Deleted from Slot {saveSlot}!", Color.yellow);
         UpdateButtonStates();
     }
 
     /// <summary>
-    /// Check if save exists
+    /// Check if save exists in the configured slot
     /// </summary>
     public bool HasSave()
     {
-        return EnhancedGameSaveManager.HasSaveGame();
+        return EnhancedGameSaveManager.HasSaveGame(saveSlot);
     }
 
     /// <summary>
-    /// Get save file info for display
+    /// Get save slot info for display
     /// </summary>
-    public SaveFileInfo GetSaveInfo()
+    public SaveSlotInfo GetSaveInfo()
     {
-        return EnhancedGameSaveManager.GetSaveFileInfo();
+        return EnhancedGameSaveManager.GetSaveSlotInfo(saveSlot);
+    }
+
+    /// <summary>
+    /// Set which save slot to use
+    /// </summary>
+    public void SetSaveSlot(int slot)
+    {
+        saveSlot = slot;
+        UpdateButtonStates();
     }
 
     /// <summary>

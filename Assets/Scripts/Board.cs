@@ -1065,4 +1065,106 @@ public class Board : MonoBehaviour
 
         return hasMatch;
     }
+
+    #region Save/Load Support
+
+    /// <summary>
+    /// Get current board state as a 1D array for serialization
+    /// </summary>
+    public int[] GetBoardStateAsArray()
+    {
+        if (pieces == null)
+            return null;
+
+        int[] stateArray = new int[width * height];
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = y * width + x;
+                if (pieces[x, y] != null)
+                {
+                    stateArray[index] = (int)pieces[x, y].Type;
+                }
+                else
+                {
+                    stateArray[index] = -1; // Empty cell
+                }
+            }
+        }
+
+        return stateArray;
+    }
+
+    /// <summary>
+    /// Restore board state from a 1D array
+    /// </summary>
+    public void RestoreBoardState(int[] stateArray, int savedWidth, int savedHeight)
+    {
+        if (stateArray == null || stateArray.Length != savedWidth * savedHeight)
+        {
+            Debug.LogError("Cannot restore board state: invalid data");
+            return;
+        }
+
+        // If dimensions changed, resize board
+        if (savedWidth != width || savedHeight != height)
+        {
+            Debug.LogWarning($"Board dimensions changed from {savedWidth}x{savedHeight} to {width}x{height}. Adjusting...");
+            width = savedWidth;
+            height = savedHeight;
+        }
+
+        // Clear existing pieces
+        if (pieces != null)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    if (pieces[x, y] != null)
+                    {
+                        Destroy(pieces[x, y].gameObject);
+                    }
+                }
+            }
+        }
+
+        // Recreate pieces array
+        pieces = new GamePiece[width, height];
+
+        // Restore pieces from saved state
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                int index = y * width + x;
+                int pieceTypeValue = stateArray[index];
+
+                if (pieceTypeValue >= 0)
+                {
+                    GamePiece.PieceType pieceType = (GamePiece.PieceType)pieceTypeValue;
+                    Vector3 worldPos = GridToWorld(x, y);
+
+                    GameObject pieceObj = Instantiate(gamePiecePrefab, worldPos, Quaternion.identity, transform);
+                    pieceObj.name = $"Piece_{x}_{y}";
+
+                    GamePiece piece = pieceObj.GetComponent<GamePiece>();
+
+                    if (piece != null)
+                    {
+                        // Get GameSettings for color customization if available
+                        GameSettings settings = UnityEngine.Object.FindFirstObjectByType<GameSettings>();
+                        piece.Initialize(pieceType, new Vector2Int(x, y), this, settings);
+                        pieces[x, y] = piece;
+                    }
+                }
+            }
+        }
+
+        Debug.Log($"Board state restored: {width}x{height} with {stateArray.Length} pieces");
+    }
+
+    #endregion
 }

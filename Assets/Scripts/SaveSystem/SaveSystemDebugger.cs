@@ -71,18 +71,27 @@ public class SaveSystemDebugger : MonoBehaviour
         // Save status
         if (showSaveStatus)
         {
-            bool hasSave = EnhancedGameSaveManager.HasSaveGame();
-            statusText += $"<b>Save File:</b> {(hasSave ? "<color=green>EXISTS</color>" : "<color=red>NOT FOUND</color>")}\n";
+            bool hasSave = EnhancedGameSaveManager.HasAnySaveGame();
+            statusText += $"<b>Save Files:</b> {(hasSave ? "<color=green>EXIST</color>" : "<color=red>NONE FOUND</color>")}\n";
 
             if (hasSave)
             {
-                SaveFileInfo info = EnhancedGameSaveManager.GetSaveFileInfo();
-                if (info != null)
+                var usedSlots = EnhancedGameSaveManager.GetUsedSlots();
+                statusText += $"Used Slots: {string.Join(", ", usedSlots)}\n";
+
+                // Show most recent save
+                int recentSlot = EnhancedGameSaveManager.GetMostRecentSlot();
+                if (recentSlot != -1)
                 {
-                    statusText += $"Save Date: {info.saveDate}\n";
-                    statusText += $"Level: {info.playerLevel}\n";
-                    statusText += $"Zone: {info.currentZone}/{info.currentSubZone}\n";
-                    statusText += $"Size: {info.fileSizeKB} KB\n";
+                    SaveSlotInfo info = EnhancedGameSaveManager.GetSaveSlotInfo(recentSlot);
+                    if (info != null && !info.isEmpty)
+                    {
+                        statusText += $"\n<b>Most Recent (Slot {recentSlot}):</b>\n";
+                        statusText += $"Date: {info.saveDate}\n";
+                        statusText += $"Level: {info.playerLevel}\n";
+                        statusText += $"Zone: {info.currentZone}/{info.currentSubZone}\n";
+                        statusText += $"Size: {info.fileSizeKB} KB\n";
+                    }
                 }
             }
             statusText += "\n";
@@ -227,27 +236,32 @@ public class SaveSystemDebugger : MonoBehaviour
 
     public void TestShowInfo()
     {
-        Debug.Log("[SaveSystemDebugger] Showing save info...");
+        Debug.Log("[SaveSystemDebugger] Showing save info for all slots...");
 
-        if (!EnhancedGameSaveManager.HasSaveGame())
+        if (!EnhancedGameSaveManager.HasAnySaveGame())
         {
-            Debug.LogWarning("[SaveSystemDebugger] No save file found!");
+            Debug.LogWarning("[SaveSystemDebugger] No save files found!");
             return;
         }
 
-        SaveFileInfo info = EnhancedGameSaveManager.GetSaveFileInfo();
-        if (info != null)
-        {
-            Debug.Log("=== SAVE FILE INFO ===");
-            Debug.Log($"Save Date: {info.saveDate}");
-            Debug.Log($"Player Level: {info.playerLevel}");
-            Debug.Log($"Zone: {info.currentZone}/{info.currentSubZone}");
-            Debug.Log($"Playtime: {info.GetPlaytimeFormatted()}");
-            Debug.Log($"File Size: {info.fileSizeKB} KB");
-            Debug.Log("======================");
+        var allSlots = EnhancedGameSaveManager.GetAllSaveSlots();
+        Debug.Log("=== ALL SAVE SLOTS ===");
 
-            ShowNotification("CHECK CONSOLE", Color.cyan);
+        foreach (var slotInfo in allSlots)
+        {
+            if (!slotInfo.isEmpty)
+            {
+                Debug.Log($"\n--- Slot {slotInfo.slotNumber} ---");
+                Debug.Log($"Save Date: {slotInfo.saveDate}");
+                Debug.Log($"Player Level: {slotInfo.playerLevel}");
+                Debug.Log($"Zone: {slotInfo.currentZone}/{slotInfo.currentSubZone}");
+                Debug.Log($"Playtime: {slotInfo.GetPlaytimeFormatted()}");
+                Debug.Log($"File Size: {slotInfo.fileSizeKB} KB");
+            }
         }
+
+        Debug.Log("======================");
+        ShowNotification("CHECK CONSOLE", Color.cyan);
     }
 
     public void TestExportJSON()
