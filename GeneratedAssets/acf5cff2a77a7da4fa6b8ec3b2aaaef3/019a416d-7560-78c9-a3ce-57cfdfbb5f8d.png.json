@@ -1,0 +1,29 @@
+{
+    "asset": "acf5cff2a77a7da4fa6b8ec3b2aaaef3",
+    "fileName": "019a416d-7560-78c9-a3ce-57cfdfbb5f8d.png",
+    "prompt": "Ranger class. male.  Serious looking.  Strong linework. Arcane. Airbrush style. \r\nDramatic lighting that emphasizes the facial features.High-quality fantasy game or concept art style, reminiscent of RPG character portraits ",
+    "negativePrompt": "blurry, background, red hair, tattoos, pauldrons, sholder armour",
+    "model": "db3e7617-6868-4d55-9955-0f0c2d4bfdff",
+    "modelName": "Fantasy RPG",
+    "customSeed": 224,
+    "w3CTraceId": "8fe8f568bcb5fe46d320b46ed6433ed8",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": [
+            {
+                "doodleReferenceType": 7,
+                "doodle": [],
+                "label": "Image",
+                "strength": 0.9800000190734863,
+                "invertStrength": false,
+                "assetReferenceGuid": "f7d29006e6414884f8ea2299801e9737"
+            }
+        ]
+    },
+    "upscaleFactor": 0
+}

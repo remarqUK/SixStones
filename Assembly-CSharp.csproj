@@ -150,6 +150,7 @@
     <Compile Include="Assets\Scripts\CPUPlayer.cs" />
     <Compile Include="Assets\Scripts\RandomItemTester.cs" />
     <Compile Include="Assets\Scripts\RandomItemGenerator.cs" />
+    <Compile Include="Assets\Scripts\PictureFrameLoader.cs" />
     <Compile Include="Assets\Scripts\PlayerActivityNotifier.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\DropdownSample.cs" />
     <Compile Include="Assets\TextMesh Pro\Examples &amp; Extras\Scripts\VertexColorCycler.cs" />

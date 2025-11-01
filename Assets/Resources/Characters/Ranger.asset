@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterData
   characterName: Ranger
   description: A skilled archer and tracker, master of wilderness survival
-  characterSprite: {fileID: 21300000, guid: f7d29006e6414884f8ea2299801e9737, type: 3}
+  characterSprite: {fileID: 21300000, guid: 89cf4aaa50ff87245b0a9dfb03543b9c, type: 3}
   strength: 12
   dexterity: 16
   constitution: 12

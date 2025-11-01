@@ -69,6 +69,7 @@
     <Compile Include="Assets\Editor\FixWorldMapInputSystem.cs" />
     <Compile Include="Assets\Editor\Maze3DSetup.cs" />
     <Compile Include="Assets\Editor\AddCharacterSelectionToBuild.cs" />
+    <Compile Include="Assets\Editor\AssignPictureFrameSprite.cs" />
     <Compile Include="Assets\Editor\MainMenuSetup.cs" />
     <Compile Include="Assets\Editor\ItemCreator.cs" />
     <Compile Include="Assets\Editor\CreateExampleStatusEffects.cs" />
